@@ -1,0 +1,10 @@
+{
+  "description": "A responsive landing page showcasing Quran Academy KZ's educational offerings, guiding users through Quranic and Islamic studies with free and premium content.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
