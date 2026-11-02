@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { Link } from "react-router";
 import { useApp } from "./context";
+import { checkPromo, getTier, type PromoResult } from "./data";
 
 export type IconName =
   | "arrow" | "back" | "bookmark" | "cart" | "check" | "chevron" | "close" | "globe" | "lock"
@@ -131,6 +133,49 @@ export function EmptyState({ title, text, action }: { title: string; text?: stri
       {text && <p>{text}</p>}
       {action}
     </div>
+  );
+}
+
+export function PromoField({ id = "promo" }: { id?: string }) {
+  const { t, requireAuth, subscribe, notify } = useApp();
+  const [code, setCode] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<PromoResult | "empty" | null>(null);
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!code.trim()) { setResult("empty"); return; }
+    setResult(null);
+    requireAuth(() => {
+      setLoading(true);
+      window.setTimeout(() => {
+        const r = checkPromo(code);
+        setLoading(false);
+        setResult(r);
+        if (r.status === "ok") { subscribe(r.tier, r.months, "grant"); notify(t("Промокод іске қосылды", "Промокод активирован")); }
+      }, 800);
+    });
+  };
+
+  const error = result === "empty" ? t("Промокодты енгізіңіз", "Введите промокод")
+    : result?.status === "invalid" ? t("Мұндай промокод табылмады. Әріптерді тексеріңіз.", "Такой промокод не найден. Проверьте написание.")
+    : result?.status === "expired" ? t("Бұл промокодтың мерзімі өтіп кеткен. Жаңа код алу үшін демеушіге хабарласыңыз.", "Срок действия промокода истёк. Обратитесь к спонсору за новым кодом.")
+    : null;
+
+  return (
+    <form className="promo-form" noValidate onSubmit={submit}>
+      <label htmlFor={id}>{t("Промокод", "Промокод")}</label>
+      <div className="promo-row">
+        <input aria-describedby={`${id}-status`} aria-invalid={!!error} autoCapitalize="characters" className="input" id={id} onChange={(e) => { setCode(e.target.value); setResult(null); }} placeholder="GRANT-XXXX" value={code} />
+        <Button loading={loading} type="submit" variant="secondary">{t("Қолдану", "Применить")}</Button>
+      </div>
+      <div aria-live="polite" id={`${id}-status`}>
+        {error && <span className="field-error">{error}</span>}
+        {result !== "empty" && result?.status === "ok" && (
+          <p className="promo-success"><Icon name="check" size={18} />{t(`${getTier(result.tier)?.name} тарифі ${result.months} айға ашылды — грант арқылы.`, `Тариф ${getTier(result.tier)?.name} открыт на ${result.months} мес. по гранту.`)}</p>
+        )}
+      </div>
+    </form>
   );
 }
 

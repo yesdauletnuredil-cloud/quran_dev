@@ -1,6 +1,13 @@
 import { createContext, useContext } from "react";
+import type { Tier } from "./data";
 
 export type Lang = "kz" | "ru";
+
+export interface Subscription {
+  tier: Tier;
+  source: "payment" | "grant";
+  until: Date;
+}
 
 export interface AppState {
   dark: boolean;
@@ -9,10 +16,13 @@ export interface AppState {
   setLang: (v: Lang) => void;
   t: (kz: string, ru: string) => string;
   authed: boolean;
+  /** true for any paid tier — unlocks all lessons */
   premium: boolean;
+  subscription: Subscription | null;
   login: () => void;
   logout: () => void;
-  subscribe: () => void;
+  subscribe: (tier: Tier, months?: number, source?: Subscription["source"]) => void;
+  formatDate: (d: Date) => string;
   requireAuth: (action?: () => void) => void;
   done: string[];
   toggleDone: (key: string) => void;

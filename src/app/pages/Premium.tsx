@@ -1,73 +1,100 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useApp } from "../context";
-import { formatPrice, plans } from "../data";
-import { Button, Icon, PageHero } from "../ui";
+import { formatPrice, getTier, tierFeatures, tiers, type Tier } from "../data";
+import { Button, Icon, PageHero, PromoField } from "../ui";
 
 export default function Premium() {
-  const { t, lang, authed, premium, subscribe, requireAuth, notify } = useApp();
+  const { t, lang, authed, subscription, subscribe, requireAuth, notify } = useApp();
   const navigate = useNavigate();
-  const [selected, setSelected] = useState("m6");
+  const [selected, setSelected] = useState<Tier>(subscription?.tier ?? "plus");
+  const [mobileTier, setMobileTier] = useState<Tier>("premium");
   const [loading, setLoading] = useState(false);
-
-  const rows: [string, string, boolean, boolean][] = [
-    [t("Алғашқы сабақтар мен бастаушылар жолы", "Первые уроки и путь для начинающих"), "", true, true],
-    [t("Сұрақ-жауап базасы", "База вопросов и ответов"), "", true, true],
-    [t("Толық курстар мен сабақтар", "Полные курсы и уроки"), "", false, true],
-    [t("Аудио және видео материалдар", "Аудио и видеоматериалы"), "", false, true],
-    [t("Арнайы материалдар мен кітаптар", "Эксклюзивные материалы и книги"), "", false, true],
-    [t("Оқу прогресін сақтау", "Сохранение прогресса"), "", false, true],
-  ];
+  const current = subscription?.tier;
+  const selectedName = getTier(selected)!.name;
 
   const subscribeNow = () => requireAuth(() => {
     setLoading(true);
-    window.setTimeout(() => { setLoading(false); subscribe(); notify(t("Premium іске қосылды", "Premium активирован")); navigate("/academy"); }, 900);
+    window.setTimeout(() => { setLoading(false); subscribe(selected); notify(t(`${selectedName} іске қосылды`, `${selectedName} активирован`)); navigate("/profile"); }, 900);
   });
 
   return (
     <>
       <PageHero
-        crumbs={[{ label: t("Басты бет", "Главная"), to: "/" }, { label: "Premium" }]}
-        eyebrow="FREE · PREMIUM"
-        lead={t("Алдымен тегін материалдармен танысыңыз. Дайын болғанда барлық курстарға қолжетімділік алыңыз.", "Сначала познакомьтесь с бесплатными материалами. Когда будете готовы — получите доступ ко всем курсам.")}
+        crumbs={[{ label: t("Басты бет", "Главная"), to: "/" }, { label: t("Тарифтер", "Тарифы") }]}
+        eyebrow="BASIC · PLUS · PREMIUM"
+        lead={t("Алдымен тегін материалдармен танысыңыз. Дайын болғанда өзіңізге лайық тарифті таңдаңыз.", "Сначала познакомьтесь с бесплатными материалами. Когда будете готовы — выберите подходящий тариф.")}
         title={t("Біліміңізді жалғастырыңыз", "Продолжайте своё обучение")}
       />
-      <section className="page-section">
+      <section className="page-section" id="tariffs">
         <div className="container">
-          <div className="compare" role="table">
-            <div className="compare-head" role="row"><span role="columnheader" /><span role="columnheader">FREE</span><span role="columnheader">PREMIUM</span></div>
-            {rows.map(([label, , free, prem]) => (
-              <div className="compare-row" key={label} role="row">
-                <span role="cell">{label}</span>
-                <span role="cell">{free ? <Icon name="check" size={18} /> : <i className="dash" aria-label={t("Жоқ", "Нет")} />}</span>
-                <span className="yes" role="cell">{prem && <Icon name="check" size={18} />}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-      <section className="page-section section-tint" id="tariffs">
-        <div className="container">
-          <div className="section-title"><p className="eyebrow">{t("ТАРИФТЕР", "ТАРИФЫ")}</p><h2>{t("Өзіңізге ыңғайлы мерзімді таңдаңыз", "Выберите удобный срок")}</h2><p className="section-intro">{t("Барлық тарифте Premium материалдарына толық қолжетімділік беріледі.", "Все тарифы дают полный доступ к материалам Premium.")}</p></div>
-          <div className="pricing-grid" role="radiogroup">
-            {plans.map((p) => {
+          <div className="pricing-grid pricing-grid--tiers" role="radiogroup" aria-label={t("Тариф", "Тариф")}>
+            {tiers.map((p) => {
               const on = selected === p.id;
               return (
-                <button aria-checked={on} className={`price-card ${on ? "selected" : ""} ${p.id === "m6" ? "recommended" : ""}`} key={p.id} onClick={() => setSelected(p.id)} role="radio" type="button">
-                  {p.id === "m6" && <span className="recommend-label">{t("ҰСЫНЫЛАДЫ", "РЕКОМЕНДУЕМ")}</span>}
-                  <div className="price-check">{on && <Icon name="check" />}</div>
-                  <h3>{p.label[lang]}</h3>
+                <button aria-checked={on} className={`price-card ${on ? "selected" : ""} ${p.id === "plus" ? "recommended" : ""}`} key={p.id} onClick={() => setSelected(p.id)} role="radio" type="button">
+                  {p.id === "plus" && <span className="recommend-label">{t("ҰСЫНЫЛАДЫ", "РЕКОМЕНДУЕМ")}</span>}
+                  <div className="price-check">{current === p.id ? <span className="badge badge--free">{t("Ағымдағы", "Текущий")}</span> : on && <Icon name="check" />}</div>
+                  <h3>{p.name}</h3>
                   <p className="price">{formatPrice(p.price)}</p>
-                  <p className="price-per">{formatPrice(p.per)} / {t("ай", "мес")}</p>
+                  <p className="price-per">/ {t("ай", "мес")} · {p.desc[lang]}</p>
+                  <ul aria-hidden="true">
+                    {tierFeatures.filter((f) => f.tiers.includes(p.id)).map((f) => <li key={f.label.ru}><Icon name="check" size={16} />{f.label[lang]}</li>)}
+                  </ul>
                 </button>
               );
             })}
           </div>
           <div className="subscribe-bar">
-            <p>{t("Аккаунт жоқ болса, тіркелуге бағыттаймыз.", "Если аккаунта нет, предложим зарегистрироваться.")}</p>
-            {premium
+            <p>{authed ? t("Төлем демо-режимде: нақты ақша алынбайды.", "Оплата в демо-режиме: деньги не списываются.") : t("Аккаунт жоқ болса, тіркелуге бағыттаймыз.", "Если аккаунта нет, предложим зарегистрироваться.")}</p>
+            {current === selected
               ? <Button icon="arrow" to="/academy">{t("Курстарға өту", "Перейти к курсам")}</Button>
-              : <Button icon="arrow" loading={loading} onClick={subscribeNow}>{authed ? t("Жазылуды рәсімдеу", "Оформить подписку") : t("Тіркеліп жазылу", "Зарегистрироваться и подписаться")}</Button>}
+              : <Button icon="arrow" loading={loading} onClick={subscribeNow}>
+                  {!authed ? t(`Тіркеліп, ${selectedName} алу`, `Зарегистрироваться и оформить ${selectedName}`) : current ? t(`${selectedName} тарифіне ауысу`, `Перейти на ${selectedName}`) : t(`${selectedName} рәсімдеу`, `Оформить ${selectedName}`)}
+                </Button>}
+          </div>
+        </div>
+      </section>
+      <section className="page-section section-tint">
+        <div className="container">
+          <div className="section-title"><p className="eyebrow">{t("САЛЫСТЫРУ", "СРАВНЕНИЕ")}</p><h2>{t("Әр тарифте не бар", "Что входит в каждый тариф")}</h2><p className="section-intro">{t("Әр келесі тариф алдыңғысын толық қамтиды. Premium — Plus мүмкіндіктері және устазбен жеке консультация.", "Каждый следующий тариф включает предыдущий. Premium — всё из Plus и личная консультация с устазом.")}</p></div>
+          <div aria-label={t("Тарифті көрсету", "Показать тариф")} className="compare-tabs filter-row" role="group">
+            {tiers.map((p) => <button aria-pressed={mobileTier === p.id} className={mobileTier === p.id ? "active" : ""} key={p.id} onClick={() => setMobileTier(p.id)} type="button">{p.name}</button>)}
+          </div>
+          <div className="compare compare--tiers" data-active={mobileTier} role="table">
+            <div className="compare-head" role="row">
+              <span role="columnheader" />
+              {tiers.map((p) => <span data-col={p.id} key={p.id} role="columnheader">{p.name.toUpperCase()}</span>)}
+            </div>
+            {tierFeatures.map((f) => (
+              <div className="compare-row" key={f.label.ru} role="row">
+                <span role="cell">{f.label[lang]}</span>
+                {tiers.map((p) => (
+                  <span className={p.id === "premium" ? "yes" : ""} data-col={p.id} key={p.id} role="cell">
+                    {f.tiers.includes(p.id) ? <Icon name="check" size={18} /> : <i aria-label={t("Жоқ", "Нет")} className="dash" />}
+                  </span>
+                ))}
+              </div>
+            ))}
+            <div className="compare-row compare-price" role="row">
+              <span role="cell">{t("Бағасы / ай", "Цена / мес")}</span>
+              {tiers.map((p) => <span data-col={p.id} key={p.id} role="cell">{formatPrice(p.price)}</span>)}
+            </div>
+          </div>
+        </div>
+      </section>
+      <section className="page-section">
+        <div className="container promo-layout">
+          <div className="panel">
+            <p className="eyebrow">{t("ГРАНТ", "ГРАНТ")}</p>
+            <h3>{t("Промокодыңыз бар ма?", "Есть промокод?")}</h3>
+            <p>{t("Демеуші немесе грант бағдарламасы берген кодты енгізіңіз — тариф бірден ашылады.", "Введите код от спонсора или грантовой программы — тариф откроется сразу.")}</p>
+            <PromoField id="promo-premium" />
+          </div>
+          <div className="panel panel--green">
+            <h3>{t("Басқа біреудің оқуына көмектескіңіз келе ме?", "Хотите оплатить обучение другому?")}</h3>
+            <p>{t("Оқушыға демеуші болыңыз: біз промокод жасаймыз, ол оны осы бетте қолданады.", "Станьте спонсором ученика: мы создадим промокод, который он активирует на этой странице.")}</p>
+            <Button icon="arrow" to="/support" variant="light">{t("Жобаны қолдау", "Поддержать проект")}</Button>
           </div>
         </div>
       </section>

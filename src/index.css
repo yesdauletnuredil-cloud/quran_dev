@@ -657,3 +657,58 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
   .destination h2 { font-size: 28px; }
   .toast { width: calc(100% - 32px); text-align: center; }
 }
+
+/* Tiers, promo, profile, support */
+.pricing-grid--tiers { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.pricing-grid--tiers .price-card { min-height: 0; display: flex; flex-direction: column; justify-content: flex-start; }
+.pricing-grid--tiers .price-card ul { min-height: 0; margin: 24px 0 0; padding-top: 16px; border-top: 1px solid var(--line); }
+.pricing-grid--tiers .price-card li { font-size: 13px; line-height: 1.4; }
+.compare-tabs { display: none; }
+.compare--tiers .compare-head, .compare--tiers .compare-row { grid-template-columns: 1fr repeat(3, 110px); }
+.compare--tiers .compare-head span:last-child { color: var(--accent-text); }
+.compare-price { font-weight: 500; }
+.compare-price span:not(:first-child) { font-size: 14px; }
+.promo-layout { display: grid; grid-template-columns: 3fr 2fr; gap: 16px; align-items: stretch; }
+.promo-form { display: grid; gap: 8px; }
+.promo-form label { font-size: 14px; font-weight: 500; }
+.promo-row { display: flex; gap: 10px; }
+.promo-row .input { flex: 1; min-width: 0; letter-spacing: .06em; text-transform: uppercase; }
+.promo-row .input::placeholder { letter-spacing: .06em; }
+.promo-success { margin: 4px 0 0 !important; padding: 12px 14px; border-radius: var(--radius-sm); display: flex; gap: 10px; align-items: center; color: var(--primary) !important; background: var(--surface-soft); font-size: 14px !important; }
+.tier-name { font-size: 40px !important; letter-spacing: -.04em; }
+.tier-features { margin-bottom: 24px; }
+.panel--green .check-list .icon { color: #e6a34c; }
+.profile-stats { margin: 16px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.profile-stats .panel { display: grid; gap: 4px; }
+.profile-stats strong { font-size: 34px; font-weight: 400; letter-spacing: -.03em; }
+.profile-stats span { color: var(--muted); font-size: 13px; }
+.detail-main > .panel + .panel { margin-top: 16px; }
+.support-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: start; }
+.support-card { display: flex; flex-direction: column; }
+.support-card .filter-row { margin-bottom: 18px; }
+.support-num { margin-bottom: 18px; color: var(--accent-text); font-size: 12px; font-weight: 600; letter-spacing: .14em; }
+.support-label { margin: 0 0 10px !important; color: var(--text) !important; font-size: 13px !important; font-weight: 500; }
+.support-foot { margin: 14px 0 0 !important; font-size: 12px !important; }
+.support-list { margin-bottom: 20px; }
+.support-list li { font-size: 14px; }
+.requisites { margin: 20px 0 0; padding: 16px; border: 1px dashed var(--line); border-radius: var(--radius-sm); display: grid; gap: 10px; font-size: 13px; }
+.requisites div { display: flex; justify-content: space-between; gap: 12px; }
+.requisites dt { color: var(--muted); }
+.requisites dd { margin: 0; color: var(--text); text-align: right; font-variant-numeric: tabular-nums; }
+.promo-code { padding: 18px; border: 1px dashed var(--accent); border-radius: var(--radius-sm); display: grid; gap: 6px; background: var(--surface-soft); }
+.promo-code span, .promo-code small { color: var(--muted); font-size: 12px; }
+.promo-code strong { font-size: 24px; font-weight: 500; letter-spacing: .08em; }
+
+@media (max-width: 900px) {
+  .pricing-grid--tiers, .support-grid, .promo-layout { grid-template-columns: 1fr; }
+  .compare--tiers .compare-head, .compare--tiers .compare-row { grid-template-columns: 1fr repeat(3, 84px); }
+}
+@media (max-width: 620px) {
+  .compare-tabs { display: flex; }
+  .compare--tiers .compare-head, .compare--tiers .compare-row { grid-template-columns: 1fr 96px; }
+  .compare--tiers[data-active="basic"] [data-col]:not([data-col="basic"]),
+  .compare--tiers[data-active="plus"] [data-col]:not([data-col="plus"]),
+  .compare--tiers[data-active="premium"] [data-col]:not([data-col="premium"]) { display: none; }
+  .promo-row { flex-direction: column; }
+  .profile-stats { grid-template-columns: 1fr; }
+}

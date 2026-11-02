@@ -10,6 +10,8 @@ import Premium from "./pages/Premium";
 import Beginner from "./pages/Beginner";
 import Login from "./pages/Login";
 import Info from "./pages/Info";
+import Profile from "./pages/Profile";
+import Support from "./pages/Support";
 
 export const router = createBrowserRouter([
   {
@@ -32,6 +34,8 @@ export const router = createBrowserRouter([
       { path: "premium", Component: Premium },
       { path: "beginner", Component: Beginner },
       { path: "login", Component: Login },
+      { path: "profile", Component: Profile },
+      { path: "support", Component: Support },
       { path: "about", element: <Info page="about" /> },
       { path: "contact", element: <Info page="contact" /> },
       { path: "privacy", element: <Info page="privacy" /> },

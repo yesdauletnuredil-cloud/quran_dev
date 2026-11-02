@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, NavLink, Outlet, ScrollRestoration, useLocation, useNavigate } from "react-router";
-import { AppCtx, useApp, type Lang } from "./context";
+import { AppCtx, useApp, type Lang, type Subscription } from "./context";
+import { getTier, type Tier } from "./data";
 import { Brand, Button, Icon } from "./ui";
 
 const navItems = (t: (a: string, b: string) => string) => [
@@ -14,7 +15,7 @@ const navItems = (t: (a: string, b: string) => string) => [
 ];
 
 function Header({ menuOpen, setMenuOpen }: { menuOpen: boolean; setMenuOpen: (v: boolean) => void }) {
-  const { dark, setDark, lang, setLang, t, authed, premium, logout } = useApp();
+  const { dark, setDark, lang, setLang, t, authed, premium, subscription, logout } = useApp();
   const items = navItems(t);
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
@@ -49,8 +50,9 @@ function Header({ menuOpen, setMenuOpen }: { menuOpen: boolean; setMenuOpen: (v:
                 {profileOpen && (
                   <div className="profile-menu">
                     <strong>{t("Оқушы", "Ученик")}</strong>
-                    <span>{premium ? "Premium" : "Free"}</span>
-                    {!premium && <Link onClick={() => setProfileOpen(false)} to="/premium">{t("Premium-ға өту", "Перейти на Premium")}</Link>}
+                    <span>{getTier(subscription?.tier)?.name.toUpperCase() ?? "FREE"}</span>
+                    <Link onClick={() => setProfileOpen(false)} to="/profile">{t("Профиль", "Профиль")}</Link>
+                    {!premium && <Link onClick={() => setProfileOpen(false)} to="/premium">{t("Тариф таңдау", "Выбрать тариф")}</Link>}
                     <button onClick={() => { logout(); setProfileOpen(false); }} type="button">{t("Шығу", "Выйти")}</button>
                   </div>
                 )}
@@ -73,7 +75,7 @@ function Header({ menuOpen, setMenuOpen }: { menuOpen: boolean; setMenuOpen: (v:
         </nav>
         <div className="mobile-sheet-actions">
           {authed
-            ? <Button full onClick={logout} variant="secondary">{t("Шығу", "Выйти")}</Button>
+            ? <><Button full to="/profile">{t("Профиль", "Профиль")}</Button><Button full onClick={logout} variant="secondary">{t("Шығу", "Выйти")}</Button></>
             : <><Button full to="/login" variant="secondary">{t("Кіру", "Войти")}</Button><Button full to="/login?mode=register">{t("Тіркелу", "Регистрация")}</Button></>}
         </div>
       </div>
@@ -116,6 +118,7 @@ function Footer() {
           <p>{t("Ақпарат", "Информация")}</p>
           <Link to="/about">{t("Біз туралы", "О нас")}</Link>
           <Link to="/contact">{t("Байланыс", "Контакты")}</Link>
+          <Link to="/support">{t("Жобаны қолдау", "Поддержать проект")}</Link>
           <Link to="/about#official">{t("Ресми сілтемелер", "Официальные ссылки")}</Link>
           <Link to="/privacy">{t("Құпиялылық саясаты", "Политика конфиденциальности")}</Link>
           <Link to="/terms">{t("Пайдалану шарттары", "Условия использования")}</Link>
@@ -170,7 +173,7 @@ export default function Root() {
   const [dark, setDark] = useState(false);
   const [lang, setLang] = useState<Lang>("kz");
   const [authed, setAuthed] = useState(false);
-  const [premium, setPremium] = useState(false);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [done, setDone] = useState<string[]>([]);
   const [saved, setSaved] = useState<string[]>([]);
   const [authOpen, setAuthOpen] = useState(false);
@@ -192,10 +195,16 @@ export default function Root() {
   const toggle = (set: React.Dispatch<React.SetStateAction<string[]>>) => (k: string) => set((l) => (l.includes(k) ? l.filter((x) => x !== k) : [...l, k]));
 
   const value = {
-    dark, setDark, lang, setLang, t, authed, premium, done, saved, notify,
+    dark, setDark, lang, setLang, t, authed, done, saved, notify, subscription,
+    premium: subscription !== null,
     login: () => setAuthed(true),
-    logout: () => { setAuthed(false); setPremium(false); notify(t("Сіз аккаунттан шықтыңыз", "Вы вышли из аккаунта")); navigate("/"); },
-    subscribe: () => { setPremium(true); },
+    logout: () => { setAuthed(false); setSubscription(null); notify(t("Сіз аккаунттан шықтыңыз", "Вы вышли из аккаунта")); navigate("/"); },
+    subscribe: (tier: Tier, months = 1, source: Subscription["source"] = "payment") => {
+      const until = new Date();
+      until.setMonth(until.getMonth() + months);
+      setSubscription({ tier, source, until });
+    },
+    formatDate: (d: Date) => d.toLocaleDateString(lang === "kz" ? "kk-KZ" : "ru-RU", { day: "numeric", month: "long", year: "numeric" }),
     requireAuth: (action?: () => void) => (authed ? action?.() : setAuthOpen(true)),
     toggleDone: toggle(setDone),
     toggleSaved: toggle(setSaved),

@@ -98,9 +98,32 @@ export const products: Product[] = [
 export const getProduct = (id?: string) => products.find((p) => p.id === id);
 export const formatPrice = (n: number) => `${n.toLocaleString("ru-RU")} ₸`;
 
-export const plans = [
-  { id: "m1", label: { kz: "1 ай", ru: "1 месяц" }, price: 4900, per: 4900 },
-  { id: "m3", label: { kz: "3 ай", ru: "3 месяца" }, price: 12900, per: 4300 },
-  { id: "m6", label: { kz: "6 ай", ru: "6 месяцев" }, price: 22900, per: 3817 },
-  { id: "y1", label: { kz: "1 жыл", ru: "1 год" }, price: 39900, per: 3325 },
+export type Tier = "basic" | "plus" | "premium";
+type L = { kz: string; ru: string };
+
+export const tiers: { id: Tier; name: string; price: number; desc: L }[] = [
+  { id: "basic", name: "Basic", price: 2900, desc: { kz: "Барлық сабақтар мен прогресс", ru: "Все уроки и прогресс" } },
+  { id: "plus", name: "Plus", price: 4900, desc: { kz: "Basic + медиа және арнайы материалдар", ru: "Basic + медиа и эксклюзивные материалы" } },
+  { id: "premium", name: "Premium", price: 9900, desc: { kz: "Plus + устазбен жеке консультация", ru: "Plus + личная консультация с устазом" } },
 ];
+export const getTier = (id?: Tier | null) => tiers.find((x) => x.id === id);
+
+// Which tiers include each feature; Premium always includes everything from Plus.
+export const tierFeatures: { label: L; tiers: Tier[] }[] = [
+  { label: { kz: "Барлық курстар мен сабақтар", ru: "Все курсы и уроки" }, tiers: ["basic", "plus", "premium"] },
+  { label: { kz: "Оқу прогресін сақтау", ru: "Сохранение прогресса" }, tiers: ["basic", "plus", "premium"] },
+  { label: { kz: "Сұрақ-жауап базасы", ru: "База вопросов и ответов" }, tiers: ["basic", "plus", "premium"] },
+  { label: { kz: "Аудио және видео материалдар", ru: "Аудио и видеоматериалы" }, tiers: ["plus", "premium"] },
+  { label: { kz: "Арнайы материалдар мен кітаптар", ru: "Эксклюзивные материалы и книги" }, tiers: ["plus", "premium"] },
+  { label: { kz: "Имам жауабы басымдықпен", ru: "Приоритетные ответы имама" }, tiers: ["plus", "premium"] },
+  { label: { kz: "Устазбен жеке консультация", ru: "Личная консультация с устазом" }, tiers: ["premium"] },
+];
+
+// Mock promo codes — validation is simulated on the client.
+export type PromoResult = { status: "ok"; tier: Tier; months: number } | { status: "invalid" } | { status: "expired" };
+export const promoCodes: Record<string, PromoResult> = {
+  "GRANT-2026": { status: "ok", tier: "premium", months: 6 },
+  "SPONSOR-PLUS": { status: "ok", tier: "plus", months: 3 },
+  "GRANT-2025": { status: "expired" },
+};
+export const checkPromo = (code: string): PromoResult => promoCodes[code.trim().toUpperCase()] ?? { status: "invalid" };
