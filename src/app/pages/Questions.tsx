@@ -4,6 +4,8 @@ import { useApp } from "../context";
 import { getQuestion, questionCategories, questions } from "../data";
 import { Button, EmptyState, Icon, PageHero } from "../ui";
 import { NotFoundBlock } from "./Quran";
+import { SharePanel } from "../share";
+import { questionVisual } from "../visuals";
 
 export function Questions() {
   const { t } = useApp();
@@ -87,6 +89,7 @@ export function Answer() {
               <p>{t("Имамға сұрағыңызды жіберіңіз, жауап аккаунтыңызға келеді.", "Отправьте вопрос имаму, ответ придёт в ваш аккаунт.")}</p>
               <Button full icon="arrow" to="/questions/ask" variant="light">{t("Имамға сұрақ қою", "Задать вопрос имаму")}</Button>
             </div>
+            <SharePanel path={`/questions/${item.id}`} story={{ eyebrow: `${t("Сұрақ-жауап", "Вопрос-ответ")} · ${item.category}`, title: item.title, subtitle: item.short, visual: questionVisual, path: `/questions/${item.id}` }} title={item.title} />
           </aside>
         </div>
         <div className="container related">

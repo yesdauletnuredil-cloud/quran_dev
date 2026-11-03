@@ -13,6 +13,8 @@ function Requisites({ rows }: { rows: [string, string][] }) {
 }
 
 const SPONSOR_MONTHS = 6;
+// Only paid tiers that add value beyond the basic course access can be sponsored.
+const sponsorTiers = tiers.filter((x) => x.id === "plus" || x.id === "premium");
 
 function SponsorCard() {
   const { t, notify } = useApp();
@@ -37,7 +39,7 @@ function SponsorCard() {
       <h3>{t("Оқушыға демеушілік", "Спонсорство ученика")}</h3>
       <p>{t("Оқушының оқуын төлеңіз — біз грант промокодын жасаймыз. Оны оқушыға өзіңіз бересіз немесе академия мұқтаж оқушыға табыстайды.", "Оплатите обучение ученика — мы создадим грантовый промокод. Передайте его сами или доверьте академии выбрать нуждающегося ученика.")}</p>
       <p className="support-label">{t("Тариф", "Тариф")} · {SPONSOR_MONTHS} {t("ай", "мес.")}</p>
-      <Chips items={tiers.map((x) => x.name)} onChange={(name) => { setTier(tiers.find((x) => x.name === name)!.id); setCode(null); }} value={getTier(tier)!.name} />
+      <Chips items={sponsorTiers.map((x) => x.name)} onChange={(name) => { setTier(sponsorTiers.find((x) => x.name === name)!.id); setCode(null); }} value={getTier(tier)!.name} />
       <p className="support-label">{t("Оқушылар саны", "Количество учеников")}</p>
       <Chips items={["1", "5", "10"]} onChange={(v) => { setCount(v); setCode(null); }} value={count} />
       <p className="price-line">{formatPrice(total)}</p>

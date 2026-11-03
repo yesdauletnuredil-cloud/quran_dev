@@ -1,9 +1,48 @@
+import { useState } from "react";
 import { useApp } from "../context";
-import { getTier, tierFeatures } from "../data";
-import { Button, EmptyState, Icon, PageHero, PromoField } from "../ui";
+import { getAchievements, getTier, tierFeatures, type Achievement } from "../data";
+import { StoryModal } from "../share";
+import { Button, EmptyState, Icon, PageHero, PromoField, TierBadge } from "../ui";
+import { getVisual } from "../visuals";
+
+function Achievements() {
+  const { t, lang, done } = useApp();
+  const [story, setStory] = useState<Achievement | null>(null);
+  const items = getAchievements(done);
+  return (
+    <section aria-labelledby="ach-title" className="achievements">
+      <h2 className="list-heading" id="ach-title">{t("Жетістіктер", "Достижения")}<span>{items.filter((a) => a.earned).length} / {items.length}</span></h2>
+      <div className="achievement-grid">
+        {items.map((a) => (
+          <article className={`achievement ${a.earned ? "is-earned" : ""}`} key={a.id}>
+            <div className="achievement-top">
+              <span className="medal">{a.medal}</span>
+              {a.demo && <span className="badge badge--demo">DEMO</span>}
+            </div>
+            <h3>{a.title[lang]}</h3>
+            <p>{a.desc[lang]}</p>
+            {a.earned
+              ? <Button icon="image" onClick={() => setStory(a)} size="sm" variant="secondary">Stories</Button>
+              : <>
+                  <div aria-hidden="true" className="progress"><i style={{ width: `${(a.progress[0] / (a.progress[1] || 1)) * 100}%` }} /></div>
+                  <small>{a.progress[0]} / {a.progress[1]} {t("сабақ", "уроков")}</small>
+                </>}
+          </article>
+        ))}
+      </div>
+      <p className="achievements-note">{t("DEMO белгісі бар жетістік үлгі деректермен көрсетілген: күн сериясы әзірге есептелмейді.", "Достижение с меткой DEMO показано на примерных данных: серия дней пока не считается.")}</p>
+      {story && (
+        <StoryModal
+          data={{ eyebrow: t("Жетістік", "Достижение"), title: story.title[lang], subtitle: story.desc[lang], visual: getVisual(story.topic), path: "/profile", medal: story.medal, demo: story.demo }}
+          onClose={() => setStory(null)}
+        />
+      )}
+    </section>
+  );
+}
 
 export default function Profile() {
-  const { t, lang, authed, subscription, done, saved, formatDate, logout } = useApp();
+  const { t, lang, authed, subscription, tier: tierId, done, saved, formatDate, logout } = useApp();
   const crumbs = [{ label: t("Басты бет", "Главная"), to: "/" }, { label: t("Профиль", "Профиль") }];
 
   if (!authed) {
@@ -19,7 +58,7 @@ export default function Profile() {
     );
   }
 
-  const tier = getTier(subscription?.tier);
+  const tier = getTier(tierId);
   const features = tier ? tierFeatures.filter((f) => f.tiers.includes(tier.id)) : [];
 
   return (
@@ -28,9 +67,9 @@ export default function Profile() {
       <section className="page-section">
         <div className="container detail-layout">
           <div className="detail-main">
-            <div className={`panel tier-panel ${tier ? "panel--green" : ""}`}>
+            <div className={`panel tier-panel ${subscription ? "panel--green" : ""}`}>
               <p className="eyebrow">{t("ТАРИФ", "ТАРИФ")}</p>
-              <h3 className="tier-name">{tier?.name ?? "Free"}</h3>
+              <h3 className="tier-name">{tier?.name}</h3>
               {subscription ? (
                 <p>
                   {subscription.source === "grant" ? t("Грант промокоды арқылы", "По грантовому промокоду") : t("Жазылым", "Подписка")}
@@ -38,19 +77,20 @@ export default function Profile() {
                   {t(`${formatDate(subscription.until)} дейін`, `до ${formatDate(subscription.until)}`)}
                 </p>
               ) : (
-                <p>{t("Тегін сабақтар мен сұрақ-жауап базасы қолжетімді.", "Доступны бесплатные уроки и база вопросов и ответов.")}</p>
+                <p>{t("Тегін · тіркелген әр пайдаланушыда бар", "Бесплатно · есть у каждого зарегистрированного пользователя")}</p>
               )}
               {features.length > 0 && (
                 <ul className="check-list tier-features">
                   {features.map((f) => <li key={f.label.ru}><Icon name="check" size={18} />{f.label[lang]}</li>)}
                 </ul>
               )}
-              <Button icon="arrow" to="/premium" variant={tier ? "light" : "primary"}>{tier ? t("Тарифті өзгерту", "Изменить тариф") : t("Тариф таңдау", "Выбрать тариф")}</Button>
+              <Button icon="arrow" to="/premium" variant={subscription ? "light" : "primary"}>{subscription ? t("Тарифті өзгерту", "Изменить тариф") : t("Plus не Premium-ға өту", "Перейти на Plus или Premium")}</Button>
             </div>
             <div className="profile-stats">
               <div className="panel"><strong>{done.length}</strong><span>{t("аяқталған сабақ", "уроков завершено")}</span></div>
               <div className="panel"><strong>{saved.length}</strong><span>{t("сақталған материал", "сохранённых материалов")}</span></div>
             </div>
+            <Achievements />
             <div className="panel">
               <h3>{t("Грант промокоды", "Грантовый промокод")}</h3>
               <p>{t("Демеушіден немесе грант бағдарламасынан код алсаңыз, осында енгізіңіз.", "Если вы получили код от спонсора или грантовой программы, введите его здесь.")}</p>
@@ -59,10 +99,17 @@ export default function Profile() {
           </div>
           <aside className="detail-aside">
             <div className="panel">
-              <h3>{t("Оқушы", "Ученик")}</h3>
+              <div className="tier-heading"><h3>{t("Оқушы", "Ученик")}</h3><TierBadge small tier={tier?.id} /></div>
               <p>[email@example.com]</p>
               <Button full onClick={logout} size="sm" variant="secondary">{t("Шығу", "Выйти")}</Button>
             </div>
+            {(tier?.id === "plus" || tier?.id === "premium") && (
+              <div className="panel panel--green">
+                <h3>{t("Сіздің Ұстазыңыз", "Ваш Ұстаз")}</h3>
+                <p>{tier.id === "premium" ? t("Жазбаша сұрақтар, қоңырау не бейне консультация.", "Письменные вопросы, звонок или видеоконсультация.") : t("Ұстазға жеке жазбаша сұрақ қоя аласыз.", "Вы можете задавать Ұстазу личные письменные вопросы.")}</p>
+                <Button full icon="arrow" size="sm" to="/ustaz" variant="light">{t("Ұстазбен байланыс", "Связь с Ұстазом")}</Button>
+              </div>
+            )}
             <div className="panel">
               <h3>{t("Жобаны қолдау", "Поддержать проект")}</h3>
               <p>{t("Басқа оқушының оқуына демеуші болыңыз немесе жобаның дамуына үлес қосыңыз.", "Станьте спонсором другого ученика или внесите вклад в развитие проекта.")}</p>

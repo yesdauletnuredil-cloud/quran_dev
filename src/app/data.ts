@@ -25,6 +25,8 @@ export const topics: Topic[] = [
 ];
 
 export const quranTopics = topics.filter((t) => t.quran);
+/** Estimated lesson length in minutes (shown in lesson lists and the video player). */
+export const lessonMinutes = (index: number) => 12 + (index % 4) * 4;
 export const getTopic = (slug?: string) => topics.find((t) => t.slug === slug);
 
 export const arabicSamples = [
@@ -62,25 +64,25 @@ export const questionCategories = ["Құран", "Намаз", "Иман", "Ор
 
 export interface Question { id: string; category: string; title: string; short: string; answer: string[]; imam: string; date: string }
 export const questions: Question[] = [
-  { id: "quran-start", category: "Құран", title: "Құран оқуды неден бастаған дұрыс?", short: "Әуелі араб әліпбиі мен әріптердің дұрыс айтылуын үйренуден бастаңыз.", answer: ["Алдымен араб әліпбиін, әріптердің атауын және айтылуын үйрену ұсынылады. Содан кейін дауысты белгілер, сукун және шәдда сияқты негізгі белгілерге өтіңіз.", "Күн сайын аз уақыт болса да тұрақты шұғылданған дұрыс. Мүмкіндік болса, білімді ұстаздан немесе қатесіз оқитын қаридан тыңдап түзетіп отырыңыз."], imam: "Ерлан ұстаз", date: "12 қыр 2026" },
-  { id: "prayer-times", category: "Намаз", title: "Намаз уақыттарын қалай анықтаймыз?", short: "Намаз уақыттары күннің қозғалысына байланысты анықталады.", answer: ["Бес уақыт намаздың кіру және шығу уақыты күннің көкжиектегі орнына байланысты. Сондықтан уақыт қала мен күнге қарай өзгереді.", "Сенімді кесте ретінде өңіріңіздегі діни басқарманың ресми намаз уақыттарын пайдаланыңыз."], imam: "Нұрлан ұстаз", date: "08 қыр 2026" },
-  { id: "six-pillars", category: "Иман", title: "Иманның алты шарты қандай?", short: "Аллаға, періштелерге, кітаптарға, пайғамбарларға, ақыретке және тағдырға сену.", answer: ["Иманның алты шарты: Аллаға, періштелерге, кітаптарға, пайғамбарларға, ақырет күніне және тағдырдың жақсысы мен жаманы Алладан екеніне сену.", "Әр шарт туралы бөлек сабақтар «Иман негіздері» курсында қарастырылады."], imam: "Ерлан ұстаз", date: "01 қыр 2026" },
-  { id: "daily-duas", category: "Дұғалар", title: "Күнделікті қандай дұғаларды жаттауға болады?", short: "Таңғы және кешкі зікірлерден, тамақ және ұйқы дұғаларынан бастауға болады.", answer: ["Бастауға ыңғайлы дұғалар: тамаққа отырарда және тамақтан кейін, ұйқыға жатарда және оянғанда, үйден шығарда оқылатын дұғалар.", "Бір аптада бір-екі дұғаны мағынасымен жаттаған тиімді."], imam: "Нұрлан ұстаз", date: "26 жел 2026" },
-  { id: "fasting-intro", category: "Ораза", title: "Оразаны алғаш рет ұстағалы тұрсам, нені білуім керек?", short: "Ниет, сәресі мен ауыз ашу уақыты және оразаны бұзатын жайттар туралы негіздер.", answer: ["Ораза таңның атуынан күннің батуына дейін тамақтан, судан және оразаны бұзатын әрекеттерден тыю болып табылады. Ниет ету маңызды.", "Денсаулығыңызға байланысты ерекше жағдайлар болса, дәрігер мен имамға кеңесіңіз."], imam: "Ерлан ұстаз", date: "19 жел 2026" },
-  { id: "zakat-basics", category: "Зекет", title: "Зекет кімге және қашан парыз болады?", short: "Нисап мөлшеріне жеткен және бір жыл толған мүлікке байланысты болады.", answer: ["Зекет белгілі мөлшерге (нисап) жеткен мүлікке, жыл толғаннан кейін парыз болады. Мүліктің түріне қарай есептеу тәсілі өзгеше.", "Есептеу нақты жағдайыңызға байланысты, сондықтан имамға жеке сұрақ қойған жөн."], imam: "Нұрлан ұстаз", date: "11 жел 2026" },
-  { id: "hajj-prep", category: "Қажылық", title: "Қажылыққа дайындықты қайдан бастау керек?", short: "Парыздарын үйреніп, ресми ұйымдар арқылы тіркелуден бастаңыз.", answer: ["Қажылықтың парыздары мен әдебін алдын ала үйрену ұсынылады. Тіркелу мен құжаттар бойынша ресми ақпаратты тек сенімді ұйымдардан алыңыз.", "Дайындық барысында денсаулық пен қаржы жағын ерте жоспарлаңыз."], imam: "Ерлан ұстаз", date: "02 жел 2026" },
-  { id: "new-muslim-path", category: "Жаңадан бастаушыларға", title: "Исламды жаңадан үйреніп жатсам, қай тақырыптан бастаймын?", short: "Иман негіздері, тазалық, намаз және Құран оқудың алғашқы қадамдарынан.", answer: ["Бастау үшін иман негіздерін, содан кейін тазалық пен намаз туралы негіздерді үйреніңіз. Параллель түрде Құран оқудың алғашқы сабақтарын бастауға болады.", "Дайын жоспар керек болса, «Жаңадан бастаушыларға» бетіндегі жолды ұстаныңыз."], imam: "Нұрлан ұстаз", date: "24 тамыз 2026" },
-  { id: "wudu-steps", category: "Намаз", title: "Дәрет қалай алынады?", short: "Дәреттің парыздары мен реті туралы қысқаша түсіндірме.", answer: ["Ханафи мазхабында дәреттің парыздары: бетті жуу, қолды шынтаққа дейін жуу, басқа мәсіх тарту және аяқты тобыққа дейін жуу.", "Толық ретін «Фиқһ негіздері» бөліміндегі «Дәрет» сабағынан қараңыз."], imam: "Ерлан ұстаз", date: "15 тамыз 2026" },
+  { id: "quran-start", category: "Құран", title: "Құран оқуды неден бастаған дұрыс?", short: "Әуелі араб әліпбиі мен әріптердің дұрыс айтылуын үйренуден бастаңыз.", answer: ["Алдымен араб әліпбиін, әріптердің атауын және айтылуын үйрену ұсынылады. Содан кейін дауысты белгілер, сукун және шәдда сияқты негізгі белгілерге өтіңіз.", "Күн сайын аз уақыт болса да тұрақты шұғылданған дұрыс. Мүмкіндік болса, білімді Ұстаздан немесе қатесіз оқитын қаридан тыңдап түзетіп отырыңыз."], imam: "Ерлан Ұстаз", date: "12 қыр 2026" },
+  { id: "prayer-times", category: "Намаз", title: "Намаз уақыттарын қалай анықтаймыз?", short: "Намаз уақыттары күннің қозғалысына байланысты анықталады.", answer: ["Бес уақыт намаздың кіру және шығу уақыты күннің көкжиектегі орнына байланысты. Сондықтан уақыт қала мен күнге қарай өзгереді.", "Сенімді кесте ретінде өңіріңіздегі діни басқарманың ресми намаз уақыттарын пайдаланыңыз."], imam: "Нұрлан Ұстаз", date: "08 қыр 2026" },
+  { id: "six-pillars", category: "Иман", title: "Иманның алты шарты қандай?", short: "Аллаға, періштелерге, кітаптарға, пайғамбарларға, ақыретке және тағдырға сену.", answer: ["Иманның алты шарты: Аллаға, періштелерге, кітаптарға, пайғамбарларға, ақырет күніне және тағдырдың жақсысы мен жаманы Алладан екеніне сену.", "Әр шарт туралы бөлек сабақтар «Иман негіздері» курсында қарастырылады."], imam: "Ерлан Ұстаз", date: "01 қыр 2026" },
+  { id: "daily-duas", category: "Дұғалар", title: "Күнделікті қандай дұғаларды жаттауға болады?", short: "Таңғы және кешкі зікірлерден, тамақ және ұйқы дұғаларынан бастауға болады.", answer: ["Бастауға ыңғайлы дұғалар: тамаққа отырарда және тамақтан кейін, ұйқыға жатарда және оянғанда, үйден шығарда оқылатын дұғалар.", "Бір аптада бір-екі дұғаны мағынасымен жаттаған тиімді."], imam: "Нұрлан Ұстаз", date: "26 жел 2026" },
+  { id: "fasting-intro", category: "Ораза", title: "Оразаны алғаш рет ұстағалы тұрсам, нені білуім керек?", short: "Ниет, сәресі мен ауыз ашу уақыты және оразаны бұзатын жайттар туралы негіздер.", answer: ["Ораза таңның атуынан күннің батуына дейін тамақтан, судан және оразаны бұзатын әрекеттерден тыю болып табылады. Ниет ету маңызды.", "Денсаулығыңызға байланысты ерекше жағдайлар болса, дәрігер мен имамға кеңесіңіз."], imam: "Ерлан Ұстаз", date: "19 жел 2026" },
+  { id: "zakat-basics", category: "Зекет", title: "Зекет кімге және қашан парыз болады?", short: "Нисап мөлшеріне жеткен және бір жыл толған мүлікке байланысты болады.", answer: ["Зекет белгілі мөлшерге (нисап) жеткен мүлікке, жыл толғаннан кейін парыз болады. Мүліктің түріне қарай есептеу тәсілі өзгеше.", "Есептеу нақты жағдайыңызға байланысты, сондықтан имамға жеке сұрақ қойған жөн."], imam: "Нұрлан Ұстаз", date: "11 жел 2026" },
+  { id: "hajj-prep", category: "Қажылық", title: "Қажылыққа дайындықты қайдан бастау керек?", short: "Парыздарын үйреніп, ресми ұйымдар арқылы тіркелуден бастаңыз.", answer: ["Қажылықтың парыздары мен әдебін алдын ала үйрену ұсынылады. Тіркелу мен құжаттар бойынша ресми ақпаратты тек сенімді ұйымдардан алыңыз.", "Дайындық барысында денсаулық пен қаржы жағын ерте жоспарлаңыз."], imam: "Ерлан Ұстаз", date: "02 жел 2026" },
+  { id: "new-muslim-path", category: "Жаңадан бастаушыларға", title: "Исламды жаңадан үйреніп жатсам, қай тақырыптан бастаймын?", short: "Иман негіздері, тазалық, намаз және Құран оқудың алғашқы қадамдарынан.", answer: ["Бастау үшін иман негіздерін, содан кейін тазалық пен намаз туралы негіздерді үйреніңіз. Параллель түрде Құран оқудың алғашқы сабақтарын бастауға болады.", "Дайын жоспар керек болса, «Жаңадан бастаушыларға» бетіндегі жолды ұстаныңыз."], imam: "Нұрлан Ұстаз", date: "24 тамыз 2026" },
+  { id: "wudu-steps", category: "Намаз", title: "Дәрет қалай алынады?", short: "Дәреттің парыздары мен реті туралы қысқаша түсіндірме.", answer: ["Ханафи мазхабында дәреттің парыздары: бетті жуу, қолды шынтаққа дейін жуу, басқа мәсіх тарту және аяқты тобыққа дейін жуу.", "Толық ретін «Фиқһ негіздері» бөліміндегі «Дәрет» сабағынан қараңыз."], imam: "Ерлан Ұстаз", date: "15 тамыз 2026" },
 ];
 export const getQuestion = (id?: string) => questions.find((q) => q.id === id);
 
 export interface Episode { id: string; type: "Podcast" | "Video" | "Audio"; title: string; host: string; duration: string; seconds: number; date: string; tone: "emerald" | "sand" | "sage"; desc: string; notes: string[] }
 export const episodes: Episode[] = [
-  { id: "heart-peace", type: "Podcast", title: "Жүрек тыныштығы неден басталады?", host: "Ерлан ұстаз", duration: "32:18", seconds: 1938, date: "10 қар 2026", tone: "emerald", desc: "Күнделікті асығыс өмірде ішкі тыныштықты табу туралы әңгіме: намаз, зікір және тоқтау.", notes: ["Тыныштық пен босаңсу айырмасы", "Таңертеңгі және кешкі әдеттер", "Құранмен күн бастау"] },
+  { id: "heart-peace", type: "Podcast", title: "Жүрек тыныштығы неден басталады?", host: "Ерлан Ұстаз", duration: "32:18", seconds: 1938, date: "10 қар 2026", tone: "emerald", desc: "Күнделікті асығыс өмірде ішкі тыныштықты табу туралы әңгіме: намаз, зікір және тоқтау.", notes: ["Тыныштық пен босаңсу айырмасы", "Таңертеңгі және кешкі әдеттер", "Құранмен күн бастау"] },
   { id: "day-with-quran", type: "Video", title: "Құранмен өткен бір күн", host: "Academy studio", duration: "18:42", seconds: 1122, date: "03 қар 2026", tone: "sand", desc: "Жұмыс істейтін адамның күн тәртібіне Құран оқуды қалай енгізуге болады.", notes: ["10 минуттық режим", "Тыңдау мен оқуды үйлестіру", "Қайталау кестесі"] },
   { id: "al-fatiha", type: "Audio", title: "Әл-Фатиха сүресі", host: "Нұрлан Қари", duration: "04:12", seconds: 252, date: "28 қыр 2026", tone: "sage", desc: "Тәжуид ережелеріне сай, баяу қарқынмен оқылған Әл-Фатиха сүресі.", notes: ["Баяу оқу нұсқасы", "Әр аяттан кейін кідіріс"] },
   { id: "tajweed-mistakes", type: "Podcast", title: "Тәжуидтегі жиі кездесетін қателер", host: "Нұрлан Қари", duration: "26:05", seconds: 1565, date: "20 қыр 2026", tone: "emerald", desc: "Жаңадан бастаушылар жиі жіберетін қателер және оларды түзету жолдары.", notes: ["Әріптерді шатастыру", "Мәддті қысқарту", "Өз оқуыңды жазып тыңдау"] },
-  { id: "ramadan-ready", type: "Video", title: "Рамазанға дайындық жоспары", host: "Ерлан ұстаз", duration: "22:30", seconds: 1350, date: "11 қыр 2026", tone: "sand", desc: "Рамазан айына рухани және практикалық тұрғыдан дайындалу жоспары.", notes: ["Ниет және мақсат қою", "Құран оқу кестесі", "Отбасылық жоспар"] },
+  { id: "ramadan-ready", type: "Video", title: "Рамазанға дайындық жоспары", host: "Ерлан Ұстаз", duration: "22:30", seconds: 1350, date: "11 қыр 2026", tone: "sand", desc: "Рамазан айына рухани және практикалық тұрғыдан дайындалу жоспары.", notes: ["Ниет және мақсат қою", "Құран оқу кестесі", "Отбасылық жоспар"] },
   { id: "ikhlas", type: "Audio", title: "Ихлас сүресі: мағынасымен", host: "Нұрлан Қари", duration: "06:48", seconds: 408, date: "02 қыр 2026", tone: "sage", desc: "Ихлас сүресінің оқылуы және қысқаша мағынасы.", notes: ["Оқылуы", "Қысқаша тәпсірі"] },
 ];
 export const getEpisode = (id?: string) => episodes.find((e) => e.id === id);
@@ -97,30 +99,61 @@ export const products: Product[] = [
 ];
 export const getProduct = (id?: string) => products.find((p) => p.id === id);
 export const formatPrice = (n: number) => `${n.toLocaleString("ru-RU")} ₸`;
+/** Tier price label: Basic is free. */
+export const tierPrice = (price: number, t: (kz: string, ru: string) => string) => (price === 0 ? t("Тегін", "Бесплатно") : formatPrice(price));
 
 export type Tier = "basic" | "plus" | "premium";
+/** Tiers that are bought (or granted by promo code). Basic is free for every registered user. */
+export type PaidTier = Exclude<Tier, "basic">;
+export const isPaidTier = (tier?: Tier | null): tier is PaidTier => tier === "plus" || tier === "premium";
 type L = { kz: string; ru: string };
 
 export const tiers: { id: Tier; name: string; price: number; desc: L }[] = [
-  { id: "basic", name: "Basic", price: 2900, desc: { kz: "Барлық сабақтар мен прогресс", ru: "Все уроки и прогресс" } },
-  { id: "plus", name: "Plus", price: 4900, desc: { kz: "Basic + медиа және арнайы материалдар", ru: "Basic + медиа и эксклюзивные материалы" } },
-  { id: "premium", name: "Premium", price: 9900, desc: { kz: "Plus + устазбен жеке консультация", ru: "Plus + личная консультация с устазом" } },
+  { id: "basic", name: "Basic", price: 0, desc: { kz: "Тіркелген әр пайдаланушыға", ru: "Для каждого зарегистрированного" } },
+  { id: "plus", name: "Plus", price: 4900, desc: { kz: "Basic + толық курстар, медиа, Ұстазға сұрақ", ru: "Basic + все курсы, медиа, вопросы Ұстазу" } },
+  { id: "premium", name: "Premium", price: 9900, desc: { kz: "Plus + Ұстазбен жеке консультация", ru: "Plus + личная консультация с Ұстазом" } },
 ];
 export const getTier = (id?: Tier | null) => tiers.find((x) => x.id === id);
 
-// Which tiers include each feature; Premium always includes everything from Plus.
+// Which tiers include each feature; each tier includes everything from the previous one.
+// Basic = the original free access: first lessons of each topic, beginner path, Q&A base.
 export const tierFeatures: { label: L; tiers: Tier[] }[] = [
-  { label: { kz: "Барлық курстар мен сабақтар", ru: "Все курсы и уроки" }, tiers: ["basic", "plus", "premium"] },
-  { label: { kz: "Оқу прогресін сақтау", ru: "Сохранение прогресса" }, tiers: ["basic", "plus", "premium"] },
+  { label: { kz: "Алғашқы сабақтар мен бастаушылар жолы", ru: "Первые уроки и путь для начинающих" }, tiers: ["basic", "plus", "premium"] },
   { label: { kz: "Сұрақ-жауап базасы", ru: "База вопросов и ответов" }, tiers: ["basic", "plus", "premium"] },
+  { label: { kz: "Оқу прогресін сақтау", ru: "Сохранение прогресса" }, tiers: ["basic", "plus", "premium"] },
+  { label: { kz: "Барлық курстар мен сабақтар", ru: "Все курсы и уроки" }, tiers: ["plus", "premium"] },
   { label: { kz: "Аудио және видео материалдар", ru: "Аудио и видеоматериалы" }, tiers: ["plus", "premium"] },
   { label: { kz: "Арнайы материалдар мен кітаптар", ru: "Эксклюзивные материалы и книги" }, tiers: ["plus", "premium"] },
   { label: { kz: "Имам жауабы басымдықпен", ru: "Приоритетные ответы имама" }, tiers: ["plus", "premium"] },
-  { label: { kz: "Устазбен жеке консультация", ru: "Личная консультация с устазом" }, tiers: ["premium"] },
+  { label: { kz: "Ұстазға жеке жазбаша сұрақ", ru: "Личные письменные вопросы Ұстазу" }, tiers: ["plus", "premium"] },
+  { label: { kz: "Ұстазбен жеке консультация: қоңырау не бейне", ru: "Личная консультация с Ұстазом: звонок или видео" }, tiers: ["premium"] },
 ];
 
+// Achievements derived from completed lessons (`done` keys are "topic/n").
+// The day streak has no source data yet (completions are not dated) — it is a DEMO value.
+export const DEMO_STREAK_DAYS = 3;
+export interface Achievement { id: string; title: L; desc: L; medal: string; earned: boolean; progress: [number, number]; topic?: string; demo?: boolean }
+
+export function getAchievements(done: string[]): Achievement[] {
+  const doneIn = (slug: string) => done.filter((k) => k.startsWith(`${slug}/`)).length;
+  const best = courses
+    .map((c) => ({ c, total: getTopic(c.topic)?.lessons.length ?? 0, n: doneIn(c.topic) }))
+    .sort((a, b) => b.n / (b.total || 1) - a.n / (a.total || 1))[0];
+  const finished = best.total > 0 && best.n >= best.total;
+  return [
+    { id: "first-lesson", medal: "1", title: { kz: "Алғашқы сабақ", ru: "Первый урок" }, desc: { kz: "Бірінші сабақты аяқтадыңыз", ru: "Вы завершили первый урок" }, earned: done.length > 0, progress: [Math.min(done.length, 1), 1], topic: done[0]?.split("/")[0] },
+    {
+      id: "course-complete", medal: "100%",
+      title: finished ? { kz: `«${best.c.title}» аяқталды`, ru: `Курс «${best.c.title}» завершён` } : { kz: "Курс аяқталды", ru: "Курс завершён" },
+      desc: finished ? { kz: `Барлық ${best.total} сабақ аяқталды`, ru: `Пройдены все ${best.total} уроков` } : { kz: `Ең жақын курс: ${best.c.title}`, ru: `Ближайший курс: ${best.c.title}` },
+      earned: finished, progress: [best.n, best.total], topic: best.c.topic,
+    },
+    { id: "streak", medal: String(DEMO_STREAK_DAYS), title: { kz: `${DEMO_STREAK_DAYS} күн қатарынан`, ru: `${DEMO_STREAK_DAYS} дня подряд` }, desc: { kz: "Күн сайын оқу сериясы", ru: "Серия ежедневных занятий" }, earned: true, progress: [DEMO_STREAK_DAYS, DEMO_STREAK_DAYS], demo: true },
+  ];
+}
+
 // Mock promo codes — validation is simulated on the client.
-export type PromoResult = { status: "ok"; tier: Tier; months: number } | { status: "invalid" } | { status: "expired" };
+export type PromoResult = { status: "ok"; tier: PaidTier; months: number } | { status: "invalid" } | { status: "expired" };
 export const promoCodes: Record<string, PromoResult> = {
   "GRANT-2026": { status: "ok", tier: "premium", months: 6 },
   "SPONSOR-PLUS": { status: "ok", tier: "plus", months: 3 },

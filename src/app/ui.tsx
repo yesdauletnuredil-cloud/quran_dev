@@ -1,11 +1,17 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { useApp } from "./context";
-import { checkPromo, getTier, type PromoResult } from "./data";
+import { checkPromo, getTier, type PromoResult, type Tier } from "./data";
+import { VisualBackdrop, type Visual } from "./visuals";
+import { site } from "./config";
+import logoFull from "../assets/logo-full.png";
+import logoFullLight from "../assets/logo-full-light.png";
+import logoMark from "../assets/logo-mark.png";
 
 export type IconName =
   | "arrow" | "back" | "bookmark" | "cart" | "check" | "chevron" | "close" | "globe" | "lock"
-  | "menu" | "moon" | "pause" | "play" | "search" | "sun" | "user" | "mail";
+  | "menu" | "moon" | "pause" | "play" | "search" | "sun" | "user" | "mail"
+  | "share" | "copy" | "download" | "image" | "award" | "alert" | "chat" | "send" | "video" | "phone" | "clock" | "star" | "volume" | "mute" | "expand";
 
 const paths: Record<IconName, React.ReactNode> = {
   arrow: <path d="M5 12h14M14 7l5 5-5 5" />,
@@ -25,6 +31,21 @@ const paths: Record<IconName, React.ReactNode> = {
   sun: <><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></>,
   user: <><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></>,
   mail: <><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" /></>,
+  share: <><circle cx="18" cy="5" r="2.5" /><circle cx="6" cy="12" r="2.5" /><circle cx="18" cy="19" r="2.5" /><path d="m8.2 10.8 7.6-4.4M8.2 13.2l7.6 4.4" /></>,
+  copy: <><rect x="8" y="8" width="12" height="12" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></>,
+  download: <path d="M12 4v11M7 10l5 5 5-5M5 20h14" />,
+  image: <><rect x="3" y="4" width="18" height="16" rx="2" /><circle cx="9" cy="10" r="2" /><path d="m21 16-5-5-9 9" /></>,
+  award: <><circle cx="12" cy="9" r="6" /><path d="m8.5 14-1.5 7 5-3 5 3-1.5-7" /></>,
+  alert: <><path d="M12 3 2 20h20L12 3Z" /><path d="M12 10v4M12 17h.01" /></>,
+  chat: <path d="M4 5h16v11H9l-5 4V5Z" />,
+  send: <path d="M21 3 3 10.5l7 2.5 2.5 7L21 3ZM10 13l4-4" />,
+  video: <><rect x="3" y="6" width="13" height="12" rx="2" /><path d="m16 10 5-3v10l-5-3" /></>,
+  phone: <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z" />,
+  clock: <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>,
+  volume: <><path d="M4 9v6h4l5 4V5L8 9H4Z" /><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" /></>,
+  mute: <><path d="M4 9v6h4l5 4V5L8 9H4Z" /><path d="m17 9 5 6M22 9l-5 6" /></>,
+  expand: <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />,
+  star: <path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z" />,
 };
 
 export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
@@ -78,11 +99,14 @@ export function SectionTitle({ eyebrow, title, text }: { eyebrow?: string; title
 }
 
 export function Brand({ light }: { light?: boolean }) {
-  const { t } = useApp();
+  const { t, dark } = useApp();
+  const full = site.brand === "logo";
   return (
-    <Link aria-label={t("Quran Academy KZ — басты бет", "Quran Academy KZ — главная")} className={`brand ${light ? "brand--light" : ""}`} to="/">
-      <span className="brand-mark"><span>ق</span></span>
-      <span className="brand-name">Quran Academy <b>KZ</b></span>
+    <Link aria-label={t("Quran Academy KZ — басты бет", "Quran Academy KZ — главная")} className={`brand brand--${site.brand} ${light ? "brand--light" : ""}`} to="/">
+      {/* "logo": full image, the emblem alone is the compact fallback on small screens */}
+      {full && <img alt="" className="brand-logo" src={light || dark ? logoFullLight : logoFull} />}
+      <img alt="" className="brand-emblem" src={logoMark} />
+      {!full && <span className="brand-name">Quran Academy <b>KZ</b></span>}
     </Link>
   );
 }
@@ -100,9 +124,10 @@ export function Breadcrumb({ items }: { items: { label: string; to?: string }[] 
   );
 }
 
-export function PageHero({ crumbs, eyebrow, title, lead, aside }: { crumbs?: { label: string; to?: string }[]; eyebrow?: string; title: React.ReactNode; lead?: string; aside?: React.ReactNode }) {
+export function PageHero({ crumbs, eyebrow, title, lead, aside, visual }: { crumbs?: { label: string; to?: string }[]; eyebrow?: string; title: React.ReactNode; lead?: string; aside?: React.ReactNode; visual?: Visual }) {
   return (
-    <section className="page-hero">
+    <section className={`page-hero ${visual ? "page-hero--visual" : ""}`}>
+      {visual && <VisualBackdrop visual={visual} />}
       <div className="container">
         {crumbs && <Breadcrumb items={crumbs} />}
         <div className={aside ? "page-hero-grid" : ""}>
@@ -177,6 +202,22 @@ export function PromoField({ id = "promo" }: { id?: string }) {
       </div>
     </form>
   );
+}
+
+/** Status badge for paid Plus / Premium users; renders nothing for Free and Basic. */
+export function TierBadge({ tier, small }: { tier?: Tier | null; small?: boolean }) {
+  if (tier !== "plus" && tier !== "premium") return null;
+  return (
+    <span className={`tier-badge tier-badge--${tier} ${small ? "tier-badge--sm" : ""}`}>
+      <Icon name="star" size={small ? 11 : 13} />{getTier(tier)!.name}
+    </span>
+  );
+}
+
+/** Small star on the avatar / menu button for Plus / Premium. */
+export function TierPip({ tier }: { tier?: Tier | null }) {
+  if (tier !== "plus" && tier !== "premium") return null;
+  return <span aria-hidden="true" className={`tier-pip tier-pip--${tier}`}><Icon name="star" size={10} /></span>;
 }
 
 export function Chips({ items, value, onChange }: { items: string[]; value: string; onChange: (v: string) => void }) {

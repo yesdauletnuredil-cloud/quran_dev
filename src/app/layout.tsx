@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, NavLink, Outlet, ScrollRestoration, useLocation, useNavigate } from "react-router";
 import { AppCtx, useApp, type Lang, type Subscription } from "./context";
-import { getTier, type Tier } from "./data";
-import { Brand, Button, Icon } from "./ui";
+import { getTier, isPaidTier, type Tier } from "./data";
+import { Brand, Button, Icon, TierBadge, TierPip } from "./ui";
 
 const navItems = (t: (a: string, b: string) => string) => [
   { label: t("Басты бет", "Главная"), to: "/", end: true },
@@ -15,8 +15,9 @@ const navItems = (t: (a: string, b: string) => string) => [
 ];
 
 function Header({ menuOpen, setMenuOpen }: { menuOpen: boolean; setMenuOpen: (v: boolean) => void }) {
-  const { dark, setDark, lang, setLang, t, authed, premium, subscription, logout } = useApp();
+  const { dark, setDark, lang, setLang, t, authed, premium, subscription, tier, logout } = useApp();
   const items = navItems(t);
+  const ustazAccess = subscription?.tier === "plus" || subscription?.tier === "premium";
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
 
@@ -46,12 +47,13 @@ function Header({ menuOpen, setMenuOpen }: { menuOpen: boolean; setMenuOpen: (v:
             </button>
             {authed ? (
               <div className="profile desktop-only" ref={profileRef}>
-                <button aria-expanded={profileOpen} aria-label={t("Профиль", "Профиль")} className="icon-button profile-button" onClick={() => setProfileOpen(!profileOpen)} type="button"><Icon name="user" /></button>
+                <button aria-expanded={profileOpen} aria-label={`${t("Профиль", "Профиль")}${ustazAccess ? ` · ${getTier(subscription?.tier)!.name}` : ""}`} className="icon-button profile-button" onClick={() => setProfileOpen(!profileOpen)} type="button"><Icon name="user" /><TierPip tier={subscription?.tier} /></button>
                 {profileOpen && (
                   <div className="profile-menu">
                     <strong>{t("Оқушы", "Ученик")}</strong>
-                    <span>{getTier(subscription?.tier)?.name.toUpperCase() ?? "FREE"}</span>
+                    {ustazAccess ? <TierBadge tier={subscription?.tier} /> : <span>{getTier(tier)?.name.toUpperCase()}</span>}
                     <Link onClick={() => setProfileOpen(false)} to="/profile">{t("Профиль", "Профиль")}</Link>
+                    {ustazAccess && <Link onClick={() => setProfileOpen(false)} to="/ustaz">{t("Ұстазбен байланыс", "Связь с Ұстазом")}</Link>}
                     {!premium && <Link onClick={() => setProfileOpen(false)} to="/premium">{t("Тариф таңдау", "Выбрать тариф")}</Link>}
                     <button onClick={() => { logout(); setProfileOpen(false); }} type="button">{t("Шығу", "Выйти")}</button>
                   </div>
@@ -61,7 +63,7 @@ function Header({ menuOpen, setMenuOpen }: { menuOpen: boolean; setMenuOpen: (v:
               <Button className="desktop-only" size="sm" to="/login">{t("Кіру", "Войти")}</Button>
             )}
             <button aria-controls="mobile-menu" aria-expanded={menuOpen} aria-label={t("Мәзір", "Меню")} className="icon-button menu-button" onClick={() => setMenuOpen(!menuOpen)} type="button">
-              <Icon name={menuOpen ? "close" : "menu"} />
+              <Icon name={menuOpen ? "close" : "menu"} />{authed && <TierPip tier={subscription?.tier} />}
             </button>
           </div>
         </div>
@@ -73,9 +75,10 @@ function Header({ menuOpen, setMenuOpen }: { menuOpen: boolean; setMenuOpen: (v:
           ))}
           <NavLink to="/beginner"><span>+</span>{t("Жаңадан бастаушыларға", "Для начинающих")}<Icon name="arrow" /></NavLink>
         </nav>
+        {authed && ustazAccess && <div className="mobile-tier"><TierBadge tier={subscription?.tier} /></div>}
         <div className="mobile-sheet-actions">
           {authed
-            ? <><Button full to="/profile">{t("Профиль", "Профиль")}</Button><Button full onClick={logout} variant="secondary">{t("Шығу", "Выйти")}</Button></>
+            ? <><Button full to="/profile">{t("Профиль", "Профиль")}</Button>{ustazAccess && <Button full to="/ustaz" variant="secondary">{t("Ұстазбен байланыс", "Связь с Ұстазом")}</Button>}<Button full onClick={logout} variant="secondary">{t("Шығу", "Выйти")}</Button></>
             : <><Button full to="/login" variant="secondary">{t("Кіру", "Войти")}</Button><Button full to="/login?mode=register">{t("Тіркелу", "Регистрация")}</Button></>}
         </div>
       </div>
@@ -169,6 +172,8 @@ function AuthModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   );
 }
 
+const kzMonths = ["қаңтар", "ақпан", "наурыз", "сәуір", "мамыр", "маусым", "шілде", "тамыз", "қыркүйек", "қазан", "қараша", "желтоқсан"];
+
 export default function Root() {
   const [dark, setDark] = useState(false);
   const [lang, setLang] = useState<Lang>("kz");
@@ -196,15 +201,18 @@ export default function Root() {
 
   const value = {
     dark, setDark, lang, setLang, t, authed, done, saved, notify, subscription,
-    premium: subscription !== null,
+    tier: subscription?.tier ?? (authed ? "basic" as const : null),
+    premium: isPaidTier(subscription?.tier),
     login: () => setAuthed(true),
     logout: () => { setAuthed(false); setSubscription(null); notify(t("Сіз аккаунттан шықтыңыз", "Вы вышли из аккаунта")); navigate("/"); },
     subscribe: (tier: Tier, months = 1, source: Subscription["source"] = "payment") => {
+      if (!isPaidTier(tier)) { setSubscription(null); return; }
       const until = new Date();
       until.setMonth(until.getMonth() + months);
       setSubscription({ tier, source, until });
     },
-    formatDate: (d: Date) => d.toLocaleDateString(lang === "kz" ? "kk-KZ" : "ru-RU", { day: "numeric", month: "long", year: "numeric" }),
+    // Browsers lack Kazakh month names in Intl ("2026 М12 2"), so format kz by hand.
+    formatDate: (d: Date) => lang === "kz" ? `${d.getDate()} ${kzMonths[d.getMonth()]} ${d.getFullYear()} ж.` : d.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" }),
     requireAuth: (action?: () => void) => (authed ? action?.() : setAuthOpen(true)),
     toggleDone: toggle(setDone),
     toggleSaved: toggle(setSaved),

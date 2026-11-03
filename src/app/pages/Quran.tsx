@@ -1,7 +1,10 @@
 import { Link, useParams } from "react-router";
 import { useApp } from "../context";
-import { arabicSamples, getTopic, quranTopics, type Topic } from "../data";
+import { arabicSamples, getTopic, lessonMinutes, quranTopics, type Topic } from "../data";
 import { AccessBadge, Button, EmptyState, Icon, PageHero } from "../ui";
+import { SharePanel } from "../share";
+import LessonVideo from "../video";
+import { getVisual } from "../visuals";
 
 export function Quran() {
   const { t } = useApp();
@@ -60,6 +63,7 @@ export function TopicPage() {
         eyebrow={topic.quran ? t("ҚҰРАН", "КОРАН") : t("ІЛІМ", "ЗНАНИЯ")}
         lead={topic.desc}
         title={topic.title}
+        visual={getVisual(topic.slug)}
       />
       <section className="page-section">
         <div className="container detail-layout">
@@ -79,7 +83,7 @@ export function TopicPage() {
             {!premium && topic.freeCount < topic.lessons.length && (
               <div className="panel panel--green">
                 <h3>{t("Толық қолжетімділік", "Полный доступ")}</h3>
-                <p>{t(`Алғашқы ${topic.freeCount} сабақ тегін. Қалғаны Premium арқылы ашылады.`, `Первые ${topic.freeCount} урока бесплатны. Остальные откроются с Premium.`)}</p>
+                <p>{t(`Алғашқы ${topic.freeCount} сабақ тегін. Қалғаны Plus не Premium арқылы ашылады.`, `Первые ${topic.freeCount} урока бесплатны. Остальные откроются с Plus или Premium.`)}</p>
                 <Button full to="/premium" variant="light">{t("Premium туралы", "О Premium")}</Button>
               </div>
             )}
@@ -95,7 +99,7 @@ function LessonRow({ topic, title, i, locked, done }: { topic: Topic; title: str
   return (
     <Link className={`lesson-row ${locked ? "is-locked" : ""} ${done ? "is-done" : ""}`} to={`/quran/${topic.slug}/${i + 1}`}>
       <span className="num">{done ? <Icon name="check" size={16} /> : String(i + 1).padStart(2, "0")}</span>
-      <div><h3>{title}</h3><p>{t("Сабақ", "Урок")} {i + 1} · ~{12 + (i % 4) * 4} {t("мин", "мин")}</p></div>
+      <div><h3>{title}</h3><p>{t("Сабақ", "Урок")} {i + 1} · ~{lessonMinutes(i)} {t("мин", "мин")}</p></div>
       <AccessBadge access={locked ? "PREMIUM" : "FREE"} />
       <Icon name={locked ? "lock" : "chevron"} size={18} />
     </Link>
@@ -105,19 +109,32 @@ function LessonRow({ topic, title, i, locked, done }: { topic: Topic; title: str
 export function LessonPage() {
   const { topic: slug, n } = useParams();
   const topic = getTopic(slug);
-  const { t, premium, done, toggleDone, requireAuth, notify } = useApp();
+  const { t } = useApp();
   const index = Number(n) - 1;
   if (!topic || !(index >= 0 && index < topic.lessons.length)) return <NotFoundBlock />;
+  const parent = topic.quran ? { label: t("Құран", "Коран"), to: "/quran" } : { label: t("Академия", "Академия"), to: "/academy" };
+  return <LessonView base={`/quran/${topic.slug}`} heading={topic.title} index={index} parent={parent} topic={topic} />;
+}
+
+/**
+ * Lesson body shared by /quran/:topic/:n and /academy/:slug/:n.
+ * `base` is the list page the lesson belongs to; lesson URLs are `${base}/${n}`.
+ * Progress keys stay `${topic.slug}/${n}` so both entry points share progress.
+ */
+export function LessonView({ topic, index, base, heading, parent }: { topic: Topic; index: number; base: string; heading: string; parent: { label: string; to: string } }) {
+  const { t, premium, subscription, done, toggleDone, requireAuth, notify } = useApp();
   const title = topic.lessons[index];
+  const ustazAccess = subscription?.tier === "plus" || subscription?.tier === "premium";
   const locked = index >= topic.freeCount && !premium;
   const key = `${topic.slug}/${index + 1}`;
   const isDone = done.includes(key);
   return (
     <>
       <PageHero
-        crumbs={[{ label: t("Басты бет", "Главная"), to: "/" }, topic.quran ? { label: t("Құран", "Коран"), to: "/quran" } : { label: t("Академия", "Академия"), to: "/academy" }, { label: topic.title, to: `/quran/${topic.slug}` }, { label: `${t("Сабақ", "Урок")} ${index + 1}` }]}
-        eyebrow={`${topic.title.toUpperCase()} · ${t("САБАҚ", "УРОК")} ${index + 1}`}
+        crumbs={[{ label: t("Басты бет", "Главная"), to: "/" }, parent, { label: heading, to: base }, { label: `${t("Сабақ", "Урок")} ${index + 1}` }]}
+        eyebrow={`${heading.toUpperCase()} · ${t("САБАҚ", "УРОК")} ${index + 1}`}
         title={title}
+        visual={getVisual(topic.slug)}
       />
       <section className="page-section">
         <div className="container detail-layout">
@@ -125,15 +142,16 @@ export function LessonPage() {
             {locked ? (
               <div className="panel panel--green lock-panel">
                 <Icon name="lock" size={28} />
-                <h3>{t("Бұл сабақ Premium жазылушыларға арналған", "Этот урок доступен подписчикам Premium")}</h3>
-                <p>{t("Premium арқылы барлық сабақтар мен қосымша материалдар ашылады. Тегін сабақтар қолжетімді күйінде қалады.", "Premium открывает все уроки и дополнительные материалы. Бесплатные уроки остаются доступными.")}</p>
+                <h3>{t("Бұл сабақ Plus және Premium тарифтерінде ашық", "Этот урок доступен на тарифах Plus и Premium")}</h3>
+                <p>{t("Plus не Premium барлық сабақтар мен қосымша материалдарды ашады. Basic-тегі тегін сабақтар қолжетімді күйінде қалады.", "Plus или Premium открывают все уроки и дополнительные материалы. Бесплатные уроки Basic остаются доступными.")}</p>
                 <div className="lock-actions">
                   <Button icon="arrow" to="/premium" variant="light">{t("Тарифтерді көру", "Посмотреть тарифы")}</Button>
-                  <Button to={`/quran/${topic.slug}`} variant="ghost">{t("Тегін сабақтарға оралу", "К бесплатным урокам")}</Button>
+                  <Button to={base} variant="ghost">{t("Тегін сабақтарға оралу", "К бесплатным урокам")}</Button>
                 </div>
               </div>
             ) : (
               <>
+                <LessonVideo eyebrow={`${heading} · ${t("Сабақ", "Урок")} ${index + 1}`} key={`${base}/${index}`} minutes={lessonMinutes(index)} title={title} visual={getVisual(topic.slug)} />
                 <div className="arabic-block arabic" lang="ar">{arabicSamples[index % arabicSamples.length]}</div>
                 <div className="prose">
                   <p>{t(`Бұл сабақта «${title}» тақырыбы қарастырылады. Алдымен қысқа түсіндірмені оқып, содан кейін мысалды дауыстап қайталаңыз.`, `В этом уроке рассматривается тема «${title}». Сначала прочитайте краткое объяснение, затем повторите пример вслух.`)}</p>
@@ -147,8 +165,8 @@ export function LessonPage() {
               </>
             )}
             <div className="lesson-nav">
-              {index > 0 ? <Button icon="back" size="sm" to={`/quran/${topic.slug}/${index}`} variant="secondary">{t("Алдыңғы", "Назад")}</Button> : <span />}
-              {index < topic.lessons.length - 1 && <Button icon="arrow" size="sm" to={`/quran/${topic.slug}/${index + 2}`} variant="secondary">{t("Келесі сабақ", "Следующий урок")}</Button>}
+              {index > 0 ? <Button icon="back" size="sm" to={`${base}/${index}`} variant="secondary">{t("Алдыңғы", "Назад")}</Button> : <span />}
+              {index < topic.lessons.length - 1 && <Button icon="arrow" size="sm" to={`${base}/${index + 2}`} variant="secondary">{t("Келесі сабақ", "Следующий урок")}</Button>}
             </div>
           </div>
           <aside className="detail-aside">
@@ -158,11 +176,14 @@ export function LessonPage() {
               <Button disabled={locked} full icon={isDone ? "check" : undefined} onClick={() => requireAuth(() => { toggleDone(key); notify(isDone ? t("Белгі алынды", "Отметка снята") : t("Сабақ аяқталды", "Урок завершён")); })} variant={isDone ? "secondary" : "primary"}>
                 {isDone ? t("Аяқталды", "Завершён") : t("Аяқталды деп белгілеу", "Отметить завершённым")}
               </Button>
+              {isDone && <Button className="panel-gap" full icon="award" size="sm" to="/profile" variant="secondary">{t("Жетістіктер мен Stories", "Достижения и Stories")}</Button>}
             </div>
+            <SharePanel path={`${base}/${index + 1}`} story={{ eyebrow: `${heading} · ${t("Сабақ", "Урок")} ${index + 1}`, title, subtitle: topic.desc, visual: getVisual(topic.slug), path: `${base}/${index + 1}` }} title={title} />
             <div className="panel">
               <h3>{t("Сұрағыңыз бар ма?", "Есть вопрос?")}</h3>
               <p>{t("Сабақ бойынша түсінбеген жерді имамға жіберіңіз.", "Отправьте непонятный момент имаму.")}</p>
               <Button full size="sm" to="/questions/ask" variant="secondary">{t("Имамға сұрақ қою", "Задать вопрос имаму")}</Button>
+              {ustazAccess && <Button className="panel-gap" full size="sm" to="/ustaz" variant="ghost">{t("Ұстазға жеке жазу", "Написать Ұстазу лично")}</Button>}
             </div>
           </aside>
         </div>

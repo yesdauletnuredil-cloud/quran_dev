@@ -1,10 +1,10 @@
 import { createContext, useContext } from "react";
-import type { Tier } from "./data";
+import type { PaidTier, Tier } from "./data";
 
 export type Lang = "kz" | "ru";
 
 export interface Subscription {
-  tier: Tier;
+  tier: PaidTier;
   source: "payment" | "grant";
   until: Date;
 }
@@ -16,11 +16,15 @@ export interface AppState {
   setLang: (v: Lang) => void;
   t: (kz: string, ru: string) => string;
   authed: boolean;
-  /** true for any paid tier — unlocks all lessons */
+  /** true for Plus / Premium — unlocks all lessons. Basic only gets each topic's free lessons. */
   premium: boolean;
+  /** Paid subscription (Plus / Premium) or null */
   subscription: Subscription | null;
+  /** Effective tier: Basic for any signed-in user without a paid subscription, null for guests */
+  tier: Tier | null;
   login: () => void;
   logout: () => void;
+  /** Paid tier → start subscription; "basic" → cancel it */
   subscribe: (tier: Tier, months?: number, source?: Subscription["source"]) => void;
   formatDate: (d: Date) => string;
   requireAuth: (action?: () => void) => void;

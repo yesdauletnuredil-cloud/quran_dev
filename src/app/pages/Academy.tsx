@@ -3,7 +3,9 @@ import { Link, useParams } from "react-router";
 import { useApp } from "../context";
 import { courses, getCourse, getTopic } from "../data";
 import { Button, Chips, EmptyState, Icon, PageHero } from "../ui";
-import { NotFoundBlock } from "./Quran";
+import { LessonView, NotFoundBlock } from "./Quran";
+import { SharePanel } from "../share";
+import { getVisual, visualUrl } from "../visuals";
 
 export function Academy() {
   const { t } = useApp();
@@ -27,7 +29,7 @@ export function Academy() {
             <div className="course-grid">
               {shown.map((c) => (
                 <article className="course-card" key={c.slug}>
-                  <div className="course-visual" data-tone={c.tone}>
+                  <div className="course-visual has-visual" data-tone={c.tone} style={{ backgroundImage: `url("${visualUrl(getVisual(c.topic), 640, 380)}")` }}>
                     <span className="arabic" lang="ar">{c.glyph}</span>
                     <span>{c.category}</span>
                   </div>
@@ -54,7 +56,7 @@ export function Academy() {
 export function CourseDetail() {
   const { slug } = useParams();
   const course = getCourse(slug);
-  const { t, requireAuth, notify } = useApp();
+  const { t, premium, requireAuth, notify } = useApp();
   const [enrolled, setEnrolled] = useState(false);
   const [loading, setLoading] = useState(false);
   const topic = getTopic(course?.topic);
@@ -72,6 +74,7 @@ export function CourseDetail() {
         eyebrow={`${course.category.toUpperCase()} · ${course.level.toUpperCase()}`}
         lead={course.desc}
         title={course.title}
+        visual={getVisual(course.topic)}
       />
       <section className="page-section">
         <div className="container detail-layout">
@@ -79,9 +82,9 @@ export function CourseDetail() {
             <h2 className="list-heading">{t("Курс бағдарламасы", "Программа курса")}<span>{topic.lessons.length}</span></h2>
             <div className="lesson-list">
               {topic.lessons.map((title, i) => {
-                const locked = i >= topic.freeCount;
+                const locked = i >= topic.freeCount && !premium;
                 return (
-                  <Link className={`lesson-row ${locked ? "is-locked" : ""}`} key={title} to={`/quran/${topic.slug}/${i + 1}`}>
+                  <Link className={`lesson-row ${locked ? "is-locked" : ""}`} key={title} to={`/academy/${course.slug}/${i + 1}`}>
                     <span className="num">{String(i + 1).padStart(2, "0")}</span>
                     <div><h3>{title}</h3></div>
                     <span className={`badge ${locked ? "badge--premium" : "badge--free"}`}>{locked ? "PREMIUM" : "FREE"}</span>
@@ -98,15 +101,26 @@ export function CourseDetail() {
           <aside className="detail-aside">
             <div className="panel">
               <h3>{course.lessons} {t("сабақ", "уроков")} · {course.time}</h3>
-              <p>{t("Алғашқы сабақтар тегін. Толық курс үшін Premium қажет.", "Первые уроки бесплатны. Для полного курса нужен Premium.")}</p>
+              <p>{t("Алғашқы сабақтар Basic-те тегін. Толық курс үшін Plus не Premium қажет.", "Первые уроки бесплатны в Basic. Для полного курса нужен Plus или Premium.")}</p>
               {enrolled
-                ? <Button full icon="arrow" to={`/quran/${topic.slug}/1`}>{t("Оқуды бастау", "Начать обучение")}</Button>
+                ? <Button full icon="arrow" to={`/academy/${course.slug}/1`}>{t("Оқуды бастау", "Начать обучение")}</Button>
                 : <Button full loading={loading} onClick={enroll}>{t("Курсқа жазылу", "Записаться на курс")}</Button>}
               <Button className="panel-gap" full size="sm" to="/premium" variant="secondary">{t("Premium туралы", "О Premium")}</Button>
             </div>
+            <SharePanel path={`/academy/${course.slug}`} story={{ eyebrow: `${t("Курс", "Курс")} · ${course.category}`, title: course.title, subtitle: `${course.lessons} ${t("сабақ", "уроков")} · ${course.time}`, visual: getVisual(course.topic), path: `/academy/${course.slug}` }} title={course.title} />
           </aside>
         </div>
       </section>
     </>
   );
+}
+
+export function CourseLessonPage() {
+  const { slug, n } = useParams();
+  const course = getCourse(slug);
+  const topic = getTopic(course?.topic);
+  const { t } = useApp();
+  const index = Number(n) - 1;
+  if (!course || !topic || !(index >= 0 && index < topic.lessons.length)) return <NotFoundBlock />;
+  return <LessonView base={`/academy/${course.slug}`} heading={course.title} index={index} parent={{ label: t("Академия", "Академия"), to: "/academy" }} topic={topic} />;
 }

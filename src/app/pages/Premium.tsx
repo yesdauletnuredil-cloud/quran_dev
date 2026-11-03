@@ -1,22 +1,23 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useApp } from "../context";
-import { formatPrice, getTier, tierFeatures, tiers, type Tier } from "../data";
+import { getTier, tierFeatures, tierPrice, tiers, type Tier } from "../data";
 import { Button, Icon, PageHero, PromoField } from "../ui";
 
 export default function Premium() {
-  const { t, lang, authed, subscription, subscribe, requireAuth, notify } = useApp();
+  const { t, lang, authed, subscription, tier, subscribe, requireAuth, notify } = useApp();
   const navigate = useNavigate();
   const [selected, setSelected] = useState<Tier>(subscription?.tier ?? "plus");
   const [mobileTier, setMobileTier] = useState<Tier>("premium");
   const [loading, setLoading] = useState(false);
-  const current = subscription?.tier;
+  const current = tier;
   const selectedName = getTier(selected)!.name;
 
   const subscribeNow = () => requireAuth(() => {
     setLoading(true);
     window.setTimeout(() => { setLoading(false); subscribe(selected); notify(t(`${selectedName} іске қосылды`, `${selectedName} активирован`)); navigate("/profile"); }, 900);
   });
+  const backToBasic = () => { subscribe("basic"); notify(t("Жазылым тоқтатылды. Сіз Basic тарифіндесіз.", "Подписка отменена. Вы на тарифе Basic.")); };
 
   return (
     <>
@@ -36,8 +37,8 @@ export default function Premium() {
                   {p.id === "plus" && <span className="recommend-label">{t("ҰСЫНЫЛАДЫ", "РЕКОМЕНДУЕМ")}</span>}
                   <div className="price-check">{current === p.id ? <span className="badge badge--free">{t("Ағымдағы", "Текущий")}</span> : on && <Icon name="check" />}</div>
                   <h3>{p.name}</h3>
-                  <p className="price">{formatPrice(p.price)}</p>
-                  <p className="price-per">/ {t("ай", "мес")} · {p.desc[lang]}</p>
+                  <p className="price">{tierPrice(p.price, t)}</p>
+                  <p className="price-per">{p.price ? `/ ${t("ай", "мес")} · ` : ""}{p.desc[lang]}</p>
                   <ul aria-hidden="true">
                     {tierFeatures.filter((f) => f.tiers.includes(p.id)).map((f) => <li key={f.label.ru}><Icon name="check" size={16} />{f.label[lang]}</li>)}
                   </ul>
@@ -46,9 +47,13 @@ export default function Premium() {
             })}
           </div>
           <div className="subscribe-bar">
-            <p>{authed ? t("Төлем демо-режимде: нақты ақша алынбайды.", "Оплата в демо-режиме: деньги не списываются.") : t("Аккаунт жоқ болса, тіркелуге бағыттаймыз.", "Если аккаунта нет, предложим зарегистрироваться.")}</p>
+            <p>{selected === "basic" ? t("Basic тегін: тіркелген әр пайдаланушыда бар.", "Basic бесплатен: он есть у каждого зарегистрированного пользователя.") : authed ? t("Төлем демо-режимде: нақты ақша алынбайды.", "Оплата в демо-режиме: деньги не списываются.") : t("Аккаунт жоқ болса, тіркелуге бағыттаймыз.", "Если аккаунта нет, предложим зарегистрироваться.")}</p>
             {current === selected
               ? <Button icon="arrow" to="/academy">{t("Курстарға өту", "Перейти к курсам")}</Button>
+              : selected === "basic"
+                ? authed
+                  ? <Button onClick={backToBasic} variant="secondary">{t("Basic-ке оралу", "Вернуться на Basic")}</Button>
+                  : <Button icon="arrow" to="/login?mode=register">{t("Тегін тіркелу", "Зарегистрироваться бесплатно")}</Button>
               : <Button icon="arrow" loading={loading} onClick={subscribeNow}>
                   {!authed ? t(`Тіркеліп, ${selectedName} алу`, `Зарегистрироваться и оформить ${selectedName}`) : current ? t(`${selectedName} тарифіне ауысу`, `Перейти на ${selectedName}`) : t(`${selectedName} рәсімдеу`, `Оформить ${selectedName}`)}
                 </Button>}
@@ -57,7 +62,7 @@ export default function Premium() {
       </section>
       <section className="page-section section-tint">
         <div className="container">
-          <div className="section-title"><p className="eyebrow">{t("САЛЫСТЫРУ", "СРАВНЕНИЕ")}</p><h2>{t("Әр тарифте не бар", "Что входит в каждый тариф")}</h2><p className="section-intro">{t("Әр келесі тариф алдыңғысын толық қамтиды. Premium — Plus мүмкіндіктері және устазбен жеке консультация.", "Каждый следующий тариф включает предыдущий. Premium — всё из Plus и личная консультация с устазом.")}</p></div>
+          <div className="section-title"><p className="eyebrow">{t("САЛЫСТЫРУ", "СРАВНЕНИЕ")}</p><h2>{t("Әр тарифте не бар", "Что входит в каждый тариф")}</h2><p className="section-intro">{t("Әр келесі тариф алдыңғысын толық қамтиды. Premium — Plus мүмкіндіктері және Ұстазбен жеке консультация.", "Каждый следующий тариф включает предыдущий. Premium — всё из Plus и личная консультация с Ұстазом.")}</p></div>
           <div aria-label={t("Тарифті көрсету", "Показать тариф")} className="compare-tabs filter-row" role="group">
             {tiers.map((p) => <button aria-pressed={mobileTier === p.id} className={mobileTier === p.id ? "active" : ""} key={p.id} onClick={() => setMobileTier(p.id)} type="button">{p.name}</button>)}
           </div>
@@ -78,8 +83,16 @@ export default function Premium() {
             ))}
             <div className="compare-row compare-price" role="row">
               <span role="cell">{t("Бағасы / ай", "Цена / мес")}</span>
-              {tiers.map((p) => <span data-col={p.id} key={p.id} role="cell">{formatPrice(p.price)}</span>)}
+              {tiers.map((p) => <span data-col={p.id} key={p.id} role="cell">{tierPrice(p.price, t)}</span>)}
             </div>
+          </div>
+          <div className="ustaz-callout">
+            <span className="ustaz-callout-icon"><Icon name="chat" size={22} /></span>
+            <div>
+              <h3>{t("Ұстазбен жеке байланыс", "Личная связь с Ұстазом")}</h3>
+              <p>{t("Plus — Ұстазға жазбаша сұрақ. Premium — қосымша қоңырау не бейне консультация.", "Plus — письменные вопросы Ұстазу. Premium — дополнительно звонок или видеоконсультация.")}</p>
+            </div>
+            <Button icon="arrow" to="/ustaz" variant="secondary">{current === "plus" || current === "premium" ? t("Ұстазға жазу", "Написать Ұстазу") : t("Қалай жұмыс істейді", "Как это работает")}</Button>
           </div>
         </div>
       </section>
