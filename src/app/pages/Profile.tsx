@@ -16,7 +16,8 @@ function Achievements() {
         {items.map((a) => (
           <article className={`achievement ${a.earned ? "is-earned" : ""}`} key={a.id}>
             <div className="achievement-top">
-              <span className="medal">{a.medal}</span>
+              {/* Locked achievements show a lock, not the target value, so they never read as earned */}
+              <span className="medal">{a.earned ? a.medal : <Icon name="lock" size={18} />}</span>
               {a.demo && <span className="badge badge--demo">DEMO</span>}
             </div>
             <h3>{a.title[lang]}</h3>
