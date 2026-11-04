@@ -932,7 +932,8 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
   .cta-cards { grid-template-columns: 1fr; }
   .cta-card--course { display: none; }
 }
-.final-cta .eyebrow { color: #e6a34c; }
+/* 4.99:1 on #134e3f (was #e6a34c, 4.43:1 — below AA for 12px caps) */
+.final-cta .eyebrow { color: #ebb062; }
 
 /* Home: benefits (4 cards, replaces the 3 destination cards) */
 .destination h3 { margin: auto 0 14px; font-size: 28px; font-weight: 400; letter-spacing: -.03em; line-height: 1.15; }
