@@ -25,6 +25,7 @@ export const topics: Topic[] = [
 ];
 
 export const quranTopics = topics.filter((t) => t.quran);
+export const totalLessons = topics.reduce((n, x) => n + x.lessons.length, 0);
 /** Estimated lesson length in minutes (shown in lesson lists and the video player). */
 export const lessonMinutes = (index: number) => 12 + (index % 4) * 4;
 export const getTopic = (slug?: string) => topics.find((t) => t.slug === slug);

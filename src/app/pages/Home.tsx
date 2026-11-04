@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { useApp } from "../context";
-import { courses, getTier, getTopic, lessonMinutes, questions, tierFeatures, tierPrice, tiers, topics } from "../data";
+import { courses, getTier, getTopic, lessonMinutes, questions, tierFeatures, tierPrice, tiers, totalLessons } from "../data";
 import { Button, Icon } from "../ui";
 import { getVisual, visualUrl } from "../visuals";
 
-const totalLessons = topics.reduce((n, x) => n + x.lessons.length, 0);
 /** Russian noun form for a number: [1 урок, 2 урока, 5 уроков]. */
 const ruPlural = (n: number, [one, few, many]: [string, string, string]) => {
   const d = n % 10, h = n % 100;

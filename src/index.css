@@ -675,10 +675,12 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .tier-name { font-size: 40px !important; letter-spacing: -.04em; }
 .tier-features { margin-bottom: 24px; }
 .panel--green .check-list .icon { color: #e6a34c; }
-.profile-stats { margin: 16px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.profile-stats { margin: 16px 0; display: grid; grid-template-columns: 1fr; gap: 16px; }
 .profile-stats .panel { display: grid; gap: 4px; }
 .profile-stats strong { font-size: 34px; font-weight: 400; letter-spacing: -.03em; }
 .profile-stats span { color: var(--muted); font-size: 13px; }
+.profile-stats strong small { color: var(--muted); font-size: 18px; letter-spacing: 0; }
+.profile-stats .progress { margin: 8px 0 0; display: block; }
 .detail-main > .panel + .panel { margin-top: 16px; }
 .support-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: start; }
 .support-card { display: flex; flex-direction: column; }

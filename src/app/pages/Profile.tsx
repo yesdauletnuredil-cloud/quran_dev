@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useApp } from "../context";
-import { getAchievements, getTier, tierFeatures, type Achievement } from "../data";
+import { getAchievements, getTier, tierFeatures, totalLessons, type Achievement } from "../data";
 import { StoryModal } from "../share";
 import { Button, EmptyState, Icon, PageHero, PromoField, TierBadge } from "../ui";
 import { getVisual } from "../visuals";
@@ -42,7 +42,7 @@ function Achievements() {
 }
 
 export default function Profile() {
-  const { t, lang, authed, subscription, tier: tierId, done, saved, formatDate, logout } = useApp();
+  const { t, lang, authed, subscription, tier: tierId, done, formatDate, logout } = useApp();
   const crumbs = [{ label: t("Басты бет", "Главная"), to: "/" }, { label: t("Профиль", "Профиль") }];
 
   if (!authed) {
@@ -87,8 +87,11 @@ export default function Profile() {
               <Button icon="arrow" to="/premium" variant={subscription ? "light" : "primary"}>{subscription ? t("Тарифті өзгерту", "Изменить тариф") : t("Plus не Premium-ға өту", "Перейти на Plus или Premium")}</Button>
             </div>
             <div className="profile-stats">
-              <div className="panel"><strong>{done.length}</strong><span>{t("аяқталған сабақ", "уроков завершено")}</span></div>
-              <div className="panel"><strong>{saved.length}</strong><span>{t("сақталған материал", "сохранённых материалов")}</span></div>
+              <div className="panel">
+                <strong>{done.length}<small> / {totalLessons}</small></strong>
+                <span>{t("сабақ аяқталды", "уроков пройдено")}</span>
+                <span aria-hidden="true" className="progress"><i style={{ width: `${(done.length / totalLessons) * 100}%` }} /></span>
+              </div>
             </div>
             <Achievements />
             <div className="panel">
