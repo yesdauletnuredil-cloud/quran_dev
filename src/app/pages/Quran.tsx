@@ -151,7 +151,7 @@ export function LessonView({ topic, index, base, heading, parent }: { topic: Top
               </div>
             ) : (
               <>
-                <LessonVideo eyebrow={`${heading} · ${t("Сабақ", "Урок")} ${index + 1}`} key={`${base}/${index}`} minutes={lessonMinutes(index)} title={title} visual={getVisual(topic.slug)} />
+                <LessonVideo key={`${base}/${index}`} minutes={lessonMinutes(index)} title={title} visual={getVisual(topic.slug)} />
                 <div className="arabic-block arabic" lang="ar">{arabicSamples[index % arabicSamples.length]}</div>
                 <div className="prose">
                   <p>{t(`Бұл сабақта «${title}» тақырыбы қарастырылады. Алдымен қысқа түсіндірмені оқып, содан кейін мысалды дауыстап қайталаңыз.`, `В этом уроке рассматривается тема «${title}». Сначала прочитайте краткое объяснение, затем повторите пример вслух.`)}</p>

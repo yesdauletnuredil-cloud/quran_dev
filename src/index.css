@@ -854,15 +854,11 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .video-stage:fullscreen { border-radius: 0; }
 .video-stage .visual-overlay { background: linear-gradient(180deg, rgba(7, 26, 20, .2) 0%, rgba(7, 26, 20, .3) 50%, rgba(7, 26, 20, .86) 100%); }
 .video-badge { position: absolute; left: 20px; top: 18px; z-index: 1; padding: 6px 12px; border-radius: 999px; background: rgba(7, 26, 20, .55); backdrop-filter: blur(6px); font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; }
-.video-caption { position: absolute; left: 28px; right: 28px; bottom: 72px; z-index: 1; display: grid; gap: 6px; transition: opacity .25s; }
-.video-caption span { color: #e6a34c; font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
-.video-caption strong { max-width: 560px; font-size: clamp(18px, 2.2vw, 26px); font-weight: 400; line-height: 1.2; letter-spacing: -.02em; }
 .video-play { width: 84px; height: 84px; position: absolute; left: 50%; top: 50%; z-index: 2; padding: 0 0 0 4px; border: 0; border-radius: 50%; display: grid; place-items: center; color: #134e3f; background: #f8faf6; box-shadow: 0 12px 40px rgba(0, 0, 0, .3); cursor: pointer; transform: translate(-50%, -50%); transition: transform .2s, opacity .25s; }
 .video-play:hover { transform: translate(-50%, -50%) scale(1.06); }
 .video-play .icon, .video-controls button:first-child .icon { fill: currentColor; }
 .is-playing .video-play { padding: 0; opacity: 0; }
 .is-playing .video-stage:hover .video-play, .is-playing .video-play:focus-visible { opacity: 1; }
-.is-playing .video-caption { opacity: 0; }
 .video-controls { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: 12px 16px; display: flex; align-items: center; gap: 10px; }
 .video-controls button { width: 36px; height: 36px; flex: none; padding: 0; border: 0; border-radius: 50%; display: grid; place-items: center; color: #f8faf6; background: transparent; cursor: pointer; transition: background .2s; }
 .video-controls button:hover { background: rgba(255, 255, 255, .14); }
@@ -873,7 +869,6 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 @media (max-width: 620px) {
   .video-stage { border-radius: var(--radius-sm); }
   .video-badge { left: 12px; top: 12px; padding: 4px 10px; font-size: 10px; }
-  .video-caption { display: none; }
   .video-play { width: 60px; height: 60px; }
   .video-controls { padding: 6px 8px; gap: 4px; }
   .video-controls button { width: 32px; height: 32px; }

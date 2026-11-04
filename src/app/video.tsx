@@ -8,7 +8,8 @@ import { VisualBackdrop, type Visual } from "./visuals";
 
 const fmt = (s: number) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 
-export default function LessonVideo({ visual, eyebrow, title, minutes }: { visual: Visual; eyebrow: string; title: string; minutes: number }) {
+// No visible caption: the lesson title is already the page heading right above the player.
+export default function LessonVideo({ visual, title, minutes }: { visual: Visual; title: string; minutes: number }) {
   const { t } = useApp();
   const total = minutes * 60;
   const [playing, setPlaying] = useState(false);
@@ -29,14 +30,10 @@ export default function LessonVideo({ visual, eyebrow, title, minutes }: { visua
   const playLabel = playing ? t("Тоқтату", "Пауза") : t("Ойнату", "Воспроизвести");
 
   return (
-    <figure aria-label={t("Сабақ бейнесі", "Видео урока")} className={`video-player ${playing ? "is-playing" : ""}`}>
+    <figure aria-label={`${t("Сабақ бейнесі", "Видео урока")}: ${title}`} className={`video-player ${playing ? "is-playing" : ""}`}>
       <div className="video-stage" ref={stage}>
         <VisualBackdrop glyph={false} visual={visual} />
         <span className="video-badge">DEMO · {t("бейне жақында", "видео скоро")}</span>
-        <div className="video-caption">
-          <span>{eyebrow}</span>
-          <strong>{title}</strong>
-        </div>
         <button aria-label={playLabel} className="video-play" onClick={() => setPlaying(!playing)} type="button">
           <Icon name={playing ? "pause" : "play"} size={30} />
         </button>
