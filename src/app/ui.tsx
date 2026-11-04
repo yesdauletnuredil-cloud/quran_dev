@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { useApp } from "./context";
-import { checkPromo, getTier, type PromoResult, type Tier } from "./data";
+import { getTier, type PromoResult, type Tier } from "./data";
 import { VisualBackdrop, type Visual } from "./visuals";
 import { site } from "./config";
 import logoFull from "../assets/logo-full.png";
@@ -161,8 +161,19 @@ export function EmptyState({ title, text, action }: { title: string; text?: stri
   );
 }
 
+/** Shared promo messages (Premium, profile, registration). "empty" = nothing entered. */
+export function promoMessage(result: PromoResult | "empty", t: (kz: string, ru: string) => string) {
+  if (result === "empty") return { error: true, text: t("Промокодты енгізіңіз", "Введите промокод") };
+  switch (result.status) {
+    case "ok": return { error: false, text: t(`${getTier(result.tier)?.name} тарифі ${result.months} айға ашылды — грант арқылы.`, `Тариф ${getTier(result.tier)?.name} открыт на ${result.months} мес. по гранту.`) };
+    case "invalid": return { error: true, text: t("Мұндай промокод табылмады. Әріптерді тексеріңіз.", "Такой промокод не найден. Проверьте написание.") };
+    case "expired": return { error: true, text: t("Бұл промокодтың мерзімі өтіп кеткен. Жаңа код алу үшін демеушіге хабарласыңыз.", "Срок действия промокода истёк. Обратитесь к спонсору за новым кодом.") };
+    case "used": return { error: true, text: t("Бұл промокод сіздің аккаунтыңызда қолданылып қойған.", "Этот промокод уже использован в вашем аккаунте.") };
+  }
+}
+
 export function PromoField({ id = "promo" }: { id?: string }) {
-  const { t, requireAuth, subscribe, notify } = useApp();
+  const { t, requireAuth, redeemPromo, notify } = useApp();
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<PromoResult | "empty" | null>(null);
@@ -174,18 +185,16 @@ export function PromoField({ id = "promo" }: { id?: string }) {
     requireAuth(() => {
       setLoading(true);
       window.setTimeout(() => {
-        const r = checkPromo(code);
+        const r = redeemPromo(code);
         setLoading(false);
         setResult(r);
-        if (r.status === "ok") { subscribe(r.tier, r.months, "grant"); notify(t("Промокод іске қосылды", "Промокод активирован")); }
+        if (r.status === "ok") notify(t("Промокод іске қосылды", "Промокод активирован"));
       }, 800);
     });
   };
 
-  const error = result === "empty" ? t("Промокодты енгізіңіз", "Введите промокод")
-    : result?.status === "invalid" ? t("Мұндай промокод табылмады. Әріптерді тексеріңіз.", "Такой промокод не найден. Проверьте написание.")
-    : result?.status === "expired" ? t("Бұл промокодтың мерзімі өтіп кеткен. Жаңа код алу үшін демеушіге хабарласыңыз.", "Срок действия промокода истёк. Обратитесь к спонсору за новым кодом.")
-    : null;
+  const message = result ? promoMessage(result, t) : null;
+  const error = message?.error ? message.text : null;
 
   return (
     <form className="promo-form" noValidate onSubmit={submit}>
@@ -196,9 +205,7 @@ export function PromoField({ id = "promo" }: { id?: string }) {
       </div>
       <div aria-live="polite" id={`${id}-status`}>
         {error && <span className="field-error">{error}</span>}
-        {result !== "empty" && result?.status === "ok" && (
-          <p className="promo-success"><Icon name="check" size={18} />{t(`${getTier(result.tier)?.name} тарифі ${result.months} айға ашылды — грант арқылы.`, `Тариф ${getTier(result.tier)?.name} открыт на ${result.months} мес. по гранту.`)}</p>
-        )}
+        {message && !message.error && <p className="promo-success"><Icon name="check" size={18} />{message.text}</p>}
       </div>
     </form>
   );

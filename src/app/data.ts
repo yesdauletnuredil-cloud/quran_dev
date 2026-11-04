@@ -153,10 +153,13 @@ export function getAchievements(done: string[]): Achievement[] {
 }
 
 // Mock promo codes — validation is simulated on the client.
-export type PromoResult = { status: "ok"; tier: PaidTier; months: number } | { status: "invalid" } | { status: "expired" };
+export type PromoResult = { status: "ok"; tier: PaidTier; months: number } | { status: "invalid" } | { status: "expired" } | { status: "used" };
 export const promoCodes: Record<string, PromoResult> = {
   "GRANT-2026": { status: "ok", tier: "premium", months: 6 },
   "SPONSOR-PLUS": { status: "ok", tier: "plus", months: 3 },
   "GRANT-2025": { status: "expired" },
 };
-export const checkPromo = (code: string): PromoResult => promoCodes[code.trim().toUpperCase()] ?? { status: "invalid" };
+export const normalizePromo = (code: string) => code.trim().toUpperCase();
+/** Pure check; `used` holds codes this account already redeemed (normalized). */
+export const checkPromo = (code: string, used: string[] = []): PromoResult =>
+  used.includes(normalizePromo(code)) ? { status: "used" } : promoCodes[normalizePromo(code)] ?? { status: "invalid" };

@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import type { PaidTier, Tier } from "./data";
+import type { PaidTier, PromoResult, Tier } from "./data";
 
 export type Lang = "kz" | "ru";
 
@@ -26,6 +26,10 @@ export interface AppState {
   logout: () => void;
   /** Paid tier → start subscription; "basic" → cancel it */
   subscribe: (tier: Tier, months?: number, source?: Subscription["source"]) => void;
+  /** Promo codes this account already redeemed (normalized) */
+  usedPromos: string[];
+  /** Validates a promo code; on success applies the granted tier and marks the code as used */
+  redeemPromo: (code: string) => PromoResult;
   formatDate: (d: Date) => string;
   requireAuth: (action?: () => void) => void;
   done: string[];

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, NavLink, Outlet, ScrollRestoration, useLocation, useNavigate } from "react-router";
 import { AppCtx, useApp, type Lang, type Subscription } from "./context";
-import { getTier, isPaidTier, type Tier } from "./data";
+import { checkPromo, getTier, isPaidTier, normalizePromo, type Tier } from "./data";
 import { Brand, Button, Icon, TierBadge, TierPip } from "./ui";
 
 const navItems = (t: (a: string, b: string) => string) => [
@@ -179,6 +179,7 @@ export default function Root() {
   const [lang, setLang] = useState<Lang>("kz");
   const [authed, setAuthed] = useState(false);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [usedPromos, setUsedPromos] = useState<string[]>([]);
   const [done, setDone] = useState<string[]>([]);
   const [saved, setSaved] = useState<string[]>([]);
   const [authOpen, setAuthOpen] = useState(false);
@@ -204,7 +205,16 @@ export default function Root() {
     tier: subscription?.tier ?? (authed ? "basic" as const : null),
     premium: isPaidTier(subscription?.tier),
     login: () => setAuthed(true),
-    logout: () => { setAuthed(false); setSubscription(null); notify(t("Сіз аккаунттан шықтыңыз", "Вы вышли из аккаунта")); navigate("/"); },
+    logout: () => { setAuthed(false); setSubscription(null); setUsedPromos([]); notify(t("Сіз аккаунттан шықтыңыз", "Вы вышли из аккаунта")); navigate("/"); },
+    usedPromos,
+    redeemPromo: (code: string) => {
+      const r = checkPromo(code, usedPromos);
+      if (r.status === "ok") {
+        value.subscribe(r.tier, r.months, "grant");
+        setUsedPromos((l) => [...l, normalizePromo(code)]);
+      }
+      return r;
+    },
     subscribe: (tier: Tier, months = 1, source: Subscription["source"] = "payment") => {
       if (!isPaidTier(tier)) { setSubscription(null); return; }
       const until = new Date();

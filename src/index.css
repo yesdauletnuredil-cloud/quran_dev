@@ -891,3 +891,6 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
   .site-header .brand--logo .brand-emblem { display: block; }
   .brand-emblem { height: 42px; }
 }
+.field-hint { color: var(--muted); font-size: 13px; line-height: 1.5; }
+.promo-input { letter-spacing: .06em; text-transform: uppercase; }
+.promo-input::placeholder { letter-spacing: .06em; }
