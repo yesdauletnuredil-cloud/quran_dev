@@ -1,7 +1,46 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { useApp } from "../context";
+import { courses, getTopic, lessonMinutes, questions, topics } from "../data";
 import { Button, Icon } from "../ui";
+import { getVisual, visualUrl } from "../visuals";
+
+// Preview cards for the closing CTA — every value comes from data.ts / app state.
+function CtaCards() {
+  const { t, done } = useApp();
+  const topic = getTopic("tajweed")!;
+  const course = courses.find((c) => c.slug === "tajweed-basics")!;
+  const question = questions[0];
+  const totalLessons = topics.reduce((n, x) => n + x.lessons.length, 0);
+  const visual = getVisual(topic.slug);
+  return (
+    <div className="cta-cards">
+      <Link className="panel cta-card cta-card--lesson" to={`/quran/${topic.slug}/1`}>
+        <span aria-hidden="true" className="cta-card-visual" style={{ backgroundImage: `url("${visualUrl(visual, 600, 160)}")` }}>
+          <span className="arabic" lang="ar">{visual.glyph}</span>
+        </span>
+        <span className="cta-card-label"><Icon name="play" size={14} />{t("Құран", "Коран")} · {topic.title}</span>
+        <strong>{topic.lessons[0]}</strong>
+        <small>{t("Сабақ", "Урок")} 1 · ~{lessonMinutes(0)} {t("мин", "мин")}</small>
+      </Link>
+      <Link className="panel cta-card cta-card--course" to={`/academy/${course.slug}`}>
+        <span className="cta-card-label"><Icon name="bookmark" size={14} />{t("Онлайн академия", "Онлайн-академия")}</span>
+        <strong>{course.title}</strong>
+        <small>{course.lessons} {t("сабақ", "уроков")} · {course.time} · {course.level}</small>
+      </Link>
+      <Link className="panel cta-card cta-card--question" to={`/questions/${question.id}`}>
+        <span className="cta-card-label"><Icon name="chat" size={14} />{t("Сұрақ-жауап", "Вопросы")} · {question.category}</span>
+        <strong>{question.title}</strong>
+        <small>{question.imam}</small>
+      </Link>
+      <Link className="panel cta-card cta-card--progress" to="/profile">
+        <span className="cta-card-label"><Icon name="check" size={14} />{t("Сіздің прогрессіңіз", "Ваш прогресс")}</span>
+        <strong><b>{done.length}</b> / {totalLessons} {t("сабақ", "уроков")}</strong>
+        <span aria-hidden="true" className="progress"><i style={{ width: `${(done.length / totalLessons) * 100}%` }} /></span>
+      </Link>
+    </div>
+  );
+}
 
 export default function Home() {
   const { t } = useApp();
@@ -118,15 +157,18 @@ export default function Home() {
       </section>
 
       <section className="final-cta section">
-        <div className="container final-cta-inner">
-          <p className="arabic cta-arabic" lang="ar">رَبِّ زِدْنِي عِلْمًا</p>
-          <p className="eyebrow">{t("БІЛІМГЕ ҚАРАЙ БІР ҚАДАМ", "ОДИН ШАГ К ЗНАНИЮ")}</p>
-          <h2>{t("Білім жолыңызды бүгін бастаңыз", "Начните путь к знаниям сегодня")}</h2>
-          <p>{t("Тіркеліп, өзіңізге қажетті білімді жүйелі түрде үйреніңіз.", "Зарегистрируйтесь и изучайте нужные знания последовательно.")}</p>
-          <div>
-            <Button icon="arrow" to="/login?mode=register" variant="light">{t("Тіркелу", "Регистрация")}</Button>
-            <Button to="/academy" variant="ghost">{t("Курстарды көру", "Смотреть курсы")}</Button>
+        <div className="container final-cta-grid">
+          <div className="final-cta-inner">
+            <p className="arabic cta-arabic" lang="ar">رَبِّ زِدْنِي عِلْمًا</p>
+            <p className="eyebrow">{t("БІЛІМГЕ ҚАРАЙ БІР ҚАДАМ", "ОДИН ШАГ К ЗНАНИЮ")}</p>
+            <h2>{t("Білім жолыңызды бүгін бастаңыз", "Начните путь к знаниям сегодня")}</h2>
+            <p>{t("Тіркеліп, өзіңізге қажетті білімді жүйелі түрде үйреніңіз.", "Зарегистрируйтесь и изучайте нужные знания последовательно.")}</p>
+            <div>
+              <Button icon="arrow" to="/login?mode=register" variant="light">{t("Тіркелу", "Регистрация")}</Button>
+              <Button to="/academy" variant="ghost">{t("Курстарды көру", "Смотреть курсы")}</Button>
+            </div>
           </div>
+          <CtaCards />
         </div>
       </section>
     </>

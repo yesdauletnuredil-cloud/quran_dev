@@ -894,3 +894,40 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .field-hint { color: var(--muted); font-size: 13px; line-height: 1.5; }
 .promo-input { letter-spacing: .06em; text-transform: uppercase; }
 .promo-input::placeholder { letter-spacing: .06em; }
+
+/* Final CTA: two columns, preview cards on the right */
+.final-cta::before { left: 74%; }
+.final-cta-grid { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; align-items: center; }
+.final-cta-grid .final-cta-inner { text-align: left; }
+.final-cta-grid .cta-arabic { margin-bottom: 14px; font-size: 20px; }
+.final-cta-grid h2 { max-width: 560px; font-size: clamp(40px, 4.6vw, 64px); }
+.final-cta-grid .final-cta-inner > p:not(.eyebrow):not(.arabic) { max-width: 460px; margin: 24px 0 32px; }
+.final-cta-grid .final-cta-inner > div { justify-content: flex-start; flex-wrap: wrap; }
+.cta-cards { min-height: 470px; position: relative; }
+.cta-card { width: min(300px, 62%); padding: 20px 22px; position: absolute; display: flex; flex-direction: column; gap: 8px; color: var(--text); text-decoration: none; box-shadow: 0 24px 60px rgba(4, 22, 17, .28); transform: rotate(var(--tilt)); transition: transform .3s ease, box-shadow .3s ease; }
+.cta-card:hover, .cta-card:focus-visible { z-index: 6; transform: rotate(0) translateY(-6px); box-shadow: 0 30px 70px rgba(4, 22, 17, .36); }
+.cta-card-label { display: flex; align-items: center; gap: 8px; color: var(--accent-text); font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+.cta-card strong { font-size: 17px; font-weight: 400; line-height: 1.35; letter-spacing: -.01em; }
+.cta-card strong b { font-size: 30px; font-weight: 400; letter-spacing: -.03em; }
+.cta-card small { color: var(--muted); font-size: 13px; }
+.cta-card .progress { margin: 4px 0 0; display: block; }
+.cta-card-visual { height: 74px; margin: -6px -8px 4px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: flex-end; padding: 0 18px; color: #f7f5ed; background-size: cover; background-position: center; }
+.cta-card-visual .arabic { font-size: 30px; opacity: .85; }
+.cta-card--lesson { --tilt: -4deg; top: 0; left: 4%; z-index: 2; }
+.cta-card--course { --tilt: 3deg; top: 96px; right: 0; z-index: 3; }
+.cta-card--question { --tilt: 2.5deg; top: 236px; left: 0; z-index: 4; }
+.cta-card--progress { --tilt: -2.5deg; bottom: 0; right: 7%; z-index: 5; }
+@media (prefers-reduced-motion: reduce) { .cta-card { transition: none; } }
+@media (max-width: 900px) {
+  .final-cta::before { left: 50%; }
+  .final-cta-grid { grid-template-columns: 1fr; gap: 44px; }
+  .cta-cards { min-height: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .cta-card { width: auto; position: static; transform: none; box-shadow: 0 16px 40px rgba(4, 22, 17, .22); }
+  .cta-card:hover, .cta-card:focus-visible { transform: translateY(-3px); }
+}
+@media (max-width: 620px) {
+  .final-cta-grid h2 { font-size: 40px; }
+  .cta-cards { grid-template-columns: 1fr; }
+  .cta-card--course { display: none; }
+}
+.final-cta .eyebrow { color: #e6a34c; }
