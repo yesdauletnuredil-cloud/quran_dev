@@ -1,9 +1,41 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { useApp } from "../context";
-import { courses, getTopic, lessonMinutes, questions, topics } from "../data";
+import { courses, getTier, getTopic, lessonMinutes, questions, tierFeatures, tierPrice, tiers, topics } from "../data";
 import { Button, Icon } from "../ui";
 import { getVisual, visualUrl } from "../visuals";
+
+const totalLessons = topics.reduce((n, x) => n + x.lessons.length, 0);
+/** Russian noun form for a number: [1 урок, 2 урока, 5 уроков]. */
+const ruPlural = (n: number, [one, few, many]: [string, string, string]) => {
+  const d = n % 10, h = n % 100;
+  return d === 1 && h !== 11 ? one : d >= 2 && d <= 4 && (h < 12 || h > 14) ? few : many;
+};
+
+// Compact tier cards; same sources as /premium. Paid tiers list "everything from <previous>" + their own new features.
+function TierPreview() {
+  const { t, lang } = useApp();
+  return (
+    <div className="tier-preview">
+      {tiers.map((tier, i) => {
+        const own = tierFeatures.filter((f) => f.tiers[0] === tier.id);
+        const prev = i > 0 ? getTier(tiers[i - 1].id)!.name : null;
+        const lines = prev ? [t(`${prev} тарифіндегі барлық мүмкіндік`, `Всё из ${prev}`), ...own.slice(0, 2).map((f) => f.label[lang])] : own.slice(0, 3).map((f) => f.label[lang]);
+        return (
+          <article className={`panel tier-preview-card ${tier.id === "plus" ? "is-recommended" : ""}`} key={tier.id}>
+            {tier.id === "plus" && <span className="recommend-label">{t("ҰСЫНЫЛАДЫ", "РЕКОМЕНДУЕМ")}</span>}
+            <h3>{tier.name}</h3>
+            <p className="tier-preview-price">{tierPrice(tier.price, t)}{tier.price > 0 && <small> / {t("ай", "мес")}</small>}</p>
+            <ul className="check-list">
+              {lines.map((l) => <li key={l}><Icon name="check" size={16} />{l}</li>)}
+            </ul>
+            <Button full icon="arrow" size="sm" to="/premium" variant={tier.id === "plus" ? "primary" : "secondary"}>{t("Толығырақ", "Подробнее")}</Button>
+          </article>
+        );
+      })}
+    </div>
+  );
+}
 
 // Preview cards for the closing CTA — every value comes from data.ts / app state.
 function CtaCards() {
@@ -11,7 +43,6 @@ function CtaCards() {
   const topic = getTopic("tajweed")!;
   const course = courses.find((c) => c.slug === "tajweed-basics")!;
   const question = questions[0];
-  const totalLessons = topics.reduce((n, x) => n + x.lessons.length, 0);
   const visual = getVisual(topic.slug);
   return (
     <div className="cta-cards">
@@ -46,10 +77,17 @@ export default function Home() {
   const { t } = useApp();
   const [playing, setPlaying] = useState(false);
 
-  const destinations = [
-    { n: "01", to: "/quran", title: t("Құран", "Коран"), text: t("Оқу, тәжуид, тәпсір және Құран ғылымдары. Сабақтар жүйемен берілген.", "Чтение, таджвид, тафсир и науки о Коране. Уроки выстроены по порядку."), cta: t("Құранға өту", "Перейти к Корану"), tone: "primary" },
-    { n: "02", to: "/academy", title: t("Онлайн академия", "Онлайн-академия"), text: t("Курстар, сабақтар және прогресс. Өз қарқыныңызбен оқыңыз.", "Курсы, уроки и прогресс. Учитесь в своём темпе."), cta: t("Курстарды көру", "Смотреть курсы") },
-    { n: "03", to: "/questions", title: t("Сұрақ-жауап", "Вопросы и ответы"), text: t("Дайын жауаптарды іздеңіз немесе имамға сұрақ қойыңыз.", "Ищите готовые ответы или задайте вопрос имаму."), cta: t("Жауап табу", "Найти ответ") },
+  // What the platform actually offers; each card links to the section that provides it.
+  const benefits: { n: string; title: string; text: string; links: { to: string; label: string }[]; primary?: boolean }[] = [
+    { n: "01", primary: true, title: t("Деңгейіңізге сай бастау", "Старт с вашего уровня"), text: t("Жаңадан бастаушыларға дайын жол бар: иман негіздерінен Құран оқуға дейін.", "Для начинающих есть готовый путь: от основ веры до чтения Корана."), links: [{ to: "/beginner", label: t("Жолды көру", "Посмотреть путь") }] },
+    { n: "02", title: t("Құран мен тәжуид қадам-қадаммен", "Коран и таджвид шаг за шагом"), text: t("Әліпбиден тәжуид ережелеріне дейін — сабақтар ретімен берілген.", "От алфавита до правил таджвида — уроки идут по порядку."), links: [{ to: "/quran", label: t("Құранға өту", "Перейти к Корану") }] },
+    { n: "03", title: t("Курстар мен дайын жауаптар", "Курсы и база ответов"), text: t("Академиядағы жүйелі курстар және имамдар жауап берген сұрақтар базасы.", "Системные курсы Академии и база вопросов с ответами имамов."), links: [{ to: "/academy", label: t("Курстар", "Курсы") }, { to: "/questions", label: t("Сұрақ-жауап", "Вопросы") }] },
+    { n: "04", title: t("Өз қарқыныңызбен", "В своём темпе"), text: t("Сабақтарды өз ырғағыңызбен өтіп, аяқталғанын белгілеңіз — прогресс аккаунтта сақталады.", "Проходите уроки в своём ритме и отмечайте завершённые — прогресс сохраняется в аккаунте."), links: [{ to: "/profile", label: t("Прогресс", "Прогресс") }] },
+  ];
+  const stats: [number, string, [string, string, string]][] = [
+    [questions.length, "дайын сұрақ-жауап", ["готовый ответ", "готовых ответа", "готовых ответов"]],
+    [courses.length, "Академия курсы", ["курс Академии", "курса Академии", "курсов Академии"]],
+    [totalLessons, "сабақ", ["урок", "урока", "уроков"]],
   ];
 
   return (
@@ -68,9 +106,7 @@ export default function Home() {
               <Button to="/beginner" variant="secondary">{t("Неден бастауды білмеймін", "Не знаю, с чего начать")}</Button>
             </div>
             <div className="hero-proof">
-              <div><strong>3 000+</strong><span>{t("сұрақ пен жауап", "вопросов и ответов")}</span></div>
-              <div><strong>8</strong><span>{t("білім бағыты", "направлений знаний")}</span></div>
-              <div><strong>24/7</strong><span>{t("оқуға қолжетімді", "доступно для обучения")}</span></div>
+              {stats.map(([n, kz, ru]) => <div key={kz}><strong>{n}</strong><span>{t(kz, ruPlural(n, ru))}</span></div>)}
             </div>
           </div>
           <div aria-label={t("Құран аяты бейнеленген сәндік композиция", "Декоративная композиция с аятом")} className="hero-art" role="img">
@@ -91,16 +127,19 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section section-tint" id="destinations">
+      <section aria-labelledby="benefits-title" className="section section-tint" id="destinations">
         <div className="container">
-          <div className="destinations">
-            {destinations.map((d) => (
-              <Link className={`destination ${d.tone === "primary" ? "destination--primary" : ""}`} key={d.to} to={d.to}>
+          <div className="section-title"><p className="eyebrow">{t("МҮМКІНДІКТЕР", "ВОЗМОЖНОСТИ")}</p><h2 id="benefits-title">{t("Неге осында оқу ыңғайлы", "Почему здесь удобно учиться")}</h2></div>
+          <div className="destinations destinations--4">
+            {benefits.map((d) => (
+              <article className={`destination ${d.primary ? "destination--primary" : ""}`} key={d.n}>
                 <span className="destination-n">{d.n}</span>
-                <h2>{d.title}</h2>
+                <h3>{d.title}</h3>
                 <p>{d.text}</p>
-                <span className="destination-cta">{d.cta}<Icon name="arrow" size={18} /></span>
-              </Link>
+                <div className="destination-links">
+                  {d.links.map((l) => <Link className="destination-cta" key={l.to} to={l.to}>{l.label}<Icon name="arrow" size={18} /></Link>)}
+                </div>
+              </article>
             ))}
           </div>
         </div>
@@ -148,11 +187,7 @@ export default function Home() {
             </div>
             <Button to="/premium" variant="secondary">{t("Тарифтерді салыстыру", "Сравнить тарифы")}</Button>
           </div>
-          <div className="access-flow">
-            <div className="access-card free"><span>FREE</span><h3>{t("Алғашқы сабақтар", "Первые уроки")}</h3><p>{t("Негізгі материалдарды тегін оқып, оқу форматын байқап көріңіз.", "Изучайте основные материалы бесплатно и оцените формат.")}</p><Icon name="check" /></div>
-            <div className="flow-arrow"><Icon name="arrow" /></div>
-            <div className="access-card full"><span>PREMIUM</span><h3>{t("Толық курстар", "Полные курсы")}</h3><p>{t("Барлық сабақтар, арнайы материалдар және оқу прогресі.", "Все уроки, эксклюзивные материалы и учебный прогресс.")}</p><Icon name="lock" /></div>
-          </div>
+          <TierPreview />
         </div>
       </section>
 
