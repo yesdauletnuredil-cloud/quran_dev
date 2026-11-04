@@ -830,19 +830,17 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 /* Tier status badge (Plus / Premium) */
 .tier-badge { padding: 5px 11px 5px 9px; border-radius: 999px; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; letter-spacing: .04em; line-height: 1; white-space: nowrap; }
 .tier-badge .icon { fill: currentColor; stroke-width: 1.2; }
-.tier-badge--plus { color: #0d3a2e; background: #d9e8e0; box-shadow: inset 0 0 0 1px #b4cdc0; }
-.tier-badge--premium { color: #3b2306; background: linear-gradient(135deg, #f6d9a3, #e6a34c); box-shadow: inset 0 0 0 1px rgba(154, 77, 4, .35); }
+.tier-badge--plus { color: var(--tier-plus-ink); background: var(--tier-plus-bg); box-shadow: inset 0 0 0 1px var(--tier-plus-line); }
+.tier-badge--premium { color: var(--tier-premium-ink); background: var(--tier-premium-bg); box-shadow: inset 0 0 0 1px var(--tier-premium-line); }
 .tier-badge--sm { padding: 3px 8px 3px 7px; font-size: 11px; }
-.theme-dark .tier-badge--plus { color: #f3f3eb; background: #2b7a63; box-shadow: none; }
 .profile-menu .tier-badge { align-self: flex-start; letter-spacing: .04em; }
-.profile-menu span.tier-badge { color: #0d3a2e; font-size: 12px; }
-.profile-menu span.tier-badge--premium { color: #3b2306; }
-.theme-dark .profile-menu span.tier-badge--plus { color: #f3f3eb; }
+.profile-menu span.tier-badge { color: var(--tier-plus-ink); font-size: 12px; }
+.profile-menu span.tier-badge--premium { color: var(--tier-premium-ink); }
 .profile-button, .menu-button { position: relative; }
 .tier-pip { width: 18px; height: 18px; position: absolute; right: -3px; bottom: -3px; border: 2px solid var(--bg); border-radius: 50%; display: grid; place-items: center; }
 .tier-pip .icon { fill: currentColor; stroke-width: 1; }
-.tier-pip--plus { color: #fff; background: #2b7a63; }
-.tier-pip--premium { color: #3b2306; background: #e6a34c; }
+.tier-pip--plus { color: #fff; background: var(--tier-plus-solid); }
+.tier-pip--premium { color: var(--tier-premium-ink); background: var(--tier-premium-bg); }
 .tier-heading { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .tier-heading h3 { margin-bottom: 0 !important; }
 .detail-aside .tier-heading { margin-bottom: 12px; }
@@ -968,3 +966,19 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .destinations--4 .destination-links { margin-top: auto; }
 @media (max-width: 620px) { .destinations--4 .destination h3 { margin-top: 28px; } }
 @media (max-width: 620px) { .access-heading .button { margin-top: 20px; } }
+
+/* Tier status tokens (Plus / Premium badges and avatar pip); dark theme overrides below */
+:root {
+  --tier-plus-ink: #0d3a2e;
+  --tier-plus-bg: #d9e8e0;
+  --tier-plus-line: #b4cdc0;
+  --tier-plus-solid: #2b7a63;
+  --tier-premium-ink: #3b2306;
+  --tier-premium-bg: #e6a34c;
+  --tier-premium-line: rgba(154, 77, 4, .35);
+}
+.app.theme-dark {
+  --tier-plus-ink: #f3f3eb;
+  --tier-plus-bg: #2b7a63;
+  --tier-plus-line: transparent;
+}
