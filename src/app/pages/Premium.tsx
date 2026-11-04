@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { useApp } from "../context";
 import { getTier, tierFeatures, tierPrice, tiers, type Tier } from "../data";
 import { Button, Icon, PageHero, PromoField, tierHighlightLines } from "../ui";
@@ -7,7 +7,9 @@ import { Button, Icon, PageHero, PromoField, tierHighlightLines } from "../ui";
 export default function Premium() {
   const { t, lang, authed, subscription, tier, subscribe, requireAuth, notify } = useApp();
   const navigate = useNavigate();
-  const [selected, setSelected] = useState<Tier>(subscription?.tier ?? "plus");
+  // ?tier=plus preselects a tier (links from the home tier preview); unknown values are ignored.
+  const linked = useSearchParams()[0].get("tier");
+  const [selected, setSelected] = useState<Tier>(tiers.find((x) => x.id === linked)?.id ?? subscription?.tier ?? "plus");
   const [mobileTier, setMobileTier] = useState<Tier>("premium");
   const [loading, setLoading] = useState(false);
   const current = tier;

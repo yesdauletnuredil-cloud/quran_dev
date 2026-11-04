@@ -26,7 +26,7 @@ function TierPreview() {
             <ul className="check-list">
               {lines.map((l) => <li key={l}><Icon name="check" size={16} />{l}</li>)}
             </ul>
-            <Button full icon="arrow" size="sm" to="/premium" variant={tier.id === "plus" ? "primary" : "secondary"}>{t("Толығырақ", "Подробнее")}</Button>
+            <Button full icon="arrow" size="sm" to={`/premium?tier=${tier.id}`} variant={tier.id === "plus" ? "primary" : "secondary"}>{t(`${tier.name} таңдау`, `Выбрать ${tier.name}`)}</Button>
           </article>
         );
       })}
