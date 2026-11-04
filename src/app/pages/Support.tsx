@@ -50,7 +50,7 @@ function SponsorCard() {
           <small>{t("Демо: нақты төлемнен кейін код поштаға жіберіледі.", "Демо: после реальной оплаты код придёт на почту.")}</small>
         </div>
       ) : (
-        <Button full icon="arrow" loading={loading} onClick={generate}>{t("Демеуші болу", "Стать спонсором")}</Button>
+        <Button full loading={loading} onClick={generate}>{t("Демеуші болу", "Стать спонсором")}</Button>
       )}
       <p className="support-foot">{t("Оқушы кодты тіркелу кезінде, «Тарифтер» немесе «Профиль» бетінде енгізеді.", "Ученик вводит код при регистрации, на странице «Тарифы» или в профиле.")}</p>
     </article>
@@ -80,7 +80,7 @@ function DevelopmentCard() {
       <Chips items={amounts.map(formatPrice)} onChange={setAmount} value={amount} />
       <p className="support-label">{t("Мерзімділік", "Периодичность")}</p>
       <Chips items={[once, each]} onChange={(v) => setMonthly(v === each)} value={monthly ? each : once} />
-      <Button full icon="arrow" loading={loading} onClick={donate}>{t(`${amount} қолдау`, `Поддержать на ${amount}`)}</Button>
+      <Button full loading={loading} onClick={donate}>{t(`${amount} қолдау`, `Поддержать на ${amount}`)}</Button>
       <Requisites rows={[
         [t("Алушы", "Получатель"), t("[Ұйым атауы]", "[Название организации]")],
         [t("БСН", "БИН"), "[000000000000]"],

@@ -75,7 +75,7 @@ function RequestForm({ tier }: { tier: Tier }) {
         <label htmlFor="u-time">{t("Ыңғайлы уақыт", "Удобное время")}</label>
         <select className="input select" id="u-time" onChange={(e) => setTime(e.target.value)} value={time}>{times.map((x) => <option key={x}>{x}</option>)}</select>
       </div>
-      <Button icon="arrow" loading={loading} type="submit">{t("Сұраныс жіберу", "Отправить запрос")}</Button>
+      <Button loading={loading} type="submit">{t("Сұраныс жіберу", "Отправить запрос")}</Button>
     </form>
   );
 }
