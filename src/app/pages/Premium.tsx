@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useApp } from "../context";
 import { getTier, tierFeatures, tierPrice, tiers, type Tier } from "../data";
-import { Button, Icon, PageHero, PromoField } from "../ui";
+import { Button, Icon, PageHero, PromoField, tierHighlightLines } from "../ui";
 
 export default function Premium() {
   const { t, lang, authed, subscription, tier, subscribe, requireAuth, notify } = useApp();
@@ -40,7 +40,7 @@ export default function Premium() {
                   <p className="price">{tierPrice(p.price, t)}</p>
                   <p className="price-per">{p.price ? `/ ${t("ай", "мес")} · ` : ""}{p.desc[lang]}</p>
                   <ul aria-hidden="true">
-                    {tierFeatures.filter((f) => f.tiers.includes(p.id)).map((f) => <li key={f.label.ru}><Icon name="check" size={16} />{f.label[lang]}</li>)}
+                    {tierHighlightLines(p.id, t, lang).map((l) => <li key={l}><Icon name="check" size={16} />{l}</li>)}
                   </ul>
                 </button>
               );

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { useApp } from "./context";
-import { getTier, type PromoResult, type Tier } from "./data";
+import { getTier, tierFeatures, tiers, type PromoResult, type Tier } from "./data";
 import { VisualBackdrop, type Visual } from "./visuals";
 import { site } from "./config";
 import logoFull from "../assets/logo-full.png";
@@ -209,6 +209,18 @@ export function PromoField({ id = "promo" }: { id?: string }) {
       </div>
     </form>
   );
+}
+
+/**
+ * What a tier offers, described by difference: "everything from <previous tier>" + its own features.
+ * Shared by /premium cards, the home tier preview and the profile. `max` caps the number of lines.
+ */
+export function tierHighlightLines(id: Tier, t: (kz: string, ru: string) => string, lang: "kz" | "ru", max = Infinity) {
+  const i = tiers.findIndex((x) => x.id === id);
+  const own = tierFeatures.filter((f) => f.tiers[0] === id).map((f) => f.label[lang]);
+  if (i <= 0) return own.slice(0, max);
+  const prev = getTier(tiers[i - 1].id)!.name;
+  return [t(`${prev} тарифіндегі барлық мүмкіндік`, `Всё из ${prev}`), ...own.slice(0, max - 1)];
 }
 
 /** Status badge for paid Plus / Premium users; renders nothing for Free and Basic. */

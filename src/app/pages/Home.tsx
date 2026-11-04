@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { useApp } from "../context";
-import { courses, getTier, getTopic, lessonMinutes, questions, tierFeatures, tierPrice, tiers, totalLessons } from "../data";
-import { Button, Icon } from "../ui";
+import { courses, getTopic, lessonMinutes, questions, tierPrice, tiers, totalLessons } from "../data";
+import { Button, Icon, tierHighlightLines } from "../ui";
 import { getVisual, visualUrl } from "../visuals";
 
 /** Russian noun form for a number: [1 урок, 2 урока, 5 уроков]. */
@@ -16,10 +16,8 @@ function TierPreview() {
   const { t, lang } = useApp();
   return (
     <div className="tier-preview">
-      {tiers.map((tier, i) => {
-        const own = tierFeatures.filter((f) => f.tiers[0] === tier.id);
-        const prev = i > 0 ? getTier(tiers[i - 1].id)!.name : null;
-        const lines = prev ? [t(`${prev} тарифіндегі барлық мүмкіндік`, `Всё из ${prev}`), ...own.slice(0, 2).map((f) => f.label[lang])] : own.slice(0, 3).map((f) => f.label[lang]);
+      {tiers.map((tier) => {
+        const lines = tierHighlightLines(tier.id, t, lang, 3);
         return (
           <article className={`panel tier-preview-card ${tier.id === "plus" ? "is-recommended" : ""}`} key={tier.id}>
             {tier.id === "plus" && <span className="recommend-label">{t("ҰСЫНЫЛАДЫ", "РЕКОМЕНДУЕМ")}</span>}
