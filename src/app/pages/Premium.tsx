@@ -101,7 +101,6 @@ export default function Premium() {
       <section className="page-section">
         <div className="container promo-layout">
           <div className="panel">
-            <p className="eyebrow">{t("ГРАНТ", "ГРАНТ")}</p>
             <h3>{t("Промокодыңыз бар ма?", "Есть промокод?")}</h3>
             <p>{t("Демеуші немесе грант бағдарламасы берген кодты енгізіңіз — тариф бірден ашылады.", "Введите код от спонсора или грантовой программы — тариф откроется сразу.")}</p>
             <PromoField id="promo-premium" />

@@ -191,7 +191,6 @@ export function StoryModal({ data, onClose }: { data: StoryData; onClose: () => 
             : <span className="story-placeholder">{failed ? t("Карточканы жасау мүмкін болмады", "Не удалось создать карточку") : <i aria-hidden="true" className="spinner" />}</span>}
         </div>
         <div className="story-side">
-          <p className="eyebrow">INSTAGRAM STORIES · 1080×1920</p>
           <h2 id="story-title">{t("Stories карточкасы", "Карточка для Stories")}</h2>
           <p>{t("Суретті сақтап немесе телефонның «Бөлісу» мәзірі арқылы жіберіп, Instagram-да Stories-ке қосыңыз. Сайт Instagram-ға өзі жарияламайды.", "Сохраните картинку или отправьте через меню «Поделиться» телефона и добавьте в Stories в Instagram. Сайт не публикует в Instagram сам.")}</p>
           <div className="story-actions">
