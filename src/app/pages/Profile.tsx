@@ -79,7 +79,7 @@ export default function Profile() {
                   {t(`${formatDate(subscription.until)} дейін`, `до ${formatDate(subscription.until)}`)}
                 </p>
               ) : (
-                <p>{t("Тегін · тіркелген әр пайдаланушыда бар", "Бесплатно · есть у каждого зарегистрированного пользователя")}</p>
+                <p>{t("Тіркелген әр пайдаланушыға тегін ашық.", "Бесплатно открыт каждому зарегистрированному пользователю.")}</p>
               )}
               {features.length > 0 && (
                 <ul className="check-list tier-features">
