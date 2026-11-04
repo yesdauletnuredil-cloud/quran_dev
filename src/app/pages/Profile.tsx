@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useApp } from "../context";
-import { getAchievements, getTier, tierFeatures, totalLessons, type Achievement } from "../data";
+import { getAchievements, getTier, totalLessons, type Achievement } from "../data";
 import { StoryModal } from "../share";
-import { Button, EmptyState, Icon, PageHero, PromoField, TierBadge } from "../ui";
+import { Button, EmptyState, Icon, PageHero, PromoField, TierBadge, tierHighlightLines } from "../ui";
 import { getVisual } from "../visuals";
 
 function Achievements() {
@@ -59,7 +59,8 @@ export default function Profile() {
   }
 
   const tier = getTier(tierId);
-  const features = tier ? tierFeatures.filter((f) => f.tiers.includes(tier.id)) : [];
+  // Short summary only; the full comparison lives on /premium.
+  const features = tier ? tierHighlightLines(tier.id, t, lang, 3) : [];
 
   return (
     <>
@@ -81,7 +82,7 @@ export default function Profile() {
               )}
               {features.length > 0 && (
                 <ul className="check-list tier-features">
-                  {features.map((f) => <li key={f.label.ru}><Icon name="check" size={18} />{f.label[lang]}</li>)}
+                  {features.map((f) => <li key={f}><Icon name="check" size={18} />{f}</li>)}
                 </ul>
               )}
               <Button icon="arrow" to="/premium" variant={subscription ? "light" : "primary"}>{subscription ? t("Тарифті өзгерту", "Изменить тариф") : t("Plus не Premium-ға өту", "Перейти на Plus или Premium")}</Button>
