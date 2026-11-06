@@ -239,9 +239,10 @@ export function TierPip({ tier }: { tier?: Tier | null }) {
   return <span aria-hidden="true" className={`tier-pip tier-pip--${tier}`}><Icon name="star" size={10} /></span>;
 }
 
-export function Chips({ items, value, onChange }: { items: string[]; value: string; onChange: (v: string) => void }) {
+// labelledBy (optional): id of the visible caption that names the group for screen readers.
+export function Chips({ items, value, onChange, labelledBy }: { items: string[]; value: string; onChange: (v: string) => void; labelledBy?: string }) {
   return (
-    <div className="filter-row" role="group">
+    <div aria-labelledby={labelledBy} className="filter-row" role="group">
       {items.map((item) => (
         <button aria-pressed={value === item} className={value === item ? "active" : ""} key={item} onClick={() => onChange(item)} type="button">{item}</button>
       ))}

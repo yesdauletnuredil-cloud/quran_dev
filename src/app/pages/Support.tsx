@@ -38,10 +38,10 @@ function SponsorCard() {
       <span className="support-num">01</span>
       <h3>{t("Оқушыға демеушілік", "Спонсорство ученика")}</h3>
       <p>{t("Оқушының оқуын төлеңіз — біз грант промокодын жасаймыз. Оны оқушыға өзіңіз бересіз немесе академия мұқтаж оқушыға табыстайды.", "Оплатите обучение ученика — мы создадим грантовый промокод. Передайте его сами или доверьте академии выбрать нуждающегося ученика.")}</p>
-      <p className="support-label">{t("Тариф", "Тариф")} · {SPONSOR_MONTHS} {t("ай", "мес.")}</p>
-      <Chips items={sponsorTiers.map((x) => x.name)} onChange={(name) => { setTier(sponsorTiers.find((x) => x.name === name)!.id); setCode(null); }} value={getTier(tier)!.name} />
-      <p className="support-label">{t("Оқушылар саны", "Количество учеников")}</p>
-      <Chips items={["1", "5", "10"]} onChange={(v) => { setCount(v); setCode(null); }} value={count} />
+      <p className="support-label" id="sponsor-tier-label">{t("Тариф", "Тариф")} · {SPONSOR_MONTHS} {t("ай", "мес.")}</p>
+      <Chips items={sponsorTiers.map((x) => x.name)} labelledBy="sponsor-tier-label" onChange={(name) => { setTier(sponsorTiers.find((x) => x.name === name)!.id); setCode(null); }} value={getTier(tier)!.name} />
+      <p className="support-label" id="sponsor-count-label">{t("Оқушылар саны", "Количество учеников")}</p>
+      <Chips items={["1", "5", "10"]} labelledBy="sponsor-count-label" onChange={(v) => { setCount(v); setCode(null); }} value={count} />
       <p className="price-line">{formatPrice(total)}</p>
       {code ? (
         <div className="promo-code">
@@ -76,10 +76,10 @@ function DevelopmentCard() {
       <span className="support-num">02</span>
       <h3>{t("Жобаны дамытуға", "Поддержка разработки")}</h3>
       <p>{t("Жаңа сабақтар, аудио жазбалар, қосымша мен сервер шығындары. Әр үлес платформаны тегін бөлімдерімен бірге дамытуға көмектеседі.", "Новые уроки, аудиозаписи, приложение и серверы. Каждый вклад помогает развивать платформу и её бесплатные разделы.")}</p>
-      <p className="support-label">{t("Сома", "Сумма")}</p>
-      <Chips items={amounts.map(formatPrice)} onChange={setAmount} value={amount} />
-      <p className="support-label">{t("Мерзімділік", "Периодичность")}</p>
-      <Chips items={[once, each]} onChange={(v) => setMonthly(v === each)} value={monthly ? each : once} />
+      <p className="support-label" id="donate-amount-label">{t("Сома", "Сумма")}</p>
+      <Chips items={amounts.map(formatPrice)} labelledBy="donate-amount-label" onChange={setAmount} value={amount} />
+      <p className="support-label" id="donate-period-label">{t("Мерзімділік", "Периодичность")}</p>
+      <Chips items={[once, each]} labelledBy="donate-period-label" onChange={(v) => setMonthly(v === each)} value={monthly ? each : once} />
       <Button full loading={loading} onClick={donate}>{t(`${amount} қолдау`, `Поддержать на ${amount}`)}</Button>
       <Requisites rows={[
         [t("Алушы", "Получатель"), t("[Ұйым атауы]", "[Название организации]")],
@@ -126,6 +126,7 @@ export default function Support() {
       />
       <section className="page-section">
         <div className="container">
+          <h2 className="sr-only">{t("Көмектесу жолдары", "Способы помочь")}</h2>
           <div className="support-grid">
             <SponsorCard />
             <DevelopmentCard />

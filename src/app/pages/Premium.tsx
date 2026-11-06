@@ -15,6 +15,18 @@ export default function Premium() {
   const current = tier;
   const selectedName = getTier(selected)!.name;
 
+  // Radio group keyboard pattern: arrows move and select, Home/End jump; only the selected card is a Tab stop.
+  const onTierKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const ids = tiers.map((x) => x.id);
+    const i = ids.indexOf(selected);
+    const next = { ArrowRight: i + 1, ArrowDown: i + 1, ArrowLeft: i - 1, ArrowUp: i - 1, Home: 0, End: ids.length - 1 }[e.key];
+    if (next === undefined) return;
+    e.preventDefault();
+    const id = ids[(next + ids.length) % ids.length];
+    setSelected(id);
+    e.currentTarget.querySelector<HTMLElement>(`[data-tier="${id}"]`)?.focus();
+  };
+
   const subscribeNow = () => requireAuth(() => {
     setLoading(true);
     window.setTimeout(() => { setLoading(false); subscribe(selected); notify(t(`${selectedName} іске қосылды`, `${selectedName} активирован`)); navigate("/profile"); }, 900);
@@ -31,17 +43,34 @@ export default function Premium() {
       />
       <section className="page-section" id="tariffs">
         <div className="container">
-          <div className="pricing-grid pricing-grid--tiers" role="radiogroup" aria-label={t("Тариф", "Тариф")}>
+          <h2 className="sr-only">{t("Тарифті таңдаңыз", "Выберите тариф")}</h2>
+          <div className="pricing-grid pricing-grid--tiers" onKeyDown={onTierKey} role="radiogroup" aria-label={t("Тариф", "Тариф")}>
             {tiers.map((p) => {
               const on = selected === p.id;
               return (
-                <button aria-checked={on} className={`price-card ${on ? "selected" : ""} ${p.id === "plus" ? "recommended" : ""}`} key={p.id} onClick={() => setSelected(p.id)} role="radio" type="button">
+                <button
+                  aria-checked={on}
+                  aria-describedby={`tier-${p.id}-desc tier-${p.id}-list`}
+                  aria-label={[
+                    p.name,
+                    p.price ? `${tierPrice(p.price, t)} ${t("айына", "в месяц")}` : tierPrice(p.price, t),
+                    p.id === "plus" && t("ұсынылады", "рекомендуем"),
+                    current === p.id && t("ағымдағы тариф", "текущий тариф"),
+                  ].filter(Boolean).join(", ")}
+                  className={`price-card ${on ? "selected" : ""} ${p.id === "plus" ? "recommended" : ""}`}
+                  data-tier={p.id}
+                  key={p.id}
+                  onClick={() => setSelected(p.id)}
+                  role="radio"
+                  tabIndex={on ? 0 : -1}
+                  type="button"
+                >
                   {p.id === "plus" && <span className="recommend-label">{t("ҰСЫНЫЛАДЫ", "РЕКОМЕНДУЕМ")}</span>}
                   <div className="price-check">{current === p.id ? <span className="badge badge--free">{t("Ағымдағы", "Текущий")}</span> : on && <Icon name="check" />}</div>
                   <h3>{p.name}</h3>
                   <p className="price">{tierPrice(p.price, t)}</p>
-                  <p className="price-per">{p.price ? `/ ${t("ай", "мес")} · ` : ""}{p.desc[lang]}</p>
-                  <ul aria-hidden="true">
+                  <p className="price-per">{p.price ? `/ ${t("ай", "мес")} · ` : ""}<span id={`tier-${p.id}-desc`}>{p.desc[lang]}</span></p>
+                  <ul id={`tier-${p.id}-list`}>
                     {tierHighlightLines(p.id, t, lang).map((l) => <li key={l}><Icon name="check" size={16} />{l}</li>)}
                   </ul>
                 </button>
@@ -70,7 +99,7 @@ export default function Premium() {
           </div>
           <div className="compare compare--tiers" data-active={mobileTier} role="table">
             <div className="compare-head" role="row">
-              <span role="columnheader" />
+              <span role="columnheader"><span className="sr-only">{t("Мүмкіндік", "Возможность")}</span></span>
               {tiers.map((p) => <span data-col={p.id} key={p.id} role="columnheader">{p.name.toUpperCase()}</span>)}
             </div>
             {tierFeatures.map((f) => (
@@ -78,7 +107,9 @@ export default function Premium() {
                 <span role="cell">{f.label[lang]}</span>
                 {tiers.map((p) => (
                   <span className={p.id === "premium" ? "yes" : ""} data-col={p.id} key={p.id} role="cell">
-                    {f.tiers.includes(p.id) ? <Icon name="check" size={18} /> : <i aria-label={t("Жоқ", "Нет")} className="dash" />}
+                    {f.tiers.includes(p.id)
+                      ? <><Icon name="check" size={18} /><span className="sr-only">{t("Бар", "Есть")}</span></>
+                      : <><i aria-hidden="true" className="dash" /><span className="sr-only">{t("Жоқ", "Нет")}</span></>}
                   </span>
                 ))}
               </div>
@@ -99,6 +130,7 @@ export default function Premium() {
         </div>
       </section>
       <section className="page-section">
+        <h2 className="sr-only">{t("Промокод және демеушілік", "Промокод и спонсорство")}</h2>
         <div className="container promo-layout">
           <div className="panel">
             <h3>{t("Промокодыңыз бар ма?", "Есть промокод?")}</h3>

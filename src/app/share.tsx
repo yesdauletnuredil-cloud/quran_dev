@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { site } from "./config";
 import { useApp } from "./context";
 import { Button, Icon } from "./ui";
@@ -161,6 +162,24 @@ export function StoryModal({ data, onClose }: { data: StoryData; onClose: () => 
     return () => { alive = false; };
   }, [dataKey, filename]);
 
+  // Keyboard focus: move into the dialog on open, keep Tab inside, give it back to the opener on close.
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    const opener = document.activeElement as HTMLElement | null;
+    closeRef.current?.focus();
+    return () => { if (opener?.isConnected) opener.focus(); };
+  }, []);
+  const trapTab = (e: React.KeyboardEvent) => {
+    if (e.key !== "Tab" || !dialogRef.current) return;
+    const items = [...dialogRef.current.querySelectorAll<HTMLElement>("button:not([disabled]), a[href], [tabindex]:not([tabindex='-1'])")];
+    if (!items.length) return;
+    const first = items[0], last = items[items.length - 1];
+    const inside = dialogRef.current.contains(document.activeElement);
+    if (e.shiftKey && (document.activeElement === first || !inside)) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && (document.activeElement === last || !inside)) { e.preventDefault(); first.focus(); }
+  };
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     document.addEventListener("keydown", onKey);
@@ -182,10 +201,12 @@ export function StoryModal({ data, onClose }: { data: StoryData; onClose: () => 
     notify(t("Сурет сақталды. Instagram-да Stories-ке өзіңіз қосыңыз.", "Картинка сохранена. Добавьте её в Stories в Instagram."));
   };
 
-  return (
+  // Rendered at the app root: inside the sticky side column the dialog could not rise above the
+  // site header. `.app` (not body) keeps the light/dark theme variables.
+  return createPortal(
     <div className="modal-backdrop" onMouseDown={onClose}>
-      <div aria-labelledby="story-title" aria-modal="true" className="auth-modal story-modal" onMouseDown={(e) => e.stopPropagation()} role="dialog">
-        <button aria-label={t("Жабу", "Закрыть")} className="modal-close icon-button" onClick={onClose} type="button"><Icon name="close" /></button>
+      <div aria-labelledby="story-title" aria-modal="true" className="auth-modal story-modal" onKeyDown={trapTab} onMouseDown={(e) => e.stopPropagation()} ref={dialogRef} role="dialog">
+        <button aria-label={t("Жабу", "Закрыть")} className="modal-close icon-button" onClick={onClose} ref={closeRef} type="button"><Icon name="close" /></button>
         <div className="story-preview">
           {preview ? <img alt={t("Stories карточкасының алдын ала көрінісі", "Предпросмотр карточки для Stories")} src={preview} />
             : <span className="story-placeholder">{failed ? t("Карточканы жасау мүмкін болмады", "Не удалось создать карточку") : <i aria-hidden="true" className="spinner" />}</span>}
@@ -200,7 +221,8 @@ export function StoryModal({ data, onClose }: { data: StoryData; onClose: () => 
           {data.demo && <p className="story-demo">{t("DEMO: жетістік деректері үлгі ретінде көрсетілген.", "DEMO: данные достижения показаны для примера.")}</p>}
         </div>
       </div>
-    </div>
+    </div>,
+    document.querySelector(".app") ?? document.body,
   );
 }
 

@@ -715,6 +715,8 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
   .support-card .filter-row { flex-wrap: wrap; margin-right: 0; padding-right: 0; overflow-x: visible; }
 }
 .support-grid > * { min-width: 0; }
+/* Text for screen readers only (new pages: compare cells, section headings). */
+.sr-only { position: absolute !important; width: 1px !important; height: 1px !important; margin: -1px !important; padding: 0 !important; overflow: hidden !important; clip: rect(0 0 0 0) !important; white-space: nowrap !important; border: 0 !important; }
 
 /* Lesson visuals */
 .page-hero--visual { min-height: 420px; padding: 64px 0; position: relative; display: flex; align-items: flex-end; overflow: hidden; border-bottom: 0; color: #f8faf6; background: #0d3a2e; isolation: isolate; }
