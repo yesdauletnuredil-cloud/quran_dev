@@ -710,7 +710,11 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
   .compare--tiers[data-active="premium"] [data-col]:not([data-col="premium"]) { display: none; }
   .promo-row { flex-direction: column; }
   .profile-stats { grid-template-columns: 1fr; }
+  /* Support cards: a form choice, not a filter strip — every option stays visible, so wrap
+     instead of the shared single-line scroll that pushed the card past the screen edge. */
+  .support-card .filter-row { flex-wrap: wrap; margin-right: 0; padding-right: 0; overflow-x: visible; }
 }
+.support-grid > * { min-width: 0; }
 
 /* Lesson visuals */
 .page-hero--visual { min-height: 420px; padding: 64px 0; position: relative; display: flex; align-items: flex-end; overflow: hidden; border-bottom: 0; color: #f8faf6; background: #0d3a2e; isolation: isolate; }
