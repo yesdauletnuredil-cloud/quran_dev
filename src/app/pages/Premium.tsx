@@ -52,7 +52,8 @@ export default function Premium() {
     }
     return (
       <Button full icon="arrow" loading={loading === id} onClick={() => subscribeNow(id)} variant={variant}>
-        {!authed ? t(`Тіркеліп, ${name} алу`, `Зарегистрироваться и оформить ${name}`) : current ? t(`${name} тарифіне ауысу`, `Перейти на ${name}`) : t(`${name} рәсімдеу`, `Оформить ${name}`)}
+        {/* Guests: the note under the cards says registration comes first, so the label stays one line. */}
+        {authed && current ? t(`${name} тарифіне ауысу`, `Перейти на ${name}`) : t(`${name} рәсімдеу`, `Оформить ${name}`)}
       </Button>
     );
   };

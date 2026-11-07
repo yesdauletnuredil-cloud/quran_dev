@@ -667,6 +667,8 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .pricing-grid--tiers .price-card:has(.tier-option:focus-visible) { outline: 3px solid rgba(217, 119, 6, .45); outline-offset: 3px; }
 .tier-action { margin-top: 24px; }
 .tier-note { margin: 20px 0 0; color: var(--muted); font-size: 14px; }
+/* Selection without layout shift: keep the 1px border and add the second pixel inside (original rule grows the border to 2px) */
+.pricing-grid--tiers .price-card.selected { border-width: 1px; border-color: var(--primary); box-shadow: inset 0 0 0 1px var(--primary); }
 /* Contrast in the new tier blocks only; the original .recommend-label and .dash rules stay untouched.
    Badge: same amber, dark text (5.22:1 instead of white 3.19:1). Dash: muted ink, 2px (3:1+ for a meaningful mark). */
 .pricing-grid--tiers .recommend-label, .tier-preview-card .recommend-label { color: #1c1f1d; }
@@ -683,15 +685,6 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .promo-row .input { flex: 1; min-width: 0; letter-spacing: .06em; text-transform: uppercase; }
 .promo-row .input::placeholder { letter-spacing: .06em; }
 .promo-success { margin: 4px 0 0 !important; padding: 12px 14px; border-radius: var(--radius-sm); display: flex; gap: 10px; align-items: center; color: var(--primary) !important; background: var(--surface-soft); font-size: 14px !important; }
-.tier-name { font-size: 40px !important; letter-spacing: -.04em; }
-.tier-features { margin-bottom: 24px; }
-.panel--green .check-list .icon { color: #e6a34c; }
-.profile-stats { margin: 16px 0; display: grid; grid-template-columns: 1fr; gap: 16px; }
-.profile-stats .panel { display: grid; gap: 4px; }
-.profile-stats strong { font-size: 34px; font-weight: 400; letter-spacing: -.03em; }
-.profile-stats span { color: var(--muted); font-size: 13px; }
-.profile-stats strong small { color: var(--muted); font-size: 18px; letter-spacing: 0; }
-.profile-stats .progress { margin: 8px 0 0; display: block; }
 .detail-main > .panel + .panel { margin-top: 16px; }
 /* Profile: progress first, tier as one line, ustaz block in the main column */
 .profile-main > * + .panel, .profile-main > * + .ustaz-callout { margin-top: 16px; }
@@ -711,7 +704,8 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .tier-row-main b { color: var(--text); font-size: 15px; font-weight: 500; }
 .tier-row-meta { color: var(--muted); font-size: 13px; }
 .tier-row-actions { display: flex; gap: 10px 18px; align-items: center; flex-wrap: wrap; }
-.tier-row-link { color: var(--accent-text); font-size: 14px; text-decoration: underline; text-underline-offset: 3px; }
+.tier-row-link { padding: 10px 0; margin: -10px 0; color: var(--accent-text); font-size: 14px; text-decoration: underline; text-underline-offset: 3px; }
+.tier-row-link:hover { color: var(--text); }
 .profile-ustaz { display: flex; gap: 16px 24px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
 .profile-ustaz > div { flex: 1 1 260px; min-width: 0; }
 .profile-ustaz p { margin: 0 !important; }
@@ -720,6 +714,7 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .disclosure-button { min-height: 40px; margin: 0; padding: 0; border: 0; display: flex; gap: 8px; align-items: center; color: var(--text); background: none; font: inherit; font-size: 15px; cursor: pointer; }
 .disclosure-button .icon { transform: rotate(90deg); transition: transform .2s; }
 .disclosure-button[aria-expanded="true"] .icon { transform: rotate(-90deg); }
+.disclosure-button:hover { text-decoration: underline; text-underline-offset: 3px; }
 .promo-more { padding: 8px 0 14px; }
 .requisites-fold { margin-top: 12px; }
 .requisites-fold .requisites { margin-top: 4px; }
@@ -758,7 +753,6 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
   .compare--tiers[data-active="plus"] [data-col]:not([data-col="plus"]),
   .compare--tiers[data-active="premium"] [data-col]:not([data-col="premium"]) { display: none; }
   .promo-row { flex-direction: column; }
-  .profile-stats { grid-template-columns: 1fr; }
   /* Support cards: a form choice, not a filter strip — every option stays visible, so wrap
      instead of the shared single-line scroll that pushed the card past the screen edge. */
   .support-card .filter-row { flex-wrap: wrap; margin-right: 0; padding-right: 0; overflow-x: visible; }
@@ -920,7 +914,7 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .video-controls button { width: 36px; height: 36px; flex: none; padding: 0; border: 0; border-radius: 50%; display: grid; place-items: center; color: #f8faf6; background: transparent; cursor: pointer; transition: background .2s; }
 .video-controls button:hover { background: rgba(255, 255, 255, .14); }
 .video-time { flex: none; color: #d3e0da; font-size: 13px; font-variant-numeric: tabular-nums; }
-.video-progress { --p: 0%; flex: 1; min-width: 0; height: 4px; margin: 0 6px; border-radius: 99px; appearance: none; background: linear-gradient(to right, #e6a34c var(--p), rgba(255, 255, 255, .3) var(--p)); cursor: pointer; }
+.video-progress { --p: 0%; flex: 1; min-width: 0; height: 24px; margin: 0 6px; border-radius: 99px; appearance: none; background: linear-gradient(to right, #e6a34c var(--p), rgba(255, 255, 255, .3) var(--p)) center / 100% 4px no-repeat; cursor: pointer; }
 .video-progress::-webkit-slider-thumb { width: 14px; height: 14px; border-radius: 50%; appearance: none; background: #f8faf6; box-shadow: 0 0 0 3px rgba(230, 163, 76, .45); }
 .video-progress::-moz-range-thumb { width: 14px; height: 14px; border: 0; border-radius: 50%; background: #f8faf6; }
 @media (max-width: 620px) {
@@ -928,7 +922,7 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
   .video-badge { left: 12px; top: 12px; padding: 4px 10px; font-size: 10px; }
   .video-play { width: 60px; height: 60px; }
   .video-controls { padding: 6px 8px; gap: 4px; }
-  .video-controls button { width: 32px; height: 32px; }
+  .video-controls button { width: 40px; height: 40px; }
   .video-controls button[aria-pressed] { display: none; }
   .video-time { font-size: 11px; }
 }
@@ -1024,6 +1018,8 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .destinations--4 .destination h3 { margin: 56px 0 12px; }
 .destinations--4 .destination-links { margin-top: auto; }
 @media (max-width: 620px) { .destinations--4 .destination h3 { margin-top: 28px; } }
+/* Bigger tap area for the small text links in the home benefits block; looks the same */
+.destinations--4 .destination-cta { padding: 10px 0; margin: -10px 0; }
 @media (max-width: 620px) { .access-heading .button { margin-top: 20px; } }
 
 /* Tier status tokens (Plus / Premium badges and avatar pip); dark theme overrides below */
