@@ -660,6 +660,13 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .pricing-grid--tiers .price-card { min-height: 0; display: flex; flex-direction: column; justify-content: flex-start; }
 .pricing-grid--tiers .price-card ul { min-height: 0; margin: 24px 0 0; padding-top: 16px; border-top: 1px solid var(--line); }
 .pricing-grid--tiers .price-card li { font-size: 13px; line-height: 1.4; }
+/* Tier card is a frame: the radio (.tier-option) and the action button are siblings inside it */
+.tier-option { flex: 1; display: flex; flex-direction: column; }
+.tier-option:focus-visible { outline: none; }
+/* Same ring as the site's buttons, drawn on the whole card like before */
+.pricing-grid--tiers .price-card:has(.tier-option:focus-visible) { outline: 3px solid rgba(217, 119, 6, .45); outline-offset: 3px; }
+.tier-action { margin-top: 24px; }
+.tier-note { margin: 20px 0 0; color: var(--muted); font-size: 14px; }
 .compare-tabs { display: none; }
 .compare--tiers .compare-head, .compare--tiers .compare-row { grid-template-columns: 1fr repeat(3, 110px); }
 .compare--tiers .compare-head span:last-child { color: var(--accent-text); }
@@ -682,6 +689,40 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .profile-stats strong small { color: var(--muted); font-size: 18px; letter-spacing: 0; }
 .profile-stats .progress { margin: 8px 0 0; display: block; }
 .detail-main > .panel + .panel { margin-top: 16px; }
+/* Profile: progress first, tier as one line, ustaz block in the main column */
+.profile-main > * + .panel, .profile-main > * + .ustaz-callout { margin-top: 16px; }
+.progress-count { margin: 0 0 12px !important; display: flex; align-items: baseline; gap: 4px 12px; flex-wrap: wrap; }
+.progress-count strong { color: var(--text); font-size: 34px; font-weight: 400; letter-spacing: -.03em; line-height: 1.1; }
+.progress-count strong small { color: var(--muted); font-size: 18px; letter-spacing: 0; }
+.progress-count span { color: var(--muted); font-size: 13px; }
+.progress-panel .progress { display: block; margin: 0; }
+.next-lesson { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--line); display: flex; gap: 16px 24px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.next-lesson p { margin: 0 !important; flex: 1 1 260px; min-width: 0; display: grid; gap: 2px; }
+.next-lesson p span { color: var(--muted); font-size: 13px; }
+.next-lesson p b { color: var(--text); font-size: 18px; font-weight: 500; line-height: 1.35; }
+.next-lesson p small { color: var(--muted); font-size: 13px; }
+.tier-row { display: flex; gap: 12px 20px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.tier-row-main { margin: 0 !important; display: flex; gap: 6px 12px; align-items: center; flex-wrap: wrap; }
+.tier-row-label { color: var(--muted); font-size: 13px; }
+.tier-row-main b { color: var(--text); font-size: 15px; font-weight: 500; }
+.tier-row-meta { color: var(--muted); font-size: 13px; }
+.tier-row-actions { display: flex; gap: 10px 18px; align-items: center; flex-wrap: wrap; }
+.tier-row-link { color: var(--accent-text); font-size: 14px; text-decoration: underline; text-underline-offset: 3px; }
+.profile-ustaz { display: flex; gap: 16px 24px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.profile-ustaz > div { flex: 1 1 260px; min-width: 0; }
+.profile-ustaz p { margin: 0 !important; }
+.ustaz-callout--profile { margin-top: 16px; }
+.promo-disclosure { padding-top: 14px; padding-bottom: 14px; }
+.disclosure-button { min-height: 40px; margin: 0; padding: 0; border: 0; display: flex; gap: 8px; align-items: center; color: var(--text); background: none; font: inherit; font-size: 15px; cursor: pointer; }
+.disclosure-button .icon { transform: rotate(90deg); transition: transform .2s; }
+.disclosure-button[aria-expanded="true"] .icon { transform: rotate(-90deg); }
+.promo-more { padding: 8px 0 14px; }
+.empty-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+@media (prefers-reduced-motion: reduce) { .disclosure-button .icon { transition: none; } }
+@media (max-width: 620px) {
+  .next-lesson .button, .profile-ustaz .button, .tier-row-actions .button { width: 100%; }
+  .tier-row-actions { width: 100%; }
+}
 .support-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: start; }
 .support-card { display: flex; flex-direction: column; }
 .support-card .filter-row { margin-bottom: 18px; }
@@ -814,22 +855,26 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
   .ustaz-callout .button { width: 100%; }
 }
 
-/* Quick consultation with on-duty ustaz */
-.quick-consult { margin-top: 64px; padding: 40px; border: 1px solid var(--line); border-radius: var(--radius-lg); display: grid; grid-template-columns: 1fr 1fr; gap: 24px 48px; background: var(--surface); }
-.quick-info h2 { margin: 0 0 16px; font-size: clamp(26px, 3vw, 36px); font-weight: 400; line-height: 1.15; letter-spacing: -.035em; }
-.quick-info > p:not(.eyebrow) { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.7; }
-.quick-info > p.quick-hours { margin-top: 20px; display: flex; gap: 10px; align-items: center; color: var(--text); font-size: 14px; }
+/* Quick consultation with on-duty ustaz (Plus / Premium): a secondary row under the request form */
+.quick-row { margin-top: 16px; padding: 22px 28px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); }
+.quick-row-head { display: flex; gap: 16px 24px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.quick-row-head > div { flex: 1 1 280px; min-width: 0; }
+.quick-row h2 { margin: 0 0 4px; font-size: 19px; font-weight: 400; letter-spacing: -.02em; }
+.quick-row-head p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
+.quick-row-head p.quick-hours { margin-top: 6px; display: flex; gap: 8px; align-items: center; color: var(--text); font-size: 13px; }
 .quick-hours .icon { color: var(--primary); }
+.quick-toggle .icon { transform: rotate(90deg); transition: transform .2s; }
+.quick-toggle[aria-expanded="true"] .icon { transform: rotate(-90deg); }
+.quick-form { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--line); }
 .quick-form .method-field { margin-bottom: 16px; }
 .quick-form .field { margin-bottom: 20px; }
 .optional { color: var(--muted); font-weight: 400; }
 .quick-contact { margin: 12px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; text-align: center; }
-.quick-disclaimer { grid-column: 1 / -1; margin: 0; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; line-height: 1.6; }
-@media (max-width: 900px) {
-  .quick-consult { grid-template-columns: 1fr; }
-}
+.emergency-note { margin: 16px 0 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+@media (prefers-reduced-motion: reduce) { .quick-toggle .icon { transition: none; } }
 @media (max-width: 620px) {
-  .quick-consult { margin-top: 48px; padding: 26px 20px; border-radius: var(--radius-md); }
+  .quick-row { padding: 20px; }
+  .quick-toggle { width: 100%; }
   .quick-form .method-grid { grid-template-columns: 1fr 1fr; }
 }
 

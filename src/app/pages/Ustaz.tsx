@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useApp } from "../context";
-import EmergencyContact from "../emergency";
+import EmergencyContact, { EmergencyNote } from "../emergency";
 import { type Tier } from "../data";
 import { Button, Icon, PageHero, type IconName } from "../ui";
 
@@ -75,7 +75,7 @@ function RequestForm({ tier }: { tier: Tier }) {
         <label htmlFor="u-time">{t("Ыңғайлы уақыт", "Удобное время")}</label>
         <select className="input select" id="u-time" onChange={(e) => setTime(e.target.value)} value={time}>{times.map((x) => <option key={x}>{x}</option>)}</select>
       </div>
-      <Button loading={loading} type="submit">{t("Сұраныс жіберу", "Отправить запрос")}</Button>
+      <Button full loading={loading} type="submit">{t("Сұраныс жіберу", "Отправить запрос")}</Button>
     </form>
   );
 }
@@ -102,16 +102,24 @@ export default function Ustaz() {
           <div className="detail-main">
             <h2 className="list-heading">{t("Қалай жұмыс істейді", "Как это работает")}</h2>
             <ol className="ustaz-steps">{steps.map((s, i) => <li key={s}><span>0{i + 1}</span>{s}</li>)}</ol>
-            {tier === "plus" || tier === "premium" ? <RequestForm tier={tier} /> : (
+            {tier === "plus" || tier === "premium" ? (
+              <>
+                <RequestForm tier={tier} />
+                {/* Urgent contact is part of Plus/Premium (product decision 2026-11-05): secondary to the paid form. */}
+                <EmergencyContact tier={tier} />
+              </>
+            ) : (
               <div className="panel panel--green lock-panel">
                 <Icon name="lock" size={28} />
                 <h3>{t("Plus және Premium тарифтерінде қолжетімді", "Доступно на тарифах Plus и Premium")}</h3>
                 <p>{t("Plus — Ұстазға жазбаша сұрақ. Premium — қосымша қоңырау не бейне консультация.", "Plus — письменные вопросы Ұстазу. Premium — дополнительно звонок или видеоконсультация.")}</p>
+                <p>{t("Екі тарифте де кезекші Ұстазбен жедел байланыс бар.", "На обоих тарифах есть срочная связь с дежурным Ұстазом.")}</p>
                 <div className="lock-actions">
                   <Button icon="arrow" to={authed ? "/premium" : "/login?next=/ustaz"} variant="light">{authed ? t("Тарифтерді көру", "Посмотреть тарифы") : t("Кіру", "Войти")}</Button>
                 </div>
               </div>
             )}
+            <EmergencyNote />
           </div>
           <aside className="detail-aside">
             <div className="panel ustaz-card">
@@ -124,9 +132,6 @@ export default function Ustaz() {
               </ul>
             </div>
           </aside>
-        </div>
-        <div className="container">
-          <EmergencyContact />
         </div>
       </section>
     </>

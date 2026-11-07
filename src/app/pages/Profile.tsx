@@ -1,8 +1,9 @@
 import { useState } from "react";
+import { Link } from "react-router";
 import { useApp } from "../context";
-import { getAchievements, getTier, totalLessons, type Achievement } from "../data";
+import { getAchievements, getTier, isPaidTier, nextLesson, totalLessons, type Achievement } from "../data";
 import { StoryModal } from "../share";
-import { Button, EmptyState, Icon, PageHero, PromoField, TierBadge, tierHighlightLines } from "../ui";
+import { Button, EmptyState, Icon, PageHero, PromoField, TierBadge } from "../ui";
 import { getVisual } from "../visuals";
 
 function Achievements() {
@@ -42,17 +43,85 @@ function Achievements() {
   );
 }
 
+/** First block of the profile: progress and the real next lesson (see nextLesson in data.ts). */
+function ProgressPanel() {
+  const { t, done, premium } = useApp();
+  const next = nextLesson(done, premium);
+  const started = done.length > 0;
+  return (
+    <section aria-labelledby="progress-title" className="panel progress-panel">
+      <h2 className="sr-only" id="progress-title">{t("Оқу барысы", "Прогресс обучения")}</h2>
+      <p className="progress-count"><strong>{done.length}<small> / {totalLessons}</small></strong><span>{t("сабақ аяқталды", "уроков пройдено")}</span></p>
+      <span aria-hidden="true" className="progress"><i style={{ width: `${(done.length / totalLessons) * 100}%` }} /></span>
+      <div className="next-lesson">
+        {next ? (
+          <>
+            <p>
+              <span>{started ? t("Келесі сабақ", "Следующий урок") : t("Алғашқы сабақтан бастаңыз", "Начните с первого урока")}</span>
+              <b>{next.title}</b>
+              <small>{next.topic.title} · {t("Сабақ", "Урок")} {next.index + 1}</small>
+            </p>
+            <Button icon="arrow" to={next.url}>{started ? t("Жалғастыру", "Продолжить") : t("Бастау", "Начать")}</Button>
+          </>
+        ) : premium ? (
+          <>
+            <p><b>{t("Барлық сабақ аяқталды", "Все уроки пройдены")}</b></p>
+            <Button icon="arrow" to="/quran" variant="secondary">{t("Сабақтар тізімі", "К списку уроков")}</Button>
+          </>
+        ) : (
+          <>
+            <p>
+              <b>{t("Тегін сабақтар аяқталды", "Бесплатные уроки пройдены")}</b>
+              <small>{t("Қалғандары Plus және Premium тарифтерінде ашылады.", "Остальные открываются на тарифах Plus и Premium.")}</small>
+            </p>
+            <Button icon="arrow" to="/premium" variant="secondary">{t("Тарифтерді көру", "Посмотреть тарифы")}</Button>
+          </>
+        )}
+      </div>
+    </section>
+  );
+}
+
+/** Promo field for subscribers: folded behind a link, it is rarely needed once a tier is active. */
+function PromoDisclosure() {
+  const { t } = useApp();
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="panel promo-disclosure">
+      <button aria-controls="promo-more" aria-expanded={open} className="disclosure-button" onClick={() => setOpen(!open)} type="button">
+        {t("Промокодыңыз бар ма?", "Есть промокод?")}<Icon name="chevron" size={16} />
+      </button>
+      {open && (
+        <div className="promo-more" id="promo-more">
+          <p>{t("Демеушіден немесе грант бағдарламасынан код алсаңыз, осында енгізіңіз.", "Если вы получили код от спонсора или грантовой программы, введите его здесь.")}</p>
+          <PromoField id="promo-profile" />
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Profile() {
-  const { t, lang, authed, subscription, tier: tierId, done, formatDate, logout } = useApp();
+  const { t, authed, subscription, tier: tierId, formatDate, logout } = useApp();
   const crumbs = [{ label: t("Басты бет", "Главная"), to: "/" }, { label: t("Профиль", "Профиль") }];
 
   if (!authed) {
+    const first = nextLesson([], false)!;
     return (
       <>
         <PageHero crumbs={crumbs} eyebrow={t("ЖЕКЕ КАБИНЕТ", "ЛИЧНЫЙ КАБИНЕТ")} title={t("Профиль", "Профиль")} />
         <section className="page-section">
           <div className="container">
-            <EmptyState action={<Button to="/login?next=/profile">{t("Кіру", "Войти")}</Button>} text={t("Тариф пен прогресті көру үшін аккаунтқа кіріңіз.", "Войдите, чтобы увидеть тариф и прогресс.")} title={t("Аккаунтқа кіріңіз", "Войдите в аккаунт")} />
+            <EmptyState
+              action={(
+                <div className="empty-actions">
+                  <Button to="/login?next=/profile">{t("Кіру", "Войти")}</Button>
+                  <Button icon="arrow" to={first.url} variant="secondary">{t("Алғашқы сабақтан бастау", "Начать с первого урока")}</Button>
+                </div>
+              )}
+              text={t("Тариф пен прогресті көру үшін аккаунтқа кіріңіз.", "Войдите, чтобы увидеть тариф и прогресс.")}
+              title={t("Аккаунтқа кіріңіз", "Войдите в аккаунт")}
+            />
           </div>
         </section>
       </>
@@ -60,47 +129,57 @@ export default function Profile() {
   }
 
   const tier = getTier(tierId);
-  // Short summary only; the full comparison lives on /premium.
-  const features = tier ? tierHighlightLines(tier.id, t, lang, 3) : [];
+  const paid = isPaidTier(tier?.id);
 
   return (
     <>
       <PageHero crumbs={crumbs} eyebrow={t("ЖЕКЕ КАБИНЕТ", "ЛИЧНЫЙ КАБИНЕТ")} title={t("Профиль", "Профиль")} />
       <section className="page-section">
         <div className="container detail-layout">
-          <div className="detail-main">
-            <div className={`panel tier-panel ${subscription ? "panel--green" : ""}`}>
-              <p className="eyebrow">{t("ТАРИФ", "ТАРИФ")}</p>
-              <h3 className="tier-name">{tier?.name}</h3>
-              {subscription ? (
-                <p>
-                  {subscription.source === "grant" ? t("Грант промокоды арқылы", "По грантовому промокоду") : t("Жазылым", "Подписка")}
-                  {" · "}
-                  {t(`${formatDate(subscription.until)} дейін`, `до ${formatDate(subscription.until)}`)}
-                </p>
-              ) : (
-                <p>{t("Тіркелген әр пайдаланушыға тегін ашық.", "Бесплатно открыт каждому зарегистрированному пользователю.")}</p>
-              )}
-              {features.length > 0 && (
-                <ul className="check-list tier-features">
-                  {features.map((f) => <li key={f}><Icon name="check" size={18} />{f}</li>)}
-                </ul>
-              )}
-              <Button icon="arrow" to="/premium" variant={subscription ? "light" : "primary"}>{subscription ? t("Тарифті өзгерту", "Изменить тариф") : t("Plus не Premium-ға өту", "Перейти на Plus или Premium")}</Button>
-            </div>
-            <div className="profile-stats">
-              <div className="panel">
-                <strong>{done.length}<small> / {totalLessons}</small></strong>
-                <span>{t("сабақ аяқталды", "уроков пройдено")}</span>
-                <span aria-hidden="true" className="progress"><i style={{ width: `${(done.length / totalLessons) * 100}%` }} /></span>
+          <div className="detail-main profile-main">
+            <ProgressPanel />
+            {/* Tier as one line; what each tier includes lives on /premium. */}
+            <div className="panel tier-row">
+              <p className="tier-row-main">
+                <span className="tier-row-label">{t("Тариф", "Тариф")}</span>
+                {paid ? <TierBadge tier={tier?.id} /> : <b>{tier?.name}</b>}
+                <span className="tier-row-meta">
+                  {subscription
+                    ? `${subscription.source === "grant" ? t("Грант промокоды арқылы", "По грантовому промокоду") : t("Жазылым", "Подписка")} · ${t(`${formatDate(subscription.until)} дейін`, `до ${formatDate(subscription.until)}`)}`
+                    : t("Тіркелген әр пайдаланушыға тегін", "Бесплатно для каждого зарегистрированного")}
+                </span>
+              </p>
+              <div className="tier-row-actions">
+                <Link className="tier-row-link" to="/premium">{t("Тарифке не кіреді", "Что входит в тариф")}</Link>
+                {!paid && <Button icon="arrow" size="sm" to="/premium">{t("Plus не Premium-ға өту", "Перейти на Plus или Premium")}</Button>}
               </div>
             </div>
+            {paid ? (
+              <div className="panel panel--green profile-ustaz">
+                <div>
+                  <h3>{t("Сіздің Ұстазыңыз", "Ваш Ұстаз")}</h3>
+                  <p>{tier?.id === "premium" ? t("Жазбаша сұрақтар, қоңырау не бейне консультация.", "Письменные вопросы, звонок или видеоконсультация.") : t("Ұстазға жеке жазбаша сұрақ қоя аласыз.", "Вы можете задавать Ұстазу личные письменные вопросы.")}</p>
+                </div>
+                <Button icon="arrow" size="sm" to="/ustaz" variant="light">{t("Ұстазбен байланыс", "Связь с Ұстазом")}</Button>
+              </div>
+            ) : (
+              <div className="ustaz-callout ustaz-callout--profile">
+                <span className="ustaz-callout-icon"><Icon name="lock" size={20} /></span>
+                <div>
+                  <h3>{t("Ұстаз", "Ұстаз")}</h3>
+                  <p>{t("Ұстазға жеке сұрақтар және кезекші Ұстазбен жедел байланыс — Plus және Premium тарифтерінде.", "Личные вопросы Ұстазу и срочная связь с дежурным — на тарифах Plus и Premium.")}</p>
+                </div>
+                <Button icon="arrow" size="sm" to="/ustaz" variant="secondary">{t("Қалай жұмыс істейді", "Как это работает")}</Button>
+              </div>
+            )}
             <Achievements />
-            <div className="panel">
-              <h3>{t("Грант промокоды", "Грантовый промокод")}</h3>
-              <p>{t("Демеушіден немесе грант бағдарламасынан код алсаңыз, осында енгізіңіз.", "Если вы получили код от спонсора или грантовой программы, введите его здесь.")}</p>
-              <PromoField id="promo-profile" />
-            </div>
+            {paid ? <PromoDisclosure /> : (
+              <div className="panel">
+                <h3>{t("Грант промокоды", "Грантовый промокод")}</h3>
+                <p>{t("Демеушіден немесе грант бағдарламасынан код алсаңыз, осында енгізіңіз.", "Если вы получили код от спонсора или грантовой программы, введите его здесь.")}</p>
+                <PromoField id="promo-profile" />
+              </div>
+            )}
           </div>
           <aside className="detail-aside">
             <div className="panel">
@@ -108,13 +187,6 @@ export default function Profile() {
               <p>[email@example.com]</p>
               <Button full onClick={logout} size="sm" variant="secondary">{t("Шығу", "Выйти")}</Button>
             </div>
-            {(tier?.id === "plus" || tier?.id === "premium") && (
-              <div className="panel panel--green">
-                <h3>{t("Сіздің Ұстазыңыз", "Ваш Ұстаз")}</h3>
-                <p>{tier.id === "premium" ? t("Жазбаша сұрақтар, қоңырау не бейне консультация.", "Письменные вопросы, звонок или видеоконсультация.") : t("Ұстазға жеке жазбаша сұрақ қоя аласыз.", "Вы можете задавать Ұстазу личные письменные вопросы.")}</p>
-                <Button full icon="arrow" size="sm" to="/ustaz" variant="light">{t("Ұстазбен байланыс", "Связь с Ұстазом")}</Button>
-              </div>
-            )}
             <div className="panel">
               <h3>{t("Жобаны қолдау", "Поддержать проект")}</h3>
               <p>{t("Басқа оқушының оқуына демеуші болыңыз немесе жобаның дамуына үлес қосыңыз.", "Станьте спонсором другого ученика или внесите вклад в развитие проекта.")}</p>

@@ -19,6 +19,11 @@ export const emergencyContacts = {
   telegram: "quranacademy_help",
   /** Hours when the line is staffed */
   hours: { kz: "[Күн сайын 09:00–21:00]", ru: "[Ежедневно 09:00–21:00]" },
+  /**
+   * Typical reply time of the on-duty ustaz, e.g. { kz: "30 минут", ru: "30 минут" }.
+   * Leave undefined until the client confirms it: the "usually replies within …" line is then hidden.
+   */
+  responseTime: undefined as { kz: string; ru: string } | undefined,
 };
 
 export const whatsappUrl = (text?: string) => `https://wa.me/${emergencyContacts.whatsapp}${text ? `?text=${encodeURIComponent(text)}` : ""}`;

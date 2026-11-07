@@ -9,29 +9,53 @@ export default function Premium() {
   const navigate = useNavigate();
   // ?tier=plus preselects a tier (links from the home tier preview); unknown values are ignored.
   const linked = useSearchParams()[0].get("tier");
-  const [selected, setSelected] = useState<Tier>(tiers.find((x) => x.id === linked)?.id ?? subscription?.tier ?? "plus");
-  const [mobileTier, setMobileTier] = useState<Tier>("premium");
-  const [loading, setLoading] = useState(false);
+  const initial = tiers.find((x) => x.id === linked)?.id ?? subscription?.tier ?? "plus";
+  const [selected, setSelected] = useState<Tier>(initial);
+  // Mobile comparison tab opens on the selected tier and follows the selection; it can still be switched by hand.
+  const [mobileTier, setMobileTier] = useState<Tier>(initial);
+  const [loading, setLoading] = useState<Tier | null>(null);
   const current = tier;
-  const selectedName = getTier(selected)!.name;
+  const choose = (id: Tier) => { setSelected(id); setMobileTier(id); };
 
-  // Radio group keyboard pattern: arrows move and select, Home/End jump; only the selected card is a Tab stop.
+  // Radio group keyboard pattern on the tier options only (not on the action buttons between them):
+  // arrows move and select, Home/End jump, Space/Enter select; only the selected option is a Tab stop.
   const onTierKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    if (target.getAttribute("role") !== "radio") return;
+    if (e.key === " " || e.key === "Enter") { e.preventDefault(); choose(target.dataset.tier as Tier); return; }
     const ids = tiers.map((x) => x.id);
     const i = ids.indexOf(selected);
     const next = { ArrowRight: i + 1, ArrowDown: i + 1, ArrowLeft: i - 1, ArrowUp: i - 1, Home: 0, End: ids.length - 1 }[e.key];
     if (next === undefined) return;
     e.preventDefault();
     const id = ids[(next + ids.length) % ids.length];
-    setSelected(id);
-    e.currentTarget.querySelector<HTMLElement>(`[data-tier="${id}"]`)?.focus();
+    choose(id);
+    e.currentTarget.querySelector<HTMLElement>(`[role="radio"][data-tier="${id}"]`)?.focus();
   };
 
-  const subscribeNow = () => requireAuth(() => {
-    setLoading(true);
-    window.setTimeout(() => { setLoading(false); subscribe(selected); notify(t(`${selectedName} іске қосылды`, `${selectedName} активирован`)); navigate("/profile"); }, 900);
+  const subscribeNow = (id: Tier) => requireAuth(() => {
+    const name = getTier(id)!.name;
+    setLoading(id);
+    window.setTimeout(() => { setLoading(null); subscribe(id); notify(t(`${name} іске қосылды`, `${name} активирован`)); navigate("/profile"); }, 900);
   });
   const backToBasic = () => { subscribe("basic"); notify(t("Жазылым тоқтатылды. Сіз Basic тарифіндесіз.", "Подписка отменена. Вы на тарифе Basic.")); };
+
+  // Each card's own action — the same labels the single button under the cards used to have.
+  const action = (id: Tier) => {
+    const name = getTier(id)!.name;
+    const variant = selected === id ? "primary" : "secondary";
+    if (current === id) return <Button full icon="arrow" to="/academy" variant={variant}>{t("Курстарға өту", "Перейти к курсам")}</Button>;
+    if (id === "basic") {
+      return authed
+        ? <Button full onClick={backToBasic} variant={variant}>{t("Basic-ке оралу", "Вернуться на Basic")}</Button>
+        : <Button full icon="arrow" to="/login?mode=register" variant={variant}>{t("Тегін тіркелу", "Зарегистрироваться бесплатно")}</Button>;
+    }
+    return (
+      <Button full icon="arrow" loading={loading === id} onClick={() => subscribeNow(id)} variant={variant}>
+        {!authed ? t(`Тіркеліп, ${name} алу`, `Зарегистрироваться и оформить ${name}`) : current ? t(`${name} тарифіне ауысу`, `Перейти на ${name}`) : t(`${name} рәсімдеу`, `Оформить ${name}`)}
+      </Button>
+    );
+  };
 
   return (
     <>
@@ -48,47 +72,38 @@ export default function Premium() {
             {tiers.map((p) => {
               const on = selected === p.id;
               return (
-                <button
-                  aria-checked={on}
-                  aria-describedby={`tier-${p.id}-desc tier-${p.id}-list`}
-                  aria-label={[
-                    p.name,
-                    p.price ? `${tierPrice(p.price, t)} ${t("айына", "в месяц")}` : tierPrice(p.price, t),
-                    p.id === "plus" && t("ұсынылады", "рекомендуем"),
-                    current === p.id && t("ағымдағы тариф", "текущий тариф"),
-                  ].filter(Boolean).join(", ")}
-                  className={`price-card ${on ? "selected" : ""} ${p.id === "plus" ? "recommended" : ""}`}
-                  data-tier={p.id}
-                  key={p.id}
-                  onClick={() => setSelected(p.id)}
-                  role="radio"
-                  tabIndex={on ? 0 : -1}
-                  type="button"
-                >
-                  {p.id === "plus" && <span className="recommend-label">{t("ҰСЫНЫЛАДЫ", "РЕКОМЕНДУЕМ")}</span>}
-                  <div className="price-check">{current === p.id ? <span className="badge badge--free">{t("Ағымдағы", "Текущий")}</span> : on && <Icon name="check" />}</div>
-                  <h3>{p.name}</h3>
-                  <p className="price">{tierPrice(p.price, t)}</p>
-                  <p className="price-per">{p.price ? `/ ${t("ай", "мес")} · ` : ""}<span id={`tier-${p.id}-desc`}>{p.desc[lang]}</span></p>
-                  <ul id={`tier-${p.id}-list`}>
-                    {tierHighlightLines(p.id, t, lang).map((l) => <li key={l}><Icon name="check" size={16} />{l}</li>)}
-                  </ul>
-                </button>
+                // The card is a frame: the radio (tier info) and the action button are siblings, never nested.
+                // A click anywhere on the frame selects the tier; the button also runs its action.
+                <div className={`price-card ${on ? "selected" : ""} ${p.id === "plus" ? "recommended" : ""}`} key={p.id} onClick={() => choose(p.id)}>
+                  <div
+                    aria-checked={on}
+                    aria-describedby={`tier-${p.id}-desc tier-${p.id}-list`}
+                    aria-label={[
+                      p.name,
+                      p.price ? `${tierPrice(p.price, t)} ${t("айына", "в месяц")}` : tierPrice(p.price, t),
+                      p.id === "plus" && t("ұсынылады", "рекомендуем"),
+                      current === p.id && t("ағымдағы тариф", "текущий тариф"),
+                    ].filter(Boolean).join(", ")}
+                    className="tier-option"
+                    data-tier={p.id}
+                    role="radio"
+                    tabIndex={on ? 0 : -1}
+                  >
+                    {p.id === "plus" && <span className="recommend-label">{t("ҰСЫНЫЛАДЫ", "РЕКОМЕНДУЕМ")}</span>}
+                    <div className="price-check">{current === p.id ? <span className="badge badge--free">{t("Ағымдағы", "Текущий")}</span> : on && <Icon name="check" />}</div>
+                    <h3>{p.name}</h3>
+                    <p className="price">{tierPrice(p.price, t)}</p>
+                    <p className="price-per">{p.price ? `/ ${t("ай", "мес")} · ` : ""}<span id={`tier-${p.id}-desc`}>{p.desc[lang]}</span></p>
+                    <ul id={`tier-${p.id}-list`}>
+                      {tierHighlightLines(p.id, t, lang).map((l) => <li key={l}><Icon name="check" size={16} />{l}</li>)}
+                    </ul>
+                  </div>
+                  <div className="tier-action">{action(p.id)}</div>
+                </div>
               );
             })}
           </div>
-          <div className="subscribe-bar">
-            <p>{selected === "basic" ? t("Basic тегін: тіркелген әр пайдаланушыда бар.", "Basic бесплатен: он есть у каждого зарегистрированного пользователя.") : authed ? t("Төлем демо-режимде: нақты ақша алынбайды.", "Оплата в демо-режиме: деньги не списываются.") : t("Аккаунт жоқ болса, тіркелуге бағыттаймыз.", "Если аккаунта нет, предложим зарегистрироваться.")}</p>
-            {current === selected
-              ? <Button icon="arrow" to="/academy">{t("Курстарға өту", "Перейти к курсам")}</Button>
-              : selected === "basic"
-                ? authed
-                  ? <Button onClick={backToBasic} variant="secondary">{t("Basic-ке оралу", "Вернуться на Basic")}</Button>
-                  : <Button icon="arrow" to="/login?mode=register">{t("Тегін тіркелу", "Зарегистрироваться бесплатно")}</Button>
-              : <Button icon="arrow" loading={loading} onClick={subscribeNow}>
-                  {!authed ? t(`Тіркеліп, ${selectedName} алу`, `Зарегистрироваться и оформить ${selectedName}`) : current ? t(`${selectedName} тарифіне ауысу`, `Перейти на ${selectedName}`) : t(`${selectedName} рәсімдеу`, `Оформить ${selectedName}`)}
-                </Button>}
-          </div>
+          <p className="tier-note">{selected === "basic" ? t("Basic тегін: тіркелген әр пайдаланушыда бар.", "Basic бесплатен: он есть у каждого зарегистрированного пользователя.") : authed ? t("Төлем демо-режимде: нақты ақша алынбайды.", "Оплата в демо-режиме: деньги не списываются.") : t("Аккаунт жоқ болса, тіркелуге бағыттаймыз.", "Если аккаунта нет, предложим зарегистрироваться.")}</p>
         </div>
       </section>
       <section className="page-section section-tint">

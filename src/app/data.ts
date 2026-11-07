@@ -30,6 +30,23 @@ export const totalLessons = topics.reduce((n, x) => n + x.lessons.length, 0);
 export const lessonMinutes = (index: number) => 12 + (index % 4) * 4;
 export const getTopic = (slug?: string) => topics.find((t) => t.slug === slug);
 
+export interface LessonRef { topic: Topic; index: number; title: string; key: string; url: string }
+/**
+ * "Continue" target for the profile. Lessons are ordered as in `topics` (topic by topic, 1..n).
+ * Starts after the last lesson marked done and returns the first lesson that is not done and
+ * is open for the user (Basic: index < freeCount, the same rule as the lesson page), wrapping
+ * around so earlier gaps are found too. No progress → the very first lesson. Null when every
+ * available lesson is done.
+ */
+export function nextLesson(done: string[], paid: boolean): LessonRef | null {
+  const all = topics.flatMap((topic) => topic.lessons.map((title, index) => ({ topic, index, title, key: `${topic.slug}/${index + 1}`, url: `/quran/${topic.slug}/${index + 1}`, open: paid || index < topic.freeCount })));
+  const last = done.length ? all.findIndex((l) => l.key === done[done.length - 1]) : -1;
+  const found = [...all.slice(last + 1), ...all.slice(0, last + 1)].find((l) => l.open && !done.includes(l.key));
+  if (!found) return null;
+  const { open: _open, ...ref } = found;
+  return ref;
+}
+
 export const arabicSamples = [
   "الٓمٓ ۝ ذَٰلِكَ ٱلْكِتَـٰبُ لَا رَيْبَ ۛ فِيهِ",
   "ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَـٰلَمِينَ",
