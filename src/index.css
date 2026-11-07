@@ -667,6 +667,10 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .pricing-grid--tiers .price-card:has(.tier-option:focus-visible) { outline: 3px solid rgba(217, 119, 6, .45); outline-offset: 3px; }
 .tier-action { margin-top: 24px; }
 .tier-note { margin: 20px 0 0; color: var(--muted); font-size: 14px; }
+/* Contrast in the new tier blocks only; the original .recommend-label and .dash rules stay untouched.
+   Badge: same amber, dark text (5.22:1 instead of white 3.19:1). Dash: muted ink, 2px (3:1+ for a meaningful mark). */
+.pricing-grid--tiers .recommend-label, .tier-preview-card .recommend-label { color: #1c1f1d; }
+.compare--tiers .dash { height: 2px; background: var(--muted); }
 .compare-tabs { display: none; }
 .compare--tiers .compare-head, .compare--tiers .compare-row { grid-template-columns: 1fr repeat(3, 110px); }
 .compare--tiers .compare-head span:last-child { color: var(--accent-text); }
