@@ -1,14 +1,26 @@
 import { useState } from "react";
 import { useApp } from "../context";
-import { formatPrice, getTier, tiers, type Tier } from "../data";
+import { formatPrice, getTier, ruPlural, tiers, type Tier } from "../data";
 import { Button, Chips, Icon, PageHero } from "../ui";
 
 // Placeholder requisites — the client will supply real values.
-function Requisites({ rows }: { rows: [string, string][] }) {
-  return (
-    <dl className="requisites">
+// `collapsible`: folded behind "Реквизиты для перевода" where the card already has a pay button.
+function Requisites({ rows, collapsible, id }: { rows: [string, string][]; collapsible?: boolean; id?: string }) {
+  const { t } = useApp();
+  const [open, setOpen] = useState(!collapsible);
+  const list = (
+    <dl className="requisites" hidden={!open} id={id}>
       {rows.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
     </dl>
+  );
+  if (!collapsible) return list;
+  return (
+    <div className="requisites-fold">
+      <button aria-controls={id} aria-expanded={open} className="disclosure-button" onClick={() => setOpen(!open)} type="button">
+        {t("Аударым деректемелері", "Реквизиты для перевода")}<Icon name="chevron" size={16} />
+      </button>
+      {list}
+    </div>
   );
 }
 
@@ -37,11 +49,12 @@ function SponsorCard() {
     <article className="panel support-card">
       <span className="support-num">01</span>
       <h3>{t("Оқушыға демеушілік", "Спонсорство ученика")}</h3>
-      <p>{t("Оқушының оқуын төлеңіз — біз грант промокодын жасаймыз. Оны оқушыға өзіңіз бересіз немесе академия мұқтаж оқушыға табыстайды.", "Оплатите обучение ученика — мы создадим грантовый промокод. Передайте его сами или доверьте академии выбрать нуждающегося ученика.")}</p>
+      <p>{t("Оқушының оқуын төлеңіз — біз грант промокодын жасаймыз, сіз оны оқушыға бересіз.", "Оплатите обучение ученика — мы создадим грантовый промокод, и вы передадите его ученику.")}</p>
       <p className="support-label" id="sponsor-tier-label">{t("Тариф", "Тариф")} · {SPONSOR_MONTHS} {t("ай", "мес.")}</p>
       <Chips items={sponsorTiers.map((x) => x.name)} labelledBy="sponsor-tier-label" onChange={(name) => { setTier(sponsorTiers.find((x) => x.name === name)!.id); setCode(null); }} value={getTier(tier)!.name} />
       <p className="support-label" id="sponsor-count-label">{t("Оқушылар саны", "Количество учеников")}</p>
       <Chips items={["1", "5", "10"]} labelledBy="sponsor-count-label" onChange={(v) => { setCount(v); setCode(null); }} value={count} />
+      <p className="support-label">{t(`Барлығы, ${SPONSOR_MONTHS} ай · ${count} оқушы`, `Итого за ${SPONSOR_MONTHS} мес. · ${count} ${ruPlural(Number(count), ["ученик", "ученика", "учеников"])}`)}</p>
       <p className="price-line">{formatPrice(total)}</p>
       {code ? (
         <div className="promo-code">
@@ -80,8 +93,8 @@ function DevelopmentCard() {
       <Chips items={amounts.map(formatPrice)} labelledBy="donate-amount-label" onChange={setAmount} value={amount} />
       <p className="support-label" id="donate-period-label">{t("Мерзімділік", "Периодичность")}</p>
       <Chips items={[once, each]} labelledBy="donate-period-label" onChange={(v) => setMonthly(v === each)} value={monthly ? each : once} />
-      <Button full loading={loading} onClick={donate}>{t(`${amount} қолдау`, `Поддержать на ${amount}`)}</Button>
-      <Requisites rows={[
+      <Button full loading={loading} onClick={donate}>{monthly ? t(`Ай сайын ${amount} қолдау`, `Поддерживать по ${amount} в месяц`) : t(`${amount} қолдау`, `Поддержать на ${amount}`)}</Button>
+      <Requisites collapsible id="dev-requisites" rows={[
         [t("Алушы", "Получатель"), t("[Ұйым атауы]", "[Название организации]")],
         [t("БСН", "БИН"), "[000000000000]"],
         ["IBAN", "[KZ00 0000 0000 0000 0000]"],

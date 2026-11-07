@@ -721,6 +721,10 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .disclosure-button .icon { transform: rotate(90deg); transition: transform .2s; }
 .disclosure-button[aria-expanded="true"] .icon { transform: rotate(-90deg); }
 .promo-more { padding: 8px 0 14px; }
+.requisites-fold { margin-top: 12px; }
+.requisites-fold .requisites { margin-top: 4px; }
+.requisites-fold .requisites[hidden] { display: none; }
+.requisites-fold .disclosure-button { font-size: 14px; }
 .empty-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
 @media (prefers-reduced-motion: reduce) { .disclosure-button .icon { transition: none; } }
 @media (max-width: 620px) {

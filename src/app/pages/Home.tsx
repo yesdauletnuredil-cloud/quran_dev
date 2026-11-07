@@ -1,15 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { useApp } from "../context";
-import { courses, getTopic, lessonMinutes, questions, tierPrice, tiers, totalLessons } from "../data";
+import { courses, getTopic, lessonMinutes, questions, ruOf, ruPlural, tierPrice, tiers, totalLessons } from "../data";
 import { Button, Icon, tierHighlightLines } from "../ui";
 import { getVisual, visualUrl } from "../visuals";
-
-/** Russian noun form for a number: [1 урок, 2 урока, 5 уроков]. */
-const ruPlural = (n: number, [one, few, many]: [string, string, string]) => {
-  const d = n % 10, h = n % 100;
-  return d === 1 && h !== 11 ? one : d >= 2 && d <= 4 && (h < 12 || h > 14) ? few : many;
-};
 
 // Compact tier cards; same sources as /premium. Paid tiers list "everything from <previous>" + their own new features.
 function TierPreview() {
@@ -36,7 +30,7 @@ function TierPreview() {
 
 // Preview cards for the closing CTA — every value comes from data.ts / app state.
 function CtaCards() {
-  const { t, done } = useApp();
+  const { t, done, authed } = useApp();
   const topic = getTopic("tajweed")!;
   const course = courses.find((c) => c.slug === "tajweed-basics")!;
   const question = questions[0];
@@ -61,10 +55,20 @@ function CtaCards() {
         <strong>{question.title}</strong>
         <small>{question.imam}</small>
       </Link>
-      <Link className="panel cta-card cta-card--progress" to="/profile">
+      {/* A guest has no progress yet: say where it will live instead of showing "0 / 57". */}
+      <Link className="panel cta-card cta-card--progress" to={authed ? "/profile" : "/login?mode=register"}>
         <span className="cta-card-label"><Icon name="check" size={14} />{t("Сіздің прогрессіңіз", "Ваш прогресс")}</span>
-        <strong><b>{done.length}</b> / {totalLessons} {t("сабақ", "уроков")}</strong>
-        <span aria-hidden="true" className="progress"><i style={{ width: `${(done.length / totalLessons) * 100}%` }} /></span>
+        {authed ? (
+          <>
+            <strong><b>{done.length}</b> / {totalLessons} {t("сабақ", ruOf(totalLessons, ["урока", "уроков"]))}</strong>
+            <span aria-hidden="true" className="progress"><i style={{ width: `${(done.length / totalLessons) * 100}%` }} /></span>
+          </>
+        ) : (
+          <>
+            <strong>{t("Тіркелгеннен кейін сақталады", "Сохранится после регистрации")}</strong>
+            <small>{totalLessons} {t("сабақ", ruPlural(totalLessons, ["урок", "урока", "уроков"]))} · {t("аяқталғанын белгілеңіз", "отмечайте пройденные")}</small>
+          </>
+        )}
       </Link>
     </div>
   );

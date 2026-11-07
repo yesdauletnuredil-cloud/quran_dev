@@ -25,6 +25,14 @@ export const topics: Topic[] = [
 ];
 
 export const quranTopics = topics.filter((t) => t.quran);
+
+/** Russian noun form for a count: [1 урок, 2 урока, 5 уроков]. Kazakh nouns do not change after numerals. */
+export const ruPlural = (n: number, [one, few, many]: [string, string, string]) => {
+  const d = n % 10, h = n % 100;
+  return d === 1 && h !== 11 ? one : d >= 2 && d <= 4 && (h < 12 || h > 14) ? few : many;
+};
+/** Russian noun after "N / M" (read "N из M"): genitive by M — 1, 21 → "урока"; 2, 5, 11, 57 → "уроков". */
+export const ruOf = (m: number, [one, many]: [string, string]) => (m % 10 === 1 && m % 100 !== 11 ? one : many);
 export const totalLessons = topics.reduce((n, x) => n + x.lessons.length, 0);
 /** Estimated lesson length in minutes (shown in lesson lists and the video player). */
 export const lessonMinutes = (index: number) => 12 + (index % 4) * 4;
@@ -163,7 +171,7 @@ export function getAchievements(done: string[]): Achievement[] {
     {
       id: "course-complete", medal: "100%",
       title: finished ? { kz: `«${best.c.title}» аяқталды`, ru: `Курс «${best.c.title}» завершён` } : { kz: "Курс аяқталды", ru: "Курс завершён" },
-      desc: finished ? { kz: `Барлық ${best.total} сабақ аяқталды`, ru: `Пройдены все ${best.total} уроков` } : { kz: `Ең жақын курс: ${best.c.title}`, ru: `Ближайший курс: ${best.c.title}` },
+      desc: finished ? { kz: `Барлық ${best.total} сабақ аяқталды`, ru: `Пройдены все ${best.total} ${ruPlural(best.total, ["урок", "урока", "уроков"])}` } : { kz: `Ең жақын курс: ${best.c.title}`, ru: `Ближайший курс: ${best.c.title}` },
       earned: finished, progress: [best.n, best.total], topic: best.c.topic,
     },
     { id: "streak", medal: String(DEMO_STREAK_DAYS), title: { kz: `${DEMO_STREAK_DAYS} күн қатарынан`, ru: `${DEMO_STREAK_DAYS} дня подряд` }, desc: { kz: "Күн сайын оқу сериясы", ru: "Серия ежедневных занятий" }, earned: true, progress: [DEMO_STREAK_DAYS, DEMO_STREAK_DAYS], demo: true },

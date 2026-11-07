@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { useApp } from "../context";
-import { getAchievements, getTier, isPaidTier, nextLesson, totalLessons, type Achievement } from "../data";
+import { getAchievements, getTier, isPaidTier, nextLesson, ruOf, totalLessons, type Achievement } from "../data";
 import { StoryModal } from "../share";
 import { Button, EmptyState, Icon, PageHero, PromoField, TierBadge } from "../ui";
 import { getVisual } from "../visuals";
@@ -27,7 +27,7 @@ function Achievements() {
               ? <Button icon="image" onClick={() => setStory(a)} size="sm" variant="secondary">Stories</Button>
               : <>
                   <div aria-hidden="true" className="progress"><i style={{ width: `${(a.progress[0] / (a.progress[1] || 1)) * 100}%` }} /></div>
-                  <small>{a.progress[0]} / {a.progress[1]} {t("сабақ", "уроков")}</small>
+                  <small>{a.progress[0]} / {a.progress[1]} {t("сабақ", ruOf(a.progress[1], ["урока", "уроков"]))}</small>
                 </>}
           </article>
         ))}
@@ -51,7 +51,7 @@ function ProgressPanel() {
   return (
     <section aria-labelledby="progress-title" className="panel progress-panel">
       <h2 className="sr-only" id="progress-title">{t("Оқу барысы", "Прогресс обучения")}</h2>
-      <p className="progress-count"><strong>{done.length}<small> / {totalLessons}</small></strong><span>{t("сабақ аяқталды", "уроков пройдено")}</span></p>
+      <p className="progress-count"><strong>{done.length}<small> / {totalLessons}</small></strong><span>{t("сабақ аяқталды", `${ruOf(totalLessons, ["урока", "уроков"])} пройдено`)}</span></p>
       <span aria-hidden="true" className="progress"><i style={{ width: `${(done.length / totalLessons) * 100}%` }} /></span>
       <div className="next-lesson">
         {next ? (
