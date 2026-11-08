@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { assignedUstaz } from "../config";
 import { useApp } from "../context";
 import EmergencyContact, { EmergencyNote } from "../emergency";
 import { type Tier } from "../data";
@@ -23,6 +24,7 @@ function RequestForm({ tier }: { tier: Tier }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const reply = assignedUstaz.replyTime;
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +39,11 @@ function RequestForm({ tier }: { tier: Tier }) {
       <div className="panel">
         <span className="badge badge--demo">DEMO</span>
         <h3 className="panel-gap">{t("Сұраныс қабылданды", "Запрос принят")}</h3>
-        <p>{t("Ұстаз [1 жұмыс күні] ішінде таңдалған тәсілмен хабарласады. Бұл демо: сұраныс ешқайда жіберілген жоқ.", "Ұстаз свяжется выбранным способом в течение [1 рабочего дня]. Это демо: запрос никуда не отправлен.")}</p>
+        <p>
+          {t("Ұстаз таңдалған тәсілмен хабарласады.", "Ұстаз свяжется выбранным способом.")}
+          {reply && ` ${t(`Әдетте ${reply.kz} ішінде.`, `Обычно в течение ${reply.ru}.`)}`}
+          {" "}{t("Бұл демо: сұраныс ешқайда жіберілген жоқ.", "Это демо: запрос никуда не отправлен.")}
+        </p>
         <Button onClick={() => { setSent(false); setText(""); }} variant="secondary">{t("Жаңа сұраныс", "Новый запрос")}</Button>
       </div>
     );
@@ -45,7 +51,7 @@ function RequestForm({ tier }: { tier: Tier }) {
 
   return (
     <form className="panel ustaz-form" noValidate onSubmit={submit}>
-      <h3>{t("Консультацияға сұраныс", "Запрос на консультацию")}</h3>
+      <h3>{t("Бекітілген Ұстазға сұраныс", "Запрос закреплённому Ұстазу")}</h3>
       <div className="field">
         <label htmlFor="u-topic">{t("Тақырып", "Тема")}</label>
         <select className="input select" id="u-topic" onChange={(e) => setTopic(e.target.value)} value={topic}>{topics.map((x) => <option key={x}>{x}</option>)}</select>
@@ -56,7 +62,7 @@ function RequestForm({ tier }: { tier: Tier }) {
         {error && <span className="field-error" id="u-err">{error}</span>}
       </div>
       <fieldset className="field method-field">
-        <legend>{t("Байланыс тәсілі", "Способ связи")}</legend>
+        <legend>{t("Жауапты қалай алғыңыз келеді", "Как вам удобнее получить ответ")}</legend>
         <div className="method-grid">
           {methods.map((m) => {
             const allowed = m.tiers.includes(tier);
@@ -85,7 +91,8 @@ export default function Ustaz() {
   const tier = subscription?.tier;
   const steps = [
     t("Сұраныс қалдырасыз: тақырып, сұрақ және байланыс тәсілі.", "Вы оставляете запрос: тема, вопрос и способ связи."),
-    t("Бекітілген Ұстаз [1 жұмыс күні] ішінде жауап береді немесе уақыт ұсынады.", "Закреплённый Ұстаз отвечает или предлагает время в течение [1 рабочего дня]."),
+    // Reply time only when the client has confirmed it (config.ts); never a made-up number.
+    t("Бекітілген Ұстаз жауап береді немесе уақыт ұсынады.", "Закреплённый Ұстаз отвечает или предлагает время.") + (assignedUstaz.replyTime ? ` ${t(`Әдетте ${assignedUstaz.replyTime.kz} ішінде.`, `Обычно в течение ${assignedUstaz.replyTime.ru}.`)}` : ""),
     t("Plus — жазбаша жауап. Premium — қосымша қоңырау не бейне кездесу.", "Plus — письменный ответ. Premium — дополнительно звонок или видеовстреча."),
   ];
 
@@ -124,12 +131,9 @@ export default function Ustaz() {
           <aside className="detail-aside">
             <div className="panel ustaz-card">
               <div className="achievement-top"><span className="medal ustaz-avatar"><Icon name="user" size={24} /></span><span className="badge badge--demo">DEMO</span></div>
-              <h3>{t("Ерлан Ұстаз", "Ұстаз Ерлан")}</h3>
-              <p>{t("[Ұстаз туралы қысқаша ақпарат: білімі, мамандығы, тәжірибесі]", "[Краткая информация об Ұстазе: образование, специализация, опыт]")}</p>
-              <ul className="check-list support-list">
-                <li><Icon name="check" size={18} />{t("Тәжуид, фиқһ", "Таджвид, фикх")}</li>
-                <li><Icon name="check" size={18} />{t("Қазақ, орыс тілдері", "Казахский, русский")}</li>
-              </ul>
+              {/* No invented name or details: the client supplies the real ustaz; DEMO until then. */}
+              <h3>{t("Бекітілген Ұстаз", "Закреплённый Ұстаз")}</h3>
+              <p>{t("[Ұстаздың аты, суреті және қысқаша ақпараты]", "[Имя, фото и краткая информация об Ұстазе]")}</p>
             </div>
           </aside>
         </div>

@@ -871,25 +871,18 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 
 /* Quick consultation with on-duty ustaz (Plus / Premium): a secondary row under the request form */
 .quick-row { margin-top: 16px; padding: 22px 28px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); }
-.quick-row-head { display: flex; gap: 16px 24px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
-.quick-row-head > div { flex: 1 1 280px; min-width: 0; }
 .quick-row h2 { margin: 0 0 4px; font-size: 19px; font-weight: 400; letter-spacing: -.02em; }
-.quick-row-head p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
-.quick-row-head p.quick-hours { margin-top: 6px; display: flex; gap: 8px; align-items: center; color: var(--text); font-size: 13px; }
+.quick-row > p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
+.quick-row > p.quick-hours { margin-top: 6px; display: flex; gap: 8px; align-items: center; color: var(--text); font-size: 13px; }
 .quick-hours .icon { color: var(--primary); }
-.quick-toggle .icon { transform: rotate(90deg); transition: transform .2s; }
-.quick-toggle[aria-expanded="true"] .icon { transform: rotate(-90deg); }
-.quick-form { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--line); }
-.quick-form .method-field { margin-bottom: 16px; }
-.quick-form .field { margin-bottom: 20px; }
+.quick-actions { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px; }
+.quick-actions .button { white-space: nowrap; }
+.quick-row > p.quick-contacts { margin-top: 12px; font-size: 13px; }
 .optional { color: var(--muted); font-weight: 400; }
-.quick-contact { margin: 12px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; text-align: center; }
 .emergency-note { margin: 16px 0 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
-@media (prefers-reduced-motion: reduce) { .quick-toggle .icon { transition: none; } }
 @media (max-width: 620px) {
   .quick-row { padding: 20px; }
-  .quick-toggle { width: 100%; }
-  .quick-form .method-grid { grid-template-columns: 1fr 1fr; }
+  .quick-actions .button { width: 100%; }
 }
 
 /* Tier status badge (Plus / Premium) */

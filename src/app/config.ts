@@ -26,5 +26,14 @@ export const emergencyContacts = {
   responseTime: undefined as { kz: string; ru: string } | undefined,
 };
 
+/** The student's assigned ustaz (paid request form on /ustaz). */
+export const assignedUstaz = {
+  /**
+   * Typical reply time, e.g. { kz: "1 жұмыс күні", ru: "1 рабочего дня" }.
+   * Leave undefined until the client confirms it: the "usually within …" text is then hidden.
+   */
+  replyTime: undefined as { kz: string; ru: string } | undefined,
+};
+
 export const whatsappUrl = (text?: string) => `https://wa.me/${emergencyContacts.whatsapp}${text ? `?text=${encodeURIComponent(text)}` : ""}`;
 export const telegramUrl = () => `https://t.me/${emergencyContacts.telegram}`;
