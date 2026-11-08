@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
+import { ConfirmDialog } from "../confirm";
 import { useApp } from "../context";
 import { getTier, tierFeatures, tierPrice, tiers, type Tier } from "../data";
 import { Button, Icon, PageHero, PromoField, tierHighlightLines } from "../ui";
 
 export default function Premium() {
-  const { t, lang, authed, subscription, tier, subscribe, requireAuth, notify } = useApp();
+  const { t, lang, authed, subscription, tier, subscribe, requireAuth, notify, formatDate } = useApp();
   const navigate = useNavigate();
   // ?tier=plus preselects a tier (links from the home tier preview); unknown values are ignored.
   const linked = useSearchParams()[0].get("tier");
@@ -14,6 +15,9 @@ export default function Premium() {
   // Mobile comparison tab opens on the selected tier and follows the selection; it can still be switched by hand.
   const [mobileTier, setMobileTier] = useState<Tier>(initial);
   const [loading, setLoading] = useState<Tier | null>(null);
+  // Lower tier the subscriber asked to move to; the confirmation dialog is open while set.
+  const [lowerTo, setLowerTo] = useState<Tier | null>(null);
+  const closeLower = useCallback(() => setLowerTo(null), []);
   const current = tier;
   const choose = (id: Tier) => { setSelected(id); setMobileTier(id); };
 
@@ -40,15 +44,34 @@ export default function Premium() {
   });
   const backToBasic = () => { subscribe("basic"); notify(t("Жазылым тоқтатылды. Сіз Basic тарифіндесіз.", "Подписка отменена. Вы на тарифе Basic.")); };
 
+  const rank = (id?: Tier | null) => tiers.findIndex((x) => x.id === id);
+  // Features of the current tier that the lower one does not have (from the tier data).
+  const lostFeatures = (to: Tier) => tierFeatures.filter((f) => current && f.tiers.includes(current) && !f.tiers.includes(to)).map((f) => f.label[lang]);
+  const confirmLower = () => {
+    const to = lowerTo; setLowerTo(null);
+    if (to === "basic") {
+      backToBasic();
+      // The link that opened the dialog is gone now; put focus on the Basic card's new action.
+      requestAnimationFrame(() => document.querySelector<HTMLElement>('.price-card:has([data-tier="basic"]) .tier-action a, .price-card:has([data-tier="basic"]) .tier-action button')?.focus());
+    } else if (to) subscribeNow(to);
+  };
+
   // Each card's own action — the same labels the single button under the cards used to have.
   const action = (id: Tier) => {
     const name = getTier(id)!.name;
     const variant = selected === id ? "primary" : "secondary";
     if (current === id) return <Button full icon="arrow" to="/academy" variant={variant}>{t("Курстарға өту", "Перейти к курсам")}</Button>;
+    // Lowering a subscription is never a same-weight button. Grant: not offered at all, the card says
+    // until when the grant runs. Paid: a text link that asks for confirmation first.
+    if (subscription && rank(id) < rank(current)) {
+      // Non-breaking spaces keep the date on one line ("7 мая 2027 г." never leaves "г." alone).
+      const until = formatDate(subscription.until).replace(/ /g, "\u00a0");
+      return subscription.source === "grant"
+        ? <p className="tier-grant-note">{t(`Тариф грант промокоды арқылы ${until} дейін ашық`, `Тариф открыт по грантовому промокоду до ${until}`)}</p>
+        : <button className="tier-lower-link" onClick={(e) => { e.stopPropagation(); setLowerTo(id); }} type="button">{id === "basic" ? t("Жазылымды тоқтату", "Отменить подписку") : t(`${name} тарифіне ауысу`, `Перейти на ${name}`)}</button>;
+    }
     if (id === "basic") {
-      return authed
-        ? <Button full onClick={backToBasic} variant={variant}>{t("Basic-ке оралу", "Вернуться на Basic")}</Button>
-        : <Button full icon="arrow" to="/login?mode=register" variant={variant}>{t("Тегін тіркелу", "Зарегистрироваться бесплатно")}</Button>;
+      return <Button full icon="arrow" to="/login?mode=register" variant={variant}>{t("Тегін тіркелу", "Зарегистрироваться бесплатно")}</Button>;
     }
     return (
       <Button full icon="arrow" loading={loading === id} onClick={() => subscribeNow(id)} variant={variant}>
@@ -66,6 +89,29 @@ export default function Premium() {
         lead={t("Алдымен тегін материалдармен танысыңыз. Дайын болғанда өзіңізге лайық тарифті таңдаңыз.", "Сначала познакомьтесь с бесплатными материалами. Когда будете готовы — выберите подходящий тариф.")}
         title={t("Біліміңізді жалғастырыңыз", "Продолжайте своё обучение")}
       />
+      {lowerTo && subscription && current && (() => {
+        const from = getTier(current)!.name, to = getTier(lowerTo)!.name, until = formatDate(subscription.until);
+        const cancel = lowerTo === "basic";
+        const lost = lostFeatures(lowerTo);
+        // The Russian date already ends with "г.", so no extra full stop after it.
+        const dot = until.endsWith(".") ? "" : ".";
+        const kzLost = lost.length === 1 ? "мына мүмкіндік жабылады" : "мына мүмкіндіктер жабылады";
+        return (
+          <ConfirmDialog
+            closeLabel={t("Жабу", "Закрыть")}
+            confirmLabel={cancel ? t("Жазылымды тоқтату", "Отменить подписку") : t(`${to} тарифіне ауысу`, `Перейти на ${to}`)}
+            keepLabel={t(`${from} тарифін қалдыру`, `Оставить ${from}`)}
+            onClose={closeLower}
+            onConfirm={confirmLower}
+            title={cancel ? t(`${from} жазылымын тоқтатасыз ба?`, `Отменить подписку ${from}?`) : t(`${from} тарифінен ${to} тарифіне ауысасыз ба?`, `Перейти с ${from} на ${to}?`)}
+          >
+            <p>{cancel
+              ? t(`${from} жазылымы ${until} дейін төленген. Тоқтатқаннан кейін сізде Basic қалады, ${kzLost}:`, `Подписка ${from} оплачена до ${until}${dot} После отмены у вас останется Basic, и пропадёт:`)
+              : t(`${from} ${until} дейін төленген. Ауысқаннан кейін ${kzLost}:`, `${from} оплачен до ${until}${dot} После перехода пропадёт:`)}</p>
+            <ul className="check-list confirm-lost">{lost.map((f) => <li key={f}><Icon name="close" size={16} />{f}</li>)}</ul>
+          </ConfirmDialog>
+        );
+      })()}
       <section className="page-section" id="tariffs">
         <div className="container">
           <h2 className="sr-only">{t("Тарифті таңдаңыз", "Выберите тариф")}</h2>
