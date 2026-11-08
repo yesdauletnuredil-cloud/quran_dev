@@ -1,4 +1,5 @@
 import { createBrowserRouter } from "react-router";
+import { basePath } from "./config";
 import Root from "./layout";
 import Home from "./pages/Home";
 import { Quran, TopicPage, LessonPage, NotFoundBlock } from "./pages/Quran";
@@ -46,4 +47,4 @@ export const router = createBrowserRouter([
       { path: "*", Component: NotFoundBlock },
     ],
   },
-]);
+], { basename: basePath || "/" });

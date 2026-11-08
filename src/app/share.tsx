@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { site } from "./config";
+import { site, withBase } from "./config";
 import { useApp } from "./context";
 import { Button, Icon } from "./ui";
 import { visualUrl, type Visual } from "./visuals";
@@ -65,7 +65,7 @@ export async function drawStory(data: StoryData) {
 
   // Background: photo if available, generated pattern otherwise.
   let bg: HTMLImageElement;
-  try { bg = await loadImage(data.visual.image ?? visualUrl(data.visual, W, H)); } catch { bg = await loadImage(visualUrl(data.visual, W, H)); }
+  try { bg = await loadImage(data.visual.image ? withBase(data.visual.image) : visualUrl(data.visual, W, H)); } catch { bg = await loadImage(visualUrl(data.visual, W, H)); }
   const scale = Math.max(W / bg.width, H / bg.height);
   ctx.drawImage(bg, (W - bg.width * scale) / 2, (H - bg.height * scale) / 2, bg.width * scale, bg.height * scale);
   const shade = ctx.createLinearGradient(0, 0, 0, H);
@@ -230,7 +230,7 @@ export function StoryModal({ data, onClose }: { data: StoryData; onClose: () => 
 export function SharePanel({ title, path, story }: { title: string; path: string; story: StoryData }) {
   const { t, notify } = useApp();
   const [open, setOpen] = useState(false);
-  const url = `${window.location.origin}${path}`;
+  const url = `${window.location.origin}${withBase(path)}`;
 
   const copy = async () => notify(await copyText(url) ? t("Сілтеме көшірілді", "Ссылка скопирована") : t("Көшіру мүмкін болмады", "Не удалось скопировать"));
   const share = async () => {

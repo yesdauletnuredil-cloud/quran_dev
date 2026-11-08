@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { withBase } from "./config";
 
 // Visual registry: one entry per topic slug (see `topics` in data.ts).
 // Patterns are generated SVG so reading rules / tajweed / letters stay abstract.
@@ -74,7 +75,7 @@ export const visualUrl = (v: Visual, w: number, h: number) => `data:image/svg+xm
 export function VisualBackdrop({ visual, glyph = true }: { visual: Visual; glyph?: boolean }) {
   const [failed, setFailed] = useState(false);
   const pattern = useMemo(() => visualUrl(visual, 1600, 900), [visual]);
-  const src = visual.image && !failed ? visual.image : pattern;
+  const src = visual.image && !failed ? withBase(visual.image) : pattern;
   return (
     <div aria-hidden="true" className="visual-backdrop" data-tone={visual.tone}>
       <img alt="" onError={() => setFailed(true)} src={src} />

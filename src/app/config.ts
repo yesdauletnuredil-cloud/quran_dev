@@ -1,7 +1,7 @@
 // PLACEHOLDER values — replace with the client's real data before launch.
 
 export const site = {
-  /** Shown on Stories cards; share links use the current origin. */
+  /** Shown on Stories cards; share links use the current origin and base path. */
   domain: "quranacademy.kz",
   /**
    * Header / footer brand:
@@ -10,6 +10,14 @@ export const site = {
    */
   brand: "mark" as "logo" | "mark",
 };
+
+/**
+ * Site base path without the trailing slash: "" at the domain root, "/quran-academy" on GitHub Pages (BASE_PATH at build).
+ * Only the path part is used, in case the base is a full URL (FIGMA_PUBLIC_URL).
+ */
+export const basePath = new URL(import.meta.env.BASE_URL, "http://localhost").pathname.replace(/\/$/, "");
+/** Root paths ("/premium", "/visuals/x.jpg") prefixed with the base so they also work in a subfolder; other URLs unchanged. */
+export const withBase = (path: string) => (path.startsWith("/") ? `${basePath}${path}` : path);
 
 export const emergencyContacts = {
   /** Digits only, international format, for https://wa.me/<number> */
