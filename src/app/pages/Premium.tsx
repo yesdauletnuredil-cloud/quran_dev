@@ -75,6 +75,11 @@ export default function Premium() {
     if (id === "basic") {
       return <Button full icon="arrow" to="/login?mode=register" variant={variant}>{t("Тегін тіркелу", "Зарегистрироваться бесплатно")}</Button>;
     }
+    // Guests go to registration and come back to this page with the same tier selected
+    // (the login page already follows ?next=; the original sign-in dialog stays as it is).
+    if (!authed) {
+      return <Button full icon="arrow" to={`/login?mode=register&next=${encodeURIComponent(`/premium?tier=${id}`)}`} variant={variant}>{t(`${name} рәсімдеу`, `Оформить ${name}`)}</Button>;
+    }
     return (
       <Button full icon="arrow" loading={loading === id} onClick={() => subscribeNow(id)} variant={variant}>
         {/* Guests: the note under the cards says registration comes first, so the label stays one line. */}
