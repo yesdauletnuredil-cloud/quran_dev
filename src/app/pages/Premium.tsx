@@ -19,6 +19,8 @@ export default function Premium() {
   const [lowerTo, setLowerTo] = useState<Tier | null>(null);
   const closeLower = useCallback(() => setLowerTo(null), []);
   const current = tier;
+  // "Recommended" is a suggestion for people without a paid tier; a subscriber already chose.
+  const recommended = (id: Tier) => !subscription && id === "plus";
   const choose = (id: Tier) => { setSelected(id); setMobileTier(id); };
 
   // Radio group keyboard pattern on the tier options only (not on the action buttons between them):
@@ -121,14 +123,14 @@ export default function Premium() {
               return (
                 // The card is a frame: the radio (tier info) and the action button are siblings, never nested.
                 // A click anywhere on the frame selects the tier; the button also runs its action.
-                <div className={`price-card ${on ? "selected" : ""} ${p.id === "plus" ? "recommended" : ""}`} key={p.id} onClick={() => choose(p.id)}>
+                <div className={`price-card ${on ? "selected" : ""} ${recommended(p.id) ? "recommended" : ""}`} key={p.id} onClick={() => choose(p.id)}>
                   <div
                     aria-checked={on}
                     aria-describedby={`tier-${p.id}-desc tier-${p.id}-list`}
                     aria-label={[
                       p.name,
                       p.price ? `${tierPrice(p.price, t)} ${t("айына", "в месяц")}` : tierPrice(p.price, t),
-                      p.id === "plus" && t("ұсынылады", "рекомендуем"),
+                      recommended(p.id) && t("ұсынылады", "рекомендуем"),
                       current === p.id && t("ағымдағы тариф", "текущий тариф"),
                     ].filter(Boolean).join(", ")}
                     className="tier-option"
@@ -136,7 +138,7 @@ export default function Premium() {
                     role="radio"
                     tabIndex={on ? 0 : -1}
                   >
-                    {p.id === "plus" && <span className="recommend-label">{t("ҰСЫНЫЛАДЫ", "РЕКОМЕНДУЕМ")}</span>}
+                    {recommended(p.id) && <span className="recommend-label">{t("ҰСЫНЫЛАДЫ", "РЕКОМЕНДУЕМ")}</span>}
                     <div className="price-check">{current === p.id ? <span className="badge badge--free">{t("Ағымдағы", "Текущий")}</span> : on && <Icon name="check" />}</div>
                     <h3>{p.name}</h3>
                     <p className="price">{tierPrice(p.price, t)}</p>

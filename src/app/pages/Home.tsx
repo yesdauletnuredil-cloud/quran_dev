@@ -7,20 +7,22 @@ import { getVisual, visualUrl } from "../visuals";
 
 // Compact tier cards; same sources as /premium. Paid tiers list "everything from <previous>" + their own new features.
 function TierPreview() {
-  const { t, lang } = useApp();
+  const { t, lang, subscription } = useApp();
+  // "Recommended" is a suggestion for people without a paid tier; a subscriber already chose.
+  const recommended = (id: string) => !subscription && id === "plus";
   return (
     <div className="tier-preview">
       {tiers.map((tier) => {
         const lines = tierHighlightLines(tier.id, t, lang, 3);
         return (
-          <article className={`panel tier-preview-card ${tier.id === "plus" ? "is-recommended" : ""}`} key={tier.id}>
-            {tier.id === "plus" && <span className="recommend-label">{t("ҰСЫНЫЛАДЫ", "РЕКОМЕНДУЕМ")}</span>}
+          <article className={`panel tier-preview-card ${recommended(tier.id) ? "is-recommended" : ""}`} key={tier.id}>
+            {recommended(tier.id) && <span className="recommend-label">{t("ҰСЫНЫЛАДЫ", "РЕКОМЕНДУЕМ")}</span>}
             <h3>{tier.name}</h3>
             <p className="tier-preview-price">{tierPrice(tier.price, t)}{tier.price > 0 && <small> / {t("ай", "мес")}</small>}</p>
             <ul className="check-list">
               {lines.map((l) => <li key={l}><Icon name="check" size={16} />{l}</li>)}
             </ul>
-            <Button full icon="arrow" size="sm" to={`/premium?tier=${tier.id}`} variant={tier.id === "plus" ? "primary" : "secondary"}>{t(`${tier.name} таңдау`, `Выбрать ${tier.name}`)}</Button>
+            <Button full icon="arrow" size="sm" to={`/premium?tier=${tier.id}`} variant={recommended(tier.id) ? "primary" : "secondary"}>{t(`${tier.name} таңдау`, `Выбрать ${tier.name}`)}</Button>
           </article>
         );
       })}
