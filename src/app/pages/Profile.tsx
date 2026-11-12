@@ -151,6 +151,8 @@ export default function Profile() {
               </p>
               <div className="tier-row-actions">
                 <Link className="tier-row-link" to="/premium">{t("Тарифке не кіреді", "Что входит в тариф")}</Link>
+                {/* Paid subscription only: a grant has nothing to cancel or change (see the grant note on /premium). */}
+                {subscription?.source === "payment" && <Link className="tier-row-link" to="/premium">{t("Жазылымды басқару", "Управлять подпиской")}</Link>}
                 {!paid && <Button icon="arrow" size="sm" to="/premium">{t("Plus не Premium-ға өту", "Перейти на Plus или Premium")}</Button>}
               </div>
             </div>
