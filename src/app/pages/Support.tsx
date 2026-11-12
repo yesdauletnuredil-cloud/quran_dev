@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useApp } from "../context";
 import { formatPrice, getTier, ruPlural, tiers, type Tier } from "../data";
 import { Button, Chips, Icon, PageHero } from "../ui";
@@ -34,6 +34,9 @@ function SponsorCard() {
   const [count, setCount] = useState("1");
   const [loading, setLoading] = useState(false);
   const [code, setCode] = useState<string | null>(null);
+  // The button is replaced by the code: move focus to the code instead of losing it to the page.
+  const codeRef = useRef<HTMLDivElement>(null);
+  useEffect(() => { if (code) codeRef.current?.focus(); }, [code]);
   const total = getTier(tier)!.price * SPONSOR_MONTHS * Number(count);
 
   const generate = () => {
@@ -57,7 +60,7 @@ function SponsorCard() {
       <p className="support-label">{t(`Барлығы, ${SPONSOR_MONTHS} ай · ${count} оқушы`, `Итого за ${SPONSOR_MONTHS} мес. · ${count} ${ruPlural(Number(count), ["ученик", "ученика", "учеников"])}`)}</p>
       <p className="price-line">{formatPrice(total)}</p>
       {code ? (
-        <div className="promo-code">
+        <div className="promo-code" ref={codeRef} tabIndex={-1}>
           <span>{t(`Промокод · ${count} активация`, `Промокод · активаций: ${count}`)}</span>
           <strong>{code}</strong>
           <small>{t("Демо: нақты төлемнен кейін код поштаға жіберіледі.", "Демо: после реальной оплаты код придёт на почту.")}</small>

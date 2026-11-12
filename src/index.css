@@ -1050,3 +1050,7 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .ustaz-sent dd { margin: 0; color: var(--text); font-size: 15px; overflow-wrap: anywhere; }
 .ustaz-sent + p { margin-top: 0; }
 @media (max-width: 620px) { .ustaz-sent div { grid-template-columns: 1fr; gap: 0; } }
+
+/* /support: focus lands on the sponsor code after it appears; same ring as the design system's controls */
+.promo-code:focus { outline: none; }
+.promo-code:focus-visible { outline: 3px solid rgba(217, 119, 6, .45); outline-offset: 3px; }
