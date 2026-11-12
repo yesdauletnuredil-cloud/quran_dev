@@ -1063,3 +1063,4 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .review-list dd b { font-size: 18px; font-weight: 600; }
 .review-gained .icon { color: var(--accent-text); } /* the design system's check-list colour, readable in both themes */
 .confirm-body .review-note { margin: 16px 0 0; font-size: 13px; }
+.promo-code .button { justify-self: start; margin: 2px 0 4px; }

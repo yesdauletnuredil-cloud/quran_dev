@@ -132,7 +132,7 @@ export async function drawStory(data: StoryData) {
   return canvas;
 }
 
-async function copyText(text: string) {
+export async function copyText(text: string) {
   try { await navigator.clipboard.writeText(text); return true; } catch {
     const area = document.createElement("textarea");
     area.value = text; area.style.position = "fixed"; area.style.opacity = "0";

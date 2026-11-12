@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ConfirmDialog } from "../confirm";
+import { copyText } from "../share";
 import { useApp } from "../context";
 import { formatPrice, getTier, ruPlural, tiers, type Tier } from "../data";
 import { Button, Chips, Icon, PageHero } from "../ui";
@@ -67,6 +68,7 @@ function SponsorCard() {
         <div className="promo-code" ref={codeRef} tabIndex={-1}>
           <span>{t(`Промокод · ${count} активация`, `Промокод · активаций: ${count}`)}</span>
           <strong>{code}</strong>
+          <Button icon="copy" onClick={async () => notify(await copyText(code) ? t("Код көшірілді", "Код скопирован") : t("Көшіру мүмкін болмады", "Не удалось скопировать"))} size="sm" variant="secondary">{t("Көшіру", "Копировать")}</Button>
           <small>{t("Демо: нақты төлемнен кейін код поштаға жіберіледі.", "Демо: после реальной оплаты код придёт на почту.")}</small>
         </div>
       ) : (
