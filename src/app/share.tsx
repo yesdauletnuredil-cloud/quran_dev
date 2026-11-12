@@ -21,7 +21,7 @@ export interface StoryData {
 }
 
 const W = 1080, H = 1920;
-const SANS = '"Lexend", "Helvetica Neue", Arial, sans-serif';
+const SANS = '"Onest", "Helvetica Neue", Arial, sans-serif';
 
 const loadImage = (src: string) => new Promise<HTMLImageElement>((resolve, reject) => {
   const img = new Image();
@@ -57,10 +57,13 @@ export async function drawStory(data: StoryData) {
   const canvas = document.createElement("canvas");
   canvas.width = W; canvas.height = H;
   const ctx = canvas.getContext("2d")!;
+  // Cyrillic and Kazakh letters live in their own font files: load the faces for the text this card draws.
+  const sample = [data.eyebrow, data.title, data.subtitle ?? "", data.medal ?? "", data.path, site.domain, "QURAN ACADEMY KZ DEMO"].join(" ");
   await Promise.all([
     document.fonts.load(`400 300px "Amiri Quran"`, data.visual.glyph),
-    document.fonts.load(`400 80px Lexend`),
-    document.fonts.load(`500 34px Lexend`),
+    document.fonts.load(`400 84px Onest`, sample),
+    document.fonts.load(`500 34px Onest`, sample),
+    document.fonts.load(`600 30px Onest`, sample),
   ]).catch(() => undefined);
 
   // Background: photo if available, generated pattern otherwise.
