@@ -18,6 +18,9 @@ export default function Premium() {
   // Lower tier the subscriber asked to move to; the confirmation dialog is open while set.
   const [lowerTo, setLowerTo] = useState<Tier | null>(null);
   const closeLower = useCallback(() => setLowerTo(null), []);
+  // Tier the person is about to take (new or higher); the "check before" dialog is open while set.
+  const [review, setReview] = useState<Tier | null>(null);
+  const closeReview = useCallback(() => setReview(null), []);
   const current = tier;
   // "Recommended" is a suggestion for people without a paid tier; a subscriber already chose.
   const recommended = (id: Tier) => !subscription && id === "plus";
@@ -58,6 +61,11 @@ export default function Premium() {
     } else if (to) subscribeNow(to);
   };
 
+  // Same label on the card button and on the dialog's confirm button.
+  const takeLabel = (name: string) => (authed && current ? t(`${name} тарифіне ауысу`, `Перейти на ${name}`) : t(`${name} рәсімдеу`, `Оформить ${name}`));
+  // Features the chosen tier adds to what the person has now (from the tier data).
+  const gainedFeatures = (to: Tier) => tierFeatures.filter((f) => f.tiers.includes(to) && !f.tiers.includes(current ?? "basic")).map((f) => f.label[lang]);
+
   // Each card's own action — the same labels the single button under the cards used to have.
   const action = (id: Tier) => {
     const name = getTier(id)!.name;
@@ -81,10 +89,7 @@ export default function Premium() {
       return <Button full icon="arrow" to={`/login?mode=register&next=${encodeURIComponent(`/premium?tier=${id}`)}`} variant={variant}>{t(`${name} рәсімдеу`, `Оформить ${name}`)}</Button>;
     }
     return (
-      <Button full icon="arrow" loading={loading === id} onClick={() => subscribeNow(id)} variant={variant}>
-        {/* Guests: the note under the cards says registration comes first, so the label stays one line. */}
-        {authed && current ? t(`${name} тарифіне ауысу`, `Перейти на ${name}`) : t(`${name} рәсімдеу`, `Оформить ${name}`)}
-      </Button>
+      <Button full icon="arrow" loading={loading === id} onClick={() => setReview(id)} variant={variant}>{takeLabel(name)}</Button>
     );
   };
 
@@ -116,6 +121,37 @@ export default function Premium() {
               ? t(`${from} жазылымы ${until} дейін төленген. Тоқтатқаннан кейін сізде Basic қалады, ${kzLost}:`, `Подписка ${from} оплачена до ${until}${dot} После отмены у вас останется Basic, и пропадёт:`)
               : t(`${from} ${until} дейін төленген. Ауысқаннан кейін ${kzLost}:`, `${from} оплачен до ${until}${dot} После перехода пропадёт:`)}</p>
             <ul className="check-list confirm-lost">{lost.map((f) => <li key={f}><Icon name="close" size={16} />{f}</li>)}</ul>
+          </ConfirmDialog>
+        );
+      })()}
+      {review && (() => {
+        const p = getTier(review)!;
+        const gained = gainedFeatures(review);
+        const now = subscription ? getTier(current)!.name : null;
+        // Only what the site already shows: tier, monthly price, what it opens. Nothing about renewal or refunds.
+        return (
+          <ConfirmDialog
+            className="review-dialog"
+            closeLabel={t("Жабу", "Закрыть")}
+            confirmLabel={takeLabel(p.name)}
+            keepLabel={t("Артқа", "Назад")}
+            onClose={closeReview}
+            onConfirm={() => { setReview(null); subscribeNow(review); }}
+            primary="confirm"
+            title={t("Рәсімдеу алдында тексеріңіз", "Проверьте перед оформлением")}
+          >
+            <dl className="review-list">
+              {now && <div><dt>{t("Қазіргі тариф", "Сейчас")}</dt><dd>{now}</dd></div>}
+              <div><dt>{t("Тариф", "Тариф")}</dt><dd>{p.name}</dd></div>
+              <div><dt>{t("Бағасы", "Цена")}</dt><dd>{tierPrice(p.price, t)} {t("айына", "в месяц")}</dd></div>
+            </dl>
+            {gained.length > 0 && (
+              <>
+                <p>{t("Ашылатын мүмкіндіктер:", "Что откроется:")}</p>
+                <ul className="check-list confirm-lost review-gained">{gained.map((f) => <li key={f}><Icon name="check" size={16} />{f}</li>)}</ul>
+              </>
+            )}
+            <p className="review-note">{t("Төлем демо-режимде: нақты ақша алынбайды.", "Оплата в демо-режиме: деньги не списываются.")}</p>
           </ConfirmDialog>
         );
       })()}

@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ConfirmDialog } from "../confirm";
 import { useApp } from "../context";
 import { formatPrice, getTier, ruPlural, tiers, type Tier } from "../data";
 import { Button, Chips, Icon, PageHero } from "../ui";
@@ -34,6 +35,9 @@ function SponsorCard() {
   const [count, setCount] = useState("1");
   const [loading, setLoading] = useState(false);
   const [code, setCode] = useState<string | null>(null);
+  // "Check before" dialog: tier, term, number of students and total — the same values as on the card.
+  const [review, setReview] = useState(false);
+  const closeReview = useCallback(() => setReview(false), []);
   // The button is replaced by the code: move focus to the code instead of losing it to the page.
   const codeRef = useRef<HTMLDivElement>(null);
   useEffect(() => { if (code) codeRef.current?.focus(); }, [code]);
@@ -66,7 +70,26 @@ function SponsorCard() {
           <small>{t("Демо: нақты төлемнен кейін код поштаға жіберіледі.", "Демо: после реальной оплаты код придёт на почту.")}</small>
         </div>
       ) : (
-        <Button full loading={loading} onClick={generate}>{t("Демеуші болу", "Стать спонсором")}</Button>
+        <Button full loading={loading} onClick={() => setReview(true)}>{t("Демеуші болу", "Стать спонсором")}</Button>
+      )}
+      {review && (
+        <ConfirmDialog
+          className="review-dialog"
+          closeLabel={t("Жабу", "Закрыть")}
+          confirmLabel={t("Демеуші болу", "Стать спонсором")}
+          keepLabel={t("Артқа", "Назад")}
+          onClose={closeReview}
+          onConfirm={() => { setReview(false); generate(); }}
+          primary="confirm"
+          title={t("Демеушілікті тексеріңіз", "Проверьте спонсорство")}
+        >
+          <dl className="review-list">
+            <div><dt>{t("Тариф", "Тариф")}</dt><dd>{getTier(tier)!.name}</dd></div>
+            <div><dt>{t("Мерзімі", "Срок")}</dt><dd>{SPONSOR_MONTHS} {t("ай", "мес.")}</dd></div>
+            <div><dt>{t("Оқушылар саны", "Учеников")}</dt><dd>{count}</dd></div>
+            <div><dt>{t("Барлығы", "Итого")}</dt><dd><b>{formatPrice(total)}</b></dd></div>
+          </dl>
+        </ConfirmDialog>
       )}
       <p className="support-foot">{t("Оқушы кодты тіркелу кезінде, «Тарифтер» немесе «Профиль» бетінде енгізеді.", "Ученик вводит код при регистрации, на странице «Тарифы» или в профиле.")}</p>
     </article>

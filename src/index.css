@@ -1054,3 +1054,12 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 /* /support: focus lands on the sponsor code after it appears; same ring as the design system's controls */
 .promo-code:focus { outline: none; }
 .promo-code:focus-visible { outline: 3px solid rgba(217, 119, 6, .45); outline-offset: 3px; }
+
+/* "Check before" dialogs (/premium purchase or upgrade, /support sponsorship): label–value rows */
+.review-list { margin: 0 0 18px; display: grid; gap: 0; border-top: 1px solid var(--line); }
+.review-list div { padding: 10px 0; display: flex; gap: 16px; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--line); }
+.review-list dt { color: var(--muted); font-size: 14px; }
+.review-list dd { margin: 0; color: var(--text); font-size: 15px; text-align: right; }
+.review-list dd b { font-size: 18px; font-weight: 600; }
+.review-gained .icon { color: var(--accent-text); } /* the design system's check-list colour, readable in both themes */
+.confirm-body .review-note { margin: 16px 0 0; font-size: 13px; }
