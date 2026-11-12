@@ -1,5 +1,7 @@
 {
-  "description": "A responsive landing page showcasing Quran Academy KZ's educational offerings, guiding users through Quranic and Islamic studies with free and premium content.",
+  "title": "Quran Academy KZ",
+  "language": "kk",
+  "description": "Құран мен ислам ілімдерін жүйелі үйренуге арналған білім платформасы.",
   "robots": {
     "index": false
   },

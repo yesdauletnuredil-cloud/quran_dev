@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:pages": "vite build && cp dist/index.html dist/404.html",
+    "build:pages": "vite build && cp dist/index.html dist/404.html && for r in $(grep -oE 'path: \"[a-z][a-z/-]*\"' src/app/routes.tsx | cut -d'\"' -f2); do mkdir -p dist/$r && cp dist/index.html dist/$r/index.html && cp dist/index.html dist/$r.html; done",
     "preview": "vite preview",
     "format": "oxfmt"
   },
