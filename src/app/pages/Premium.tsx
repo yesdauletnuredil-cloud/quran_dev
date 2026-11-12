@@ -42,10 +42,12 @@ export default function Premium() {
     e.currentTarget.querySelector<HTMLElement>(`[role="radio"][data-tier="${id}"]`)?.focus();
   };
 
-  const subscribeNow = (id: Tier) => requireAuth(() => {
+  // `opened`: the profile first shows what the new tier opened (purchase and upgrade, not lowering).
+  const subscribeNow = (id: Tier, opened = true) => requireAuth(() => {
     const name = getTier(id)!.name;
+    const from = current ?? "basic";
     setLoading(id);
-    window.setTimeout(() => { setLoading(null); subscribe(id); notify(t(`${name} іске қосылды`, `${name} активирован`)); navigate("/profile"); }, 900);
+    window.setTimeout(() => { setLoading(null); subscribe(id); notify(t(`${name} іске қосылды`, `${name} активирован`)); navigate("/profile", opened ? { state: { opened: { tier: id, from } } } : undefined); }, 900);
   });
   const backToBasic = () => { subscribe("basic"); notify(t("Жазылым тоқтатылды. Сіз Basic тарифіндесіз.", "Подписка отменена. Вы на тарифе Basic.")); };
 
@@ -58,7 +60,7 @@ export default function Premium() {
       backToBasic();
       // The link that opened the dialog is gone now; put focus on the Basic card's new action.
       requestAnimationFrame(() => document.querySelector<HTMLElement>('.price-card:has([data-tier="basic"]) .tier-action a, .price-card:has([data-tier="basic"]) .tier-action button')?.focus());
-    } else if (to) subscribeNow(to);
+    } else if (to) subscribeNow(to, false);
   };
 
   // Same label on the card button and on the dialog's confirm button.

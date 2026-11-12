@@ -1064,3 +1064,13 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .review-gained .icon { color: var(--accent-text); } /* the design system's check-list colour, readable in both themes */
 .confirm-body .review-note { margin: 16px 0 0; font-size: 13px; }
 .promo-code .button { justify-self: start; margin: 2px 0 4px; }
+
+/* /profile right after a purchase or upgrade: what the new tier opened */
+.opened-head { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+.opened-head h2 { margin: 0; font-size: 22px; font-weight: 500; letter-spacing: -.01em; }
+.opened-head h2:focus { outline: none; }
+.opened-panel > p { margin: 0 0 12px; color: var(--muted); }
+.opened-panel .check-list { gap: 10px; margin-bottom: 20px; }
+.opened-panel .check-list li { font-size: 14px; line-height: 1.45; }
+.opened-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+@media (max-width: 620px) { .opened-actions .button { flex: 1 1 100%; } }

@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { Link } from "react-router";
+import { useEffect, useRef, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router";
 import { useApp } from "../context";
-import { getAchievements, getTier, isPaidTier, nextLesson, ruOf, totalLessons, type Achievement } from "../data";
+import { getAchievements, getTier, isPaidTier, nextLesson, ruOf, tierFeatures, totalLessons, type Achievement, type Tier } from "../data";
 import { StoryModal } from "../share";
 import { Button, EmptyState, Icon, PageHero, PromoField, TierBadge } from "../ui";
 import { getVisual } from "../visuals";
@@ -39,6 +39,36 @@ function Achievements() {
           onClose={() => setStory(null)}
         />
       )}
+    </section>
+  );
+}
+
+/**
+ * Right after buying or upgrading on /premium: what the new tier opened, from the tier data
+ * (features of the new tier that the previous one did not have). Shown once, above progress.
+ */
+function OpenedPanel({ tier, from, onClose }: { tier: Tier; from: Tier; onClose: () => void }) {
+  const { t, lang } = useApp();
+  const ref = useRef<HTMLHeadingElement>(null);
+  useEffect(() => { ref.current?.focus(); }, []);
+  const name = getTier(tier)!.name;
+  const gained = tierFeatures.filter((f) => f.tiers.includes(tier) && !f.tiers.includes(from)).map((f) => f.label[lang]);
+  return (
+    <section aria-labelledby="opened-title" className="panel opened-panel">
+      <div className="opened-head">
+        <TierBadge tier={tier} />
+        <h2 id="opened-title" ref={ref} tabIndex={-1}>{t(`${name} тарифі ашылды`, `Тариф ${name} открыт`)}</h2>
+      </div>
+      {gained.length > 0 && (
+        <>
+          <p>{t("Енді сізге қолжетімді:", "Теперь вам доступно:")}</p>
+          <ul className="check-list">{gained.map((f) => <li key={f}><Icon name="check" size={16} />{f}</li>)}</ul>
+        </>
+      )}
+      <div className="opened-actions">
+        <Button icon="arrow" size="sm" to="/ustaz">{t("Ұстазбен байланыс", "Связь с Ұстазом")}</Button>
+        <Button onClick={onClose} size="sm" variant="secondary">{t("Түсінікті", "Понятно")}</Button>
+      </div>
     </section>
   );
 }
@@ -103,6 +133,15 @@ function PromoDisclosure() {
 
 export default function Profile() {
   const { t, authed, subscription, tier: tierId, formatDate, logout } = useApp();
+  const location = useLocation();
+  const navigate = useNavigate();
+  // Set by /premium after a purchase or upgrade; cleared on "Понятно" so Back or a revisit doesn't repeat it.
+  const opened = (location.state as { opened?: { tier: Tier; from: Tier } } | null)?.opened;
+  const closeOpened = () => {
+    navigate(location.pathname, { replace: true, state: null });
+    // The panel and its button are gone: continue from the progress block's action.
+    requestAnimationFrame(() => document.querySelector<HTMLElement>(".progress-panel a, .progress-panel button")?.focus());
+  };
   const crumbs = [{ label: t("Басты бет", "Главная"), to: "/" }, { label: t("Профиль", "Профиль") }];
 
   if (!authed) {
@@ -137,6 +176,7 @@ export default function Profile() {
       <section className="page-section">
         <div className="container detail-layout">
           <div className="detail-main profile-main">
+            {opened && opened.tier === tierId && <OpenedPanel from={opened.from} onClose={closeOpened} tier={opened.tier} />}
             <ProgressPanel />
             {/* Tier as one line; what each tier includes lives on /premium. */}
             <div className="panel tier-row">
