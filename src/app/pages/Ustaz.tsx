@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { assignedUstaz } from "../config";
 import { useApp } from "../context";
 import EmergencyContact, { EmergencyNote } from "../emergency";
@@ -22,14 +22,32 @@ function RequestForm({ tier }: { tier: Tier }) {
   const [method, setMethod] = useState<Method>("chat");
   const [text, setText] = useState("");
   const [error, setError] = useState("");
+  // Number or nickname when the answer should come in a messenger; the account itself only has an email.
+  const [contact, setContact] = useState("");
+  const [contactError, setContactError] = useState("");
+  const textRef = useRef<HTMLTextAreaElement>(null);
+  const contactRef = useRef<HTMLInputElement>(null);
+  const sentRef = useRef<HTMLHeadingElement>(null);
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const reply = assignedUstaz.replyTime;
 
+  const messenger = method === "whatsapp" || method === "telegram";
+  const contactLabel = method === "whatsapp" ? t("WhatsApp нөмірі", "Номер WhatsApp") : t("Telegram аты", "Ник в Telegram");
+  const methodLabel = methods.find((m) => m.id === method)!.label[lang];
+
+  // After sending, the form is replaced by the confirmation: move focus there instead of losing it.
+  useEffect(() => { if (sent) sentRef.current?.focus(); }, [sent]);
+
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (text.trim().length < 15) { setError(t("Сұранысты кемінде 15 таңбамен жазыңыз.", "Опишите запрос не короче 15 символов.")); return; }
-    setError("");
+    const textErr = text.trim().length < 15 ? t("Сұранысты кемінде 15 таңбамен жазыңыз.", "Опишите запрос не короче 15 символов.") : "";
+    const contactErr = messenger && !contact.trim()
+      ? (method === "whatsapp" ? t("WhatsApp нөмірін көрсетіңіз.", "Укажите номер WhatsApp.") : t("Telegram атыңызды көрсетіңіз.", "Укажите ник в Telegram."))
+      : "";
+    setError(textErr); setContactError(contactErr);
+    if (textErr) { textRef.current?.focus(); return; }
+    if (contactErr) { contactRef.current?.focus(); return; }
     setLoading(true);
     window.setTimeout(() => { setLoading(false); setSent(true); notify(t("Сұраныс жіберілді", "Запрос отправлен")); }, 800);
   };
@@ -38,7 +56,13 @@ function RequestForm({ tier }: { tier: Tier }) {
     return (
       <div className="panel">
         <span className="badge badge--demo">DEMO</span>
-        <h3 className="panel-gap">{t("Сұраныс қабылданды", "Запрос принят")}</h3>
+        <h3 className="panel-gap" ref={sentRef} tabIndex={-1}>{t("Сұраныс қабылданды", "Запрос принят")}</h3>
+        {/* What was sent, as the person filled it in. */}
+        <dl className="ustaz-sent">
+          <div><dt>{t("Тақырып", "Тема")}</dt><dd>{topic}</dd></div>
+          <div><dt>{t("Жауап тәсілі", "Способ ответа")}</dt><dd>{messenger ? `${methodLabel} · ${contact.trim()}` : methodLabel}</dd></div>
+          <div><dt>{t("Ыңғайлы уақыт", "Удобное время")}</dt><dd>{time}</dd></div>
+        </dl>
         <p>
           {t("Ұстаз таңдалған тәсілмен хабарласады.", "Ұстаз свяжется выбранным способом.")}
           {reply && ` ${t(`Әдетте ${reply.kz} ішінде.`, `Обычно в течение ${reply.ru}.`)}`}
@@ -58,8 +82,10 @@ function RequestForm({ tier }: { tier: Tier }) {
       </div>
       <div className="field">
         <label htmlFor="u-text">{t("Сұрағыңыз немесе жағдайыңыз", "Ваш вопрос или ситуация")}</label>
-        <textarea aria-describedby={error ? "u-err" : undefined} aria-invalid={!!error} className="textarea" id="u-text" onChange={(e) => setText(e.target.value)} value={text} />
-        {error && <span className="field-error" id="u-err">{error}</span>}
+        <textarea aria-describedby={error ? "u-err" : "u-hint"} aria-invalid={!!error} aria-required="true" className="textarea" id="u-text" onChange={(e) => setText(e.target.value)} ref={textRef} value={text} />
+        {error
+          ? <span className="field-error" id="u-err" role="alert">{error}</span>
+          : <span className="field-hint" id="u-hint">{t("Кемінде 15 таңба.", "Не короче 15 символов.")}</span>}
       </div>
       <fieldset className="field method-field">
         <legend>{t("Жауапты қалай алғыңыз келеді", "Как вам удобнее получить ответ")}</legend>
@@ -77,6 +103,27 @@ function RequestForm({ tier }: { tier: Tier }) {
           })}
         </div>
       </fieldset>
+      {messenger && (
+        <div className="field">
+          <label htmlFor="u-contact">{contactLabel}</label>
+          <input
+            aria-describedby={contactError ? "u-contact-err" : undefined}
+            aria-invalid={!!contactError}
+            aria-required="true"
+            autoCapitalize="off"
+            autoComplete={method === "whatsapp" ? "tel" : "off"}
+            className="input"
+            id="u-contact"
+            inputMode={method === "whatsapp" ? "tel" : "text"}
+            onChange={(e) => { setContact(e.target.value); setContactError(""); }}
+            placeholder={method === "whatsapp" ? "+7 700 000 00 00" : "@username"}
+            ref={contactRef}
+            type={method === "whatsapp" ? "tel" : "text"}
+            value={contact}
+          />
+          {contactError && <span className="field-error" id="u-contact-err" role="alert">{contactError}</span>}
+        </div>
+      )}
       <div className="field">
         <label htmlFor="u-time">{t("Ыңғайлы уақыт", "Удобное время")}</label>
         <select className="input select" id="u-time" onChange={(e) => setTime(e.target.value)} value={time}>{times.map((x) => <option key={x}>{x}</option>)}</select>

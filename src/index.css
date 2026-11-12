@@ -1042,3 +1042,11 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
   --tier-plus-bg: #2b7a63;
   --tier-plus-line: transparent;
 }
+
+/* /ustaz: summary of the sent request (topic, answer method with contact, time) */
+.ustaz-sent { margin: 12px 0 14px; display: grid; gap: 8px; }
+.ustaz-sent div { display: grid; grid-template-columns: minmax(120px, auto) 1fr; gap: 4px 16px; }
+.ustaz-sent dt { color: var(--muted); font-size: 14px; }
+.ustaz-sent dd { margin: 0; color: var(--text); font-size: 15px; overflow-wrap: anywhere; }
+.ustaz-sent + p { margin-top: 0; }
+@media (max-width: 620px) { .ustaz-sent div { grid-template-columns: 1fr; gap: 0; } }
