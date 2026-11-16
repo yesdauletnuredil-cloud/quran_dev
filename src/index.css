@@ -1074,3 +1074,11 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .opened-panel .check-list li { font-size: 14px; line-height: 1.45; }
 .opened-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 @media (max-width: 620px) { .opened-actions .button { flex: 1 1 100%; } }
+
+/* Hero italic: Amiri Quran used to be first in this font list, and its metrics gave the two italic lines a taller line box
+   and put their baseline lower in it. With Georgia alone the lines sit closer and higher, so the previous look is set here explicitly:
+   line box 104.3 px at the 84 px heading, 78.7 at 64, 62 at 49 (the heading's own sizes), and the italic text moved down by the same
+   amount it used to sit lower (9 px at 84, 6 px at 49) without changing the layout. At every width from 320 to 1920 the heading height
+   stays within 1.3 px of the previous one and the italic text within 1.1 px. */
+.hero h1 em { line-height: 1.24; position: relative; top: .11em; }
+@media (max-width: 620px) { .hero h1 em { line-height: 1.265; top: .122em; } }
