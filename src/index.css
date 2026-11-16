@@ -83,7 +83,7 @@ button:focus-visible, input:focus-visible, a:focus-visible, textarea:focus-visib
 .hero-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; align-items: center; }
 .hero-copy { grid-column: span 7; position: relative; z-index: 2; }
 .hero h1 { max-width: 820px; margin: 0; font-size: clamp(48px, 6vw, 84px); font-weight: 400; line-height: .98; letter-spacing: -.06em; }
-.hero h1 em { color: var(--primary); font-family: "Amiri Quran", Georgia, serif; font-style: italic; font-weight: 400; letter-spacing: -.04em; }
+.hero h1 em { color: var(--primary); font-family: Georgia, serif; font-style: italic; font-weight: 400; letter-spacing: -.04em; }
 .hero-description { max-width: 610px; margin: 32px 0; color: var(--muted); font-size: 18px; font-weight: 300; line-height: 1.65; }
 .hero-actions { display: flex; gap: 12px; }
 .hero-proof { margin-top: 64px; display: flex; gap: 46px; }
