@@ -163,7 +163,7 @@ export default function Ustaz() {
                 <EmergencyContact tier={tier} />
               </>
             ) : (
-              <div className="panel panel--green lock-panel">
+              <div className="panel panel--green lock-panel ustaz-lock">
                 <Icon name="lock" size={28} />
                 <h3>{t("Plus және Premium тарифтерінде қолжетімді", "Доступно на тарифах Plus и Premium")}</h3>
                 <p>{t("Plus — Ұстазға жазбаша сұрақ. Premium — қосымша қоңырау не бейне консультация.", "Plus — письменные вопросы Ұстазу. Premium — дополнительно звонок или видеоконсультация.")}</p>

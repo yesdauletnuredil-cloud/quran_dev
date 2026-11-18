@@ -121,7 +121,7 @@ function DevelopmentCard() {
       <Chips items={amounts.map(formatPrice)} labelledBy="donate-amount-label" onChange={setAmount} value={amount} />
       <p className="support-label" id="donate-period-label">{t("Мерзімділік", "Периодичность")}</p>
       <Chips items={[once, each]} labelledBy="donate-period-label" onChange={(v) => setMonthly(v === each)} value={monthly ? each : once} />
-      <Button full loading={loading} onClick={donate}>{monthly ? t(`Ай сайын ${amount} қолдау`, `Поддерживать по ${amount} в месяц`) : t(`${amount} қолдау`, `Поддержать на ${amount}`)}</Button>
+      <Button full loading={loading} onClick={donate} variant="secondary">{monthly ? t(`Ай сайын ${amount} қолдау`, `Поддерживать по ${amount} в месяц`) : t(`${amount} қолдау`, `Поддержать на ${amount}`)}</Button>
       <Requisites collapsible id="dev-requisites" rows={[
         [t("Алушы", "Получатель"), t("[Ұйым атауы]", "[Название организации]")],
         [t("БСН", "БИН"), "[000000000000]"],
@@ -150,7 +150,7 @@ function ZakatCard() {
         ["IBAN", "[KZ00 0000 0000 0000 0000]"],
         [t("Төлем мақсаты", "Назначение"), t("«Зекет»", "«Закят»")],
       ]} />
-      <Button className="panel-gap" full size="sm" to="/questions/ask" variant="secondary">{t("Зекет мөлшері туралы имамнан сұрау", "Спросить имама о размере закята")}</Button>
+      <Button className="panel-gap" full icon="arrow" size="sm" to="/questions/ask" variant="secondary">{t("Зекет мөлшері туралы имамнан сұрау", "Спросить имама о размере закята")}</Button>
     </article>
   );
 }

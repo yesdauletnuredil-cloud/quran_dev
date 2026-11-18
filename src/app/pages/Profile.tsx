@@ -66,7 +66,7 @@ function OpenedPanel({ tier, from, onClose }: { tier: Tier; from: Tier; onClose:
         </>
       )}
       <div className="opened-actions">
-        <Button icon="arrow" size="sm" to="/ustaz">{t("Ұстазбен байланыс", "Связь с Ұстазом")}</Button>
+        <Button icon="arrow" size="sm" to="/ustaz" variant="secondary">{t("Ұстазбен байланыс", "Связь с Ұстазом")}</Button>
         <Button onClick={onClose} size="sm" variant="secondary">{t("Түсінікті", "Понятно")}</Button>
       </div>
     </section>
@@ -154,7 +154,7 @@ export default function Profile() {
             <EmptyState
               action={(
                 <div className="empty-actions">
-                  <Button to="/login?next=/profile">{t("Кіру", "Войти")}</Button>
+                  <Button icon="arrow" to="/login?next=/profile">{t("Кіру", "Войти")}</Button>
                   <Button icon="arrow" to={first.url} variant="secondary">{t("Алғашқы сабақтан бастау", "Начать с первого урока")}</Button>
                 </div>
               )}
@@ -193,7 +193,7 @@ export default function Profile() {
                 <Link className="tier-row-link" to="/premium">{t("Тарифке не кіреді", "Что входит в тариф")}</Link>
                 {/* Paid subscription only: a grant has nothing to cancel or change (see the grant note on /premium). */}
                 {subscription?.source === "payment" && <Link className="tier-row-link" to="/premium">{t("Жазылымды басқару", "Управлять подпиской")}</Link>}
-                {!paid && <Button icon="arrow" size="sm" to="/premium">{t("Plus не Premium-ға өту", "Перейти на Plus или Premium")}</Button>}
+                {!paid && <Button icon="arrow" size="sm" to="/premium" variant="secondary">{t("Plus не Premium-ға өту", "Перейти на Plus или Premium")}</Button>}
               </div>
             </div>
             {paid ? (

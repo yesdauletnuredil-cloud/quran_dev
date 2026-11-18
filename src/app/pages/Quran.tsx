@@ -176,14 +176,14 @@ export function LessonView({ topic, index, base, heading, parent }: { topic: Top
               <Button disabled={locked} full icon={isDone ? "check" : undefined} onClick={() => requireAuth(() => { toggleDone(key); notify(isDone ? t("Белгі алынды", "Отметка снята") : t("Сабақ аяқталды", "Урок завершён")); })} variant={isDone ? "secondary" : "primary"}>
                 {isDone ? t("Аяқталды", "Завершён") : t("Аяқталды деп белгілеу", "Отметить завершённым")}
               </Button>
-              {isDone && <Button className="panel-gap" full icon="award" size="sm" to="/profile" variant="secondary">{t("Жетістіктер мен Stories", "Достижения и Stories")}</Button>}
+              {isDone && <Button className="panel-gap lesson-extra" full icon="award" size="sm" to="/profile" variant="secondary">{t("Жетістіктер мен Stories", "Достижения и Stories")}</Button>}
             </div>
             <SharePanel path={`${base}/${index + 1}`} story={{ eyebrow: `${heading} · ${t("Сабақ", "Урок")} ${index + 1}`, title, subtitle: topic.desc, visual: getVisual(topic.slug), path: `${base}/${index + 1}` }} title={title} />
             <div className="panel">
               <h3>{t("Сұрағыңыз бар ма?", "Есть вопрос?")}</h3>
               <p>{t("Сабақ бойынша түсінбеген жерді имамға жіберіңіз.", "Отправьте непонятный момент имаму.")}</p>
               <Button full size="sm" to="/questions/ask" variant="secondary">{t("Имамға сұрақ қою", "Задать вопрос имаму")}</Button>
-              {ustazAccess && <Button className="panel-gap" full size="sm" to="/ustaz" variant="ghost">{t("Ұстазға жеке жазу", "Написать Ұстазу лично")}</Button>}
+              {ustazAccess && <Button className="panel-gap lesson-extra" full icon="arrow" size="sm" to="/ustaz" variant="secondary">{t("Ұстазға жеке жазу", "Написать Ұстазу лично")}</Button>}
             </div>
           </aside>
         </div>

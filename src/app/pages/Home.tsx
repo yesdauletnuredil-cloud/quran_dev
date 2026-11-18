@@ -43,23 +43,23 @@ function CtaCards() {
         <span aria-hidden="true" className="cta-card-visual" style={{ backgroundImage: `url("${visualUrl(visual, 600, 160)}")` }}>
           <span className="arabic" lang="ar">{visual.glyph}</span>
         </span>
-        <span className="cta-card-label"><Icon name="play" size={14} />{t("Құран", "Коран")} · {topic.title}</span>
+        <span className="cta-card-label"><Icon name="play" size={14} />{t("Құран", "Коран")} · {topic.title}<Icon name="arrow" size={14} /></span>
         <strong>{topic.lessons[0]}</strong>
         <small>{t("Сабақ", "Урок")} 1 · ~{lessonMinutes(0)} {t("мин", "мин")}</small>
       </Link>
       <Link className="panel cta-card cta-card--course" to={`/academy/${course.slug}`}>
-        <span className="cta-card-label"><Icon name="bookmark" size={14} />{t("Онлайн академия", "Онлайн-академия")}</span>
+        <span className="cta-card-label"><Icon name="bookmark" size={14} />{t("Онлайн академия", "Онлайн-академия")}<Icon name="arrow" size={14} /></span>
         <strong>{course.title}</strong>
         <small>{course.lessons} {t("сабақ", "уроков")} · {course.time} · {course.level}</small>
       </Link>
       <Link className="panel cta-card cta-card--question" to={`/questions/${question.id}`}>
-        <span className="cta-card-label"><Icon name="chat" size={14} />{t("Сұрақ-жауап", "Вопросы")} · {question.category}</span>
+        <span className="cta-card-label"><Icon name="chat" size={14} />{t("Сұрақ-жауап", "Вопросы")} · {question.category}<Icon name="arrow" size={14} /></span>
         <strong>{question.title}</strong>
         <small>{question.imam}</small>
       </Link>
       {/* A guest has no progress yet: say where it will live instead of showing "0 / 57". */}
       <Link className="panel cta-card cta-card--progress" to={authed ? "/profile" : "/login?mode=register"}>
-        <span className="cta-card-label"><Icon name="check" size={14} />{t("Сіздің прогрессіңіз", "Ваш прогресс")}</span>
+        <span className="cta-card-label"><Icon name="check" size={14} />{t("Сіздің прогрессіңіз", "Ваш прогресс")}<Icon name="arrow" size={14} /></span>
         {authed ? (
           <>
             <strong><b>{done.length}</b> / {totalLessons} {t("сабақ", ruOf(totalLessons, ["урока", "уроков"]))}</strong>

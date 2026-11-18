@@ -90,8 +90,9 @@ export default function Premium() {
     if (!authed) {
       return <Button full icon="arrow" to={`/login?mode=register&next=${encodeURIComponent(`/premium?tier=${id}`)}`} variant={variant}>{t(`${name} рәсімдеу`, `Оформить ${name}`)}</Button>;
     }
+    // Opens the check dialog on this page, not another page: no arrow.
     return (
-      <Button full icon="arrow" loading={loading === id} onClick={() => setReview(id)} variant={variant}>{takeLabel(name)}</Button>
+      <Button full loading={loading === id} onClick={() => setReview(id)} variant={variant}>{takeLabel(name)}</Button>
     );
   };
 
@@ -201,7 +202,7 @@ export default function Premium() {
       <section className="page-section section-tint">
         <div className="container">
           <div className="section-title"><p className="eyebrow">{t("САЛЫСТЫРУ", "СРАВНЕНИЕ")}</p><h2>{t("Әр тарифте не бар", "Что входит в каждый тариф")}</h2><p className="section-intro">{t("Әр келесі тариф алдыңғысын толық қамтиды. Premium — Plus мүмкіндіктері және Ұстазбен жеке консультация.", "Каждый следующий тариф включает предыдущий. Premium — всё из Plus и личная консультация с Ұстазом.")}</p></div>
-          <div aria-label={t("Тарифті көрсету", "Показать тариф")} className="compare-tabs filter-row" role="group">
+          <div aria-label={t("Тарифті көрсету", "Показать тариф")} className="compare-tabs tier-tabs filter-row" role="group">
             {tiers.map((p) => <button aria-pressed={mobileTier === p.id} className={mobileTier === p.id ? "active" : ""} key={p.id} onClick={() => setMobileTier(p.id)} type="button">{p.name}</button>)}
           </div>
           <div className="compare compare--tiers" data-active={mobileTier} role="table">

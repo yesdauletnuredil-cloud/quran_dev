@@ -822,7 +822,7 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 /* Achievements */
 .achievements { margin-top: 40px; }
 .achievement-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-.achievement { padding: 22px; border: 1px dashed var(--line); border-radius: var(--radius-md); display: flex; flex-direction: column; gap: 8px; background: transparent; }
+.achievement { padding: 24px; border: 1px dashed var(--line); border-radius: var(--radius-md); display: flex; flex-direction: column; gap: 8px; background: transparent; }
 .achievement.is-earned { border-style: solid; background: var(--surface); }
 .achievement-top { margin-bottom: 8px; display: flex; align-items: flex-start; justify-content: space-between; }
 .medal { width: 56px; height: 56px; border: 3px solid var(--line); border-radius: 50%; display: grid; place-items: center; color: var(--muted); font-size: 15px; font-weight: 500; }
@@ -854,7 +854,7 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .method .icon { color: var(--primary); }
 .method.is-locked { color: var(--muted); background: var(--surface-soft); cursor: not-allowed; }
 .method.is-locked .icon { color: var(--muted); }
-.method small { margin-left: auto; color: var(--accent-text); font-size: 11px; font-weight: 600; letter-spacing: .06em; }
+.method small { margin-left: auto; color: var(--accent-text); font-size: 12px; font-weight: 600; letter-spacing: .06em; }
 .ustaz-avatar { color: var(--primary); }
 @media (max-width: 620px) {
   .method-grid { grid-template-columns: 1fr; }
@@ -865,12 +865,12 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .ustaz-callout h3 { margin: 0 0 6px; font-size: 19px; font-weight: 400; }
 .ustaz-callout p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
 @media (max-width: 620px) {
-  .ustaz-callout { padding: 22px 20px; grid-template-columns: 1fr; gap: 14px; }
+  .ustaz-callout { padding: 24px; grid-template-columns: 1fr; gap: 14px; }
   .ustaz-callout .button { width: 100%; }
 }
 
 /* Quick consultation with on-duty ustaz (Plus / Premium): a secondary row under the request form */
-.quick-row { margin-top: 16px; padding: 22px 28px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); }
+.quick-row { margin-top: 16px; padding: 24px 28px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); }
 .quick-row h2 { margin: 0 0 4px; font-size: 19px; font-weight: 400; letter-spacing: -.02em; }
 .quick-row > p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
 .quick-row > p.quick-hours { margin-top: 6px; display: flex; gap: 8px; align-items: center; color: var(--text); font-size: 13px; }
@@ -881,7 +881,7 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .optional { color: var(--muted); font-weight: 400; }
 .emergency-note { margin: 16px 0 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
 @media (max-width: 620px) {
-  .quick-row { padding: 20px; }
+  .quick-row { padding: 24px; }
   .quick-actions .button { width: 100%; }
 }
 
@@ -909,7 +909,7 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .video-stage { aspect-ratio: 16 / 9; position: relative; overflow: hidden; border-radius: var(--radius-md); color: #f8faf6; background: #0d3a2e; box-shadow: var(--shadow); isolation: isolate; }
 .video-stage:fullscreen { border-radius: 0; }
 .video-stage .visual-overlay { background: linear-gradient(180deg, rgba(7, 26, 20, .2) 0%, rgba(7, 26, 20, .3) 50%, rgba(7, 26, 20, .86) 100%); }
-.video-badge { position: absolute; left: 20px; top: 18px; z-index: 1; padding: 6px 12px; border-radius: 999px; background: rgba(7, 26, 20, .55); backdrop-filter: blur(6px); font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; }
+.video-badge { position: absolute; left: 20px; top: 18px; z-index: 1; padding: 6px 12px; border-radius: 999px; background: rgba(7, 26, 20, .55); backdrop-filter: blur(6px); font-size: 12px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; }
 .video-play { width: 84px; height: 84px; position: absolute; left: 50%; top: 50%; z-index: 2; padding: 0 0 0 4px; border: 0; border-radius: 50%; display: grid; place-items: center; color: #134e3f; background: #f8faf6; box-shadow: 0 12px 40px rgba(0, 0, 0, .3); cursor: pointer; transform: translate(-50%, -50%); transition: transform .2s, opacity .25s; }
 .video-play:hover { transform: translate(-50%, -50%) scale(1.06); }
 .video-play .icon, .video-controls button:first-child .icon { fill: currentColor; }
@@ -924,7 +924,7 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .video-progress::-moz-range-thumb { width: 14px; height: 14px; border: 0; border-radius: 50%; background: #f8faf6; }
 @media (max-width: 620px) {
   .video-stage { border-radius: var(--radius-sm); }
-  .video-badge { left: 12px; top: 12px; padding: 4px 10px; font-size: 10px; }
+  .video-badge { left: 12px; top: 12px; padding: 4px 10px; font-size: 12px; }
   .video-play { width: 60px; height: 60px; }
   .video-controls { padding: 6px 8px; gap: 4px; }
   .video-controls button { width: 40px; height: 40px; }
@@ -957,9 +957,9 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .final-cta-grid .final-cta-inner > p:not(.eyebrow):not(.arabic) { max-width: 460px; margin: 24px 0 32px; }
 .final-cta-grid .final-cta-inner > div { justify-content: flex-start; flex-wrap: wrap; }
 .cta-cards { min-height: 470px; position: relative; }
-.cta-card { width: min(300px, 62%); padding: 20px 22px; position: absolute; display: flex; flex-direction: column; gap: 8px; color: var(--text); text-decoration: none; box-shadow: 0 24px 60px rgba(4, 22, 17, .28); transform: rotate(var(--tilt)); transition: transform .3s ease, box-shadow .3s ease; }
-.cta-card:hover, .cta-card:focus-visible { z-index: 6; transform: rotate(0) translateY(-6px); box-shadow: 0 30px 70px rgba(4, 22, 17, .36); }
-.cta-card-label { display: flex; align-items: center; gap: 8px; color: var(--accent-text); font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+.cta-card { width: min(300px, 62%); padding: 24px; position: absolute; display: flex; flex-direction: column; gap: 8px; color: var(--text); text-decoration: none; box-shadow: 0 24px 60px rgba(4, 22, 17, .28); transform: rotate(var(--tilt)); transition: transform .3s ease, box-shadow .3s ease; }
+.cta-card:hover, .cta-card:focus-visible { z-index: 6; transform: rotate(0) translateY(-4px); box-shadow: 0 30px 70px rgba(4, 22, 17, .36); }
+.cta-card-label { display: flex; align-items: center; gap: 8px; color: var(--accent-text); font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
 .cta-card strong { font-size: 17px; font-weight: 400; line-height: 1.35; letter-spacing: -.01em; }
 .cta-card strong b { font-size: 30px; font-weight: 400; letter-spacing: -.03em; }
 .cta-card small { color: var(--muted); font-size: 13px; }
@@ -1016,7 +1016,7 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 }
 @media (max-width: 620px) {
   .destinations--4 { grid-template-columns: 1fr; }
-  .destinations--4 .destination { min-height: 0; padding: 28px 22px; }
+  .destinations--4 .destination { min-height: 0; padding: 28px 24px; }
   .destination h3 { margin-top: 28px; font-size: 24px; }
   .hero-proof span { max-width: 96px; }
 }
@@ -1082,3 +1082,31 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
    stays within 1.3 px of the previous one and the italic text within 1.1 px. */
 .hero h1 em { line-height: 1.24; position: relative; top: .11em; }
 @media (max-width: 620px) { .hero h1 em { line-height: 1.265; top: .122em; } }
+
+/* Rules for the new blocks (premium, support, ustaz, profile, tier preview, cards before the footer, lesson extras).
+   Every selector starts from a class of ours; shared Figma Make classes (.price-check, .filter-row, .button--sm, .input, .textarea, .destination-cta,
+   .lock-panel, .panel-gap) are only reached through one of them, so the original pages do not change. */
+
+/* Tier cards: the "Current" badge or the check sits in the row with the tier name, not in an empty strip above it */
+.pricing-grid--tiers .price-card { position: relative; }
+.pricing-grid--tiers .price-check { position: absolute; top: 30px; right: 30px; width: auto; height: 36px; margin: 0; display: flex; align-items: center; }
+.pricing-grid--tiers .tier-option h3 { margin-top: 0; padding-right: 96px; }
+
+/* Cards before the footer are links: the arrow closes the label row, right after the text (the next card overlaps the first card's right edge) */
+.cta-card-label > .icon:last-child { flex: none; }
+@media (min-width: 901px) { .cta-card--lesson .cta-card-label { padding-right: 36px; } } /* the course card overlaps this card's right edge */
+
+@media (max-width: 620px) {
+  /* Phone: controls in the new blocks are 44 px high, text in their fields is 16 px */
+  .tier-preview .button--sm, .quick-actions .button, .support-card .button--sm, .profile-main .button--sm,
+  .profile-main ~ .detail-aside .button--sm, .share-panel .button--sm, .opened-actions .button, .achievement .button,
+  .lesson-extra, .promo-code .button, .tier-tabs button, .support-card .filter-row button, .disclosure-button { min-height: 44px; }
+  .confirm-modal .modal-close, .story-modal .modal-close { width: 44px; height: 44px; }
+  .tier-row-link { padding: 12px 0; margin: -12px 0; }
+  .destinations--4 .destination-cta { padding: 12px 0; margin: -12px 0; }
+  .video-controls { padding: 6px 4px; }
+  .video-controls button { width: 44px; height: 44px; }
+  .video-progress { height: 44px; }
+  .ustaz-form .input, .ustaz-form .textarea, .promo-row .input { font-size: 16px; }
+  .ustaz-lock { padding: 28px 24px; }
+}
