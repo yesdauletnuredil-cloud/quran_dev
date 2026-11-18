@@ -1107,6 +1107,6 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
   .video-controls { padding: 6px 4px; }
   .video-controls button { width: 44px; height: 44px; }
   .video-progress { height: 44px; }
-  .ustaz-form .input, .ustaz-form .textarea, .promo-row .input { font-size: 16px; }
+  .ustaz-form .input, .ustaz-form .textarea, .promo-row .input, .promo-input { font-size: 16px; }
   .ustaz-lock { padding: 28px 24px; }
 }
