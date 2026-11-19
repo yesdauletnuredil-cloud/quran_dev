@@ -121,12 +121,11 @@ function PromoDisclosure() {
       <button aria-controls="promo-more" aria-expanded={open} className="disclosure-button" onClick={() => setOpen(!open)} type="button">
         {t("Промокодыңыз бар ма?", "Есть промокод?")}<Icon name="chevron" size={16} />
       </button>
-      {open && (
-        <div className="promo-more" id="promo-more">
-          <p>{t("Демеушіден немесе грант бағдарламасынан код алсаңыз, осында енгізіңіз.", "Если вы получили код от спонсора или грантовой программы, введите его здесь.")}</p>
-          <PromoField id="promo-profile" />
-        </div>
-      )}
+      {/* Always in the page (hidden while folded) so aria-controls always points at an element. */}
+      <div className="promo-more" hidden={!open} id="promo-more">
+        <p>{t("Демеушіден немесе грант бағдарламасынан код алсаңыз, осында енгізіңіз.", "Если вы получили код от спонсора или грантовой программы, введите его здесь.")}</p>
+        <PromoField id="promo-profile" />
+      </div>
     </div>
   );
 }

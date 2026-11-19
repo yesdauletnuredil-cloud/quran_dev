@@ -78,11 +78,11 @@ function RequestForm({ tier }: { tier: Tier }) {
       <h3>{t("Бекітілген Ұстазға сұраныс", "Запрос закреплённому Ұстазу")}</h3>
       <div className="field">
         <label htmlFor="u-topic">{t("Тақырып", "Тема")}</label>
-        <select className="input select" id="u-topic" onChange={(e) => setTopic(e.target.value)} value={topic}>{topics.map((x) => <option key={x}>{x}</option>)}</select>
+        <select autoComplete="off" className="input select" id="u-topic" name="topic" onChange={(e) => setTopic(e.target.value)} value={topic}>{topics.map((x) => <option key={x}>{x}</option>)}</select>
       </div>
       <div className="field">
         <label htmlFor="u-text">{t("Сұрағыңыз немесе жағдайыңыз", "Ваш вопрос или ситуация")}</label>
-        <textarea aria-describedby={error ? "u-err" : "u-hint"} aria-invalid={!!error} aria-required="true" className="textarea" id="u-text" onChange={(e) => setText(e.target.value)} ref={textRef} value={text} />
+        <textarea aria-describedby={error ? "u-err" : "u-hint"} aria-invalid={!!error} aria-required="true" autoComplete="off" className="textarea" id="u-text" name="message" onChange={(e) => setText(e.target.value)} ref={textRef} value={text} />
         {error
           ? <span className="field-error" id="u-err" role="alert">{error}</span>
           : <span className="field-hint" id="u-hint">{t("Кемінде 15 таңба.", "Не короче 15 символов.")}</span>}
@@ -114,10 +114,12 @@ function RequestForm({ tier }: { tier: Tier }) {
             autoComplete={method === "whatsapp" ? "tel" : "off"}
             className="input"
             id="u-contact"
+            name="contact"
             inputMode={method === "whatsapp" ? "tel" : "text"}
             onChange={(e) => { setContact(e.target.value); setContactError(""); }}
             placeholder={method === "whatsapp" ? "+7 700 000 00 00" : "@username"}
             ref={contactRef}
+            spellCheck={false}
             type={method === "whatsapp" ? "tel" : "text"}
             value={contact}
           />
@@ -126,7 +128,7 @@ function RequestForm({ tier }: { tier: Tier }) {
       )}
       <div className="field">
         <label htmlFor="u-time">{t("Ыңғайлы уақыт", "Удобное время")}</label>
-        <select className="input select" id="u-time" onChange={(e) => setTime(e.target.value)} value={time}>{times.map((x) => <option key={x}>{x}</option>)}</select>
+        <select autoComplete="off" className="input select" id="u-time" name="time" onChange={(e) => setTime(e.target.value)} value={time}>{times.map((x) => <option key={x}>{x}</option>)}</select>
       </div>
       <Button full loading={loading} type="submit">{t("Сұраныс жіберу", "Отправить запрос")}</Button>
     </form>

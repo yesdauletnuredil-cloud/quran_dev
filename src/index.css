@@ -674,6 +674,7 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .tier-lower-link { width: 100%; min-height: 44px; padding: 0; border: 0; background: none; color: var(--text); font: inherit; font-size: 14px; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .tier-lower-link:hover { text-decoration-thickness: 2px; }
 .tier-grant-note { min-height: 44px; margin: 0 !important; display: grid; place-items: center; color: var(--text) !important; font-size: 13px; line-height: 1.5; text-align: center; text-wrap: balance; }
+.confirm-modal { overscroll-behavior: contain; }
 .confirm-modal h2 { padding-right: 40px; }
 .confirm-body p { margin: 0 0 14px; color: var(--muted); font-size: 14px; line-height: 1.65; }
 .confirm-lost { gap: 8px; }
@@ -683,8 +684,9 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .confirm-actions .button { flex: 1 1 180px; }
 /* Contrast in the new tier blocks only; the original .recommend-label and .dash rules stay untouched.
    Badge: same amber, dark text (5.22:1 instead of white 3.19:1). Dash: muted ink, 2px (3:1+ for a meaningful mark). */
-.pricing-grid--tiers .recommend-label, .tier-preview-card .recommend-label { color: #1c1f1d; }
+.pricing-grid--tiers .recommend-label, .tier-preview-card .recommend-label { color: #1c1f1d; font-size: 12px; } /* 12 px minimum in cards */
 .compare--tiers .dash { height: 2px; background: var(--muted); }
+.compare--tiers .compare-price span { font-variant-numeric: tabular-nums; }
 .compare-tabs { display: none; }
 .compare--tiers .compare-head, .compare--tiers .compare-row { grid-template-columns: 1fr repeat(3, 110px); }
 .compare--tiers .compare-head span:last-child { color: var(--accent-text); }
@@ -832,7 +834,7 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .achievement .button { margin-top: auto; }
 .achievement .progress { margin: auto 0 0; }
 .achievement small { color: var(--muted); font-size: 12px; }
-.badge--demo { color: var(--accent-text); border-color: currentColor; border-style: dashed; }
+.badge--demo { color: var(--accent-text); border-color: currentColor; border-style: dashed; font-size: 12px; }
 .achievements-note { margin: 14px 0 0; color: var(--muted); font-size: 12px; }
 @media (max-width: 1120px) { .achievement-grid { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 620px) { .achievement-grid { grid-template-columns: 1fr; } }
@@ -890,7 +892,7 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .tier-badge .icon { fill: currentColor; stroke-width: 1.2; }
 .tier-badge--plus { color: var(--tier-plus-ink); background: var(--tier-plus-bg); box-shadow: inset 0 0 0 1px var(--tier-plus-line); }
 .tier-badge--premium { color: var(--tier-premium-ink); background: var(--tier-premium-bg); box-shadow: inset 0 0 0 1px var(--tier-premium-line); }
-.tier-badge--sm { padding: 3px 8px 3px 7px; font-size: 11px; }
+.tier-badge--sm { padding: 3px 8px 3px 7px; font-size: 12px; }
 .profile-menu .tier-badge { align-self: flex-start; letter-spacing: .04em; }
 .profile-menu span.tier-badge { color: var(--tier-plus-ink); font-size: 12px; }
 .profile-menu span.tier-badge--premium { color: var(--tier-premium-ink); }
