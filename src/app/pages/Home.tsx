@@ -43,23 +43,23 @@ function CtaCards() {
         <span aria-hidden="true" className="cta-card-visual" style={{ backgroundImage: `url("${visualUrl(visual, 600, 160)}")` }}>
           <span className="arabic" lang="ar">{visual.glyph}</span>
         </span>
-        <span className="cta-card-label"><Icon name="play" size={14} />{t("Құран", "Коран")} · {topic.title}<Icon name="arrow" size={14} /></span>
+        <span className="cta-card-label"><Icon name="play" size={14} />{t("Құран", "Коран")} · {topic.title}</span>
         <strong>{topic.lessons[0]}</strong>
         <small>{t("Сабақ", "Урок")} 1 · ~{lessonMinutes(0)} {t("мин", "мин")}</small>
       </Link>
       <Link className="panel cta-card cta-card--course" to={`/academy/${course.slug}`}>
-        <span className="cta-card-label"><Icon name="bookmark" size={14} />{t("Онлайн академия", "Онлайн-академия")}<Icon name="arrow" size={14} /></span>
+        <span className="cta-card-label"><Icon name="bookmark" size={14} />{t("Онлайн академия", "Онлайн-академия")}</span>
         <strong>{course.title}</strong>
         <small>{course.lessons} {t("сабақ", "уроков")} · {course.time} · {course.level}</small>
       </Link>
       <Link className="panel cta-card cta-card--question" to={`/questions/${question.id}`}>
-        <span className="cta-card-label"><Icon name="chat" size={14} />{t("Сұрақ-жауап", "Вопросы")} · {question.category}<Icon name="arrow" size={14} /></span>
+        <span className="cta-card-label"><Icon name="chat" size={14} />{t("Сұрақ-жауап", "Вопросы")} · {question.category}</span>
         <strong>{question.title}</strong>
         <small>{question.imam}</small>
       </Link>
       {/* A guest has no progress yet: say where it will live instead of showing "0 / 57". */}
       <Link className="panel cta-card cta-card--progress" to={authed ? "/profile" : "/login?mode=register"}>
-        <span className="cta-card-label"><Icon name="check" size={14} />{t("Сіздің прогрессіңіз", "Ваш прогресс")}<Icon name="arrow" size={14} /></span>
+        <span className="cta-card-label"><Icon name="check" size={14} />{t("Сіздің прогрессіңіз", "Ваш прогресс")}</span>
         {authed ? (
           <>
             <strong><b>{done.length}</b> / {totalLessons} {t("сабақ", ruOf(totalLessons, ["урока", "уроков"]))}</strong>
@@ -82,10 +82,10 @@ export default function Home() {
 
   // What the platform actually offers; each card links to the section that provides it.
   const benefits: { n: string; title: string; text: string; links: { to: string; label: string }[]; primary?: boolean }[] = [
-    { n: "01", primary: true, title: t("Жаңадан бастаушыларға жол", "Путь для начинающих"), text: t("Жаңадан бастаушыларға дайын жол бар: иман негіздерінен Құран оқуға дейін.", "Для начинающих есть готовый путь: от основ веры до чтения Корана."), links: [{ to: "/beginner", label: t("Жолды көру", "Посмотреть путь") }] },
-    { n: "02", title: t("Құран мен тәжуид ретімен", "Коран и таджвид по порядку"), text: t("Әліпбиден тәжуид ережелеріне дейін — сабақтар ретімен берілген.", "От алфавита до правил таджвида — уроки идут по порядку."), links: [{ to: "/quran", label: t("Құранға өту", "Перейти к Корану") }] },
+    { n: "01", primary: true, title: t("Деңгейіңізге сай бастау", "Старт с вашего уровня"), text: t("Жаңадан бастаушыларға дайын жол бар: иман негіздерінен Құран оқуға дейін.", "Для начинающих есть готовый путь: от основ веры до чтения Корана."), links: [{ to: "/beginner", label: t("Жолды көру", "Посмотреть путь") }] },
+    { n: "02", title: t("Құран мен тәжуид қадам-қадаммен", "Коран и таджвид шаг за шагом"), text: t("Әліпбиден тәжуид ережелеріне дейін — сабақтар ретімен берілген.", "От алфавита до правил таджвида — уроки идут по порядку."), links: [{ to: "/quran", label: t("Құранға өту", "Перейти к Корану") }] },
     { n: "03", title: t("Курстар мен дайын жауаптар", "Курсы и база ответов"), text: t("Академиядағы жүйелі курстар және имамдар жауап берген сұрақтар базасы.", "Системные курсы Академии и база вопросов с ответами имамов."), links: [{ to: "/academy", label: t("Курстар", "Курсы") }, { to: "/questions", label: t("Сұрақ-жауап", "Вопросы") }] },
-    { n: "04", title: t("Сіздің прогресіңіз", "Ваш прогресс"), text: t("Аяқталған сабақтарды белгілеңіз.", "Отмечайте завершённые уроки."), links: [{ to: "/profile", label: t("Прогресс", "Прогресс") }] },
+    { n: "04", title: t("Өз қарқыныңызбен", "В своём темпе"), text: t("Сабақтарды өз ырғағыңызбен өтіп, аяқталғанын белгілеңіз — прогресс аккаунтта сақталады.", "Проходите уроки в своём ритме и отмечайте завершённые — прогресс сохраняется в аккаунте."), links: [{ to: "/profile", label: t("Прогресс", "Прогресс") }] },
   ];
   const stats: [number, string, [string, string, string]][] = [
     [questions.length, "дайын сұрақ-жауап", ["готовый ответ", "готовых ответа", "готовых ответов"]],
@@ -132,7 +132,7 @@ export default function Home() {
 
       <section aria-labelledby="benefits-title" className="section section-tint" id="destinations">
         <div className="container">
-          <div className="section-title"><p className="eyebrow">{t("САЙТТАҒЫ БӨЛІМДЕР", "ЧТО ЕСТЬ НА САЙТЕ")}</p><h2 id="benefits-title">{t("Сабақтар, курстар және имамдардың жауаптары", "Уроки, курсы и ответы имамов")}</h2></div>
+          <div className="section-title"><p className="eyebrow">{t("МҮМКІНДІКТЕР", "ВОЗМОЖНОСТИ")}</p><h2 id="benefits-title">{t("Неге осында оқу ыңғайлы", "Почему здесь удобно учиться")}</h2></div>
           <div className="destinations destinations--4">
             {benefits.map((d) => (
               <article className={`destination ${d.primary ? "destination--primary" : ""}`} key={d.n}>

@@ -959,9 +959,9 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .final-cta-grid .final-cta-inner > p:not(.eyebrow):not(.arabic) { max-width: 460px; margin: 24px 0 32px; }
 .final-cta-grid .final-cta-inner > div { justify-content: flex-start; flex-wrap: wrap; }
 .cta-cards { min-height: 470px; position: relative; }
-.cta-card { width: min(300px, 62%); padding: 24px; position: absolute; display: flex; flex-direction: column; gap: 8px; color: var(--text); text-decoration: none; box-shadow: 0 24px 60px rgba(4, 22, 17, .28); transform: rotate(var(--tilt)); transition: transform .3s ease, box-shadow .3s ease; }
-.cta-card:hover, .cta-card:focus-visible { z-index: 6; transform: rotate(0) translateY(-4px); box-shadow: 0 30px 70px rgba(4, 22, 17, .36); }
-.cta-card-label { display: flex; align-items: center; gap: 8px; color: var(--accent-text); font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+.cta-card { width: min(300px, 62%); padding: 20px 22px; position: absolute; display: flex; flex-direction: column; gap: 8px; color: var(--text); text-decoration: none; box-shadow: 0 24px 60px rgba(4, 22, 17, .28); transform: rotate(var(--tilt)); transition: transform .3s ease, box-shadow .3s ease; }
+.cta-card:hover, .cta-card:focus-visible { z-index: 6; transform: rotate(0) translateY(-6px); box-shadow: 0 30px 70px rgba(4, 22, 17, .36); }
+.cta-card-label { display: flex; align-items: center; gap: 8px; color: var(--accent-text); font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
 .cta-card strong { font-size: 17px; font-weight: 400; line-height: 1.35; letter-spacing: -.01em; }
 .cta-card strong b { font-size: 30px; font-weight: 400; letter-spacing: -.03em; }
 .cta-card small { color: var(--muted); font-size: 13px; }
@@ -1018,7 +1018,7 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 }
 @media (max-width: 620px) {
   .destinations--4 { grid-template-columns: 1fr; }
-  .destinations--4 .destination { min-height: 0; padding: 28px 24px; }
+  .destinations--4 .destination { min-height: 0; padding: 28px 22px; }
   .destination h3 { margin-top: 28px; font-size: 24px; }
   .hero-proof span { max-width: 96px; }
 }
@@ -1093,10 +1093,6 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .pricing-grid--tiers .price-card { position: relative; }
 .pricing-grid--tiers .price-check { position: absolute; top: 30px; right: 30px; width: auto; height: 36px; margin: 0; display: flex; align-items: center; }
 .pricing-grid--tiers .tier-option h3 { margin-top: 0; padding-right: 96px; }
-
-/* Cards before the footer are links: the arrow closes the label row, right after the text (the next card overlaps the first card's right edge) */
-.cta-card-label > .icon:last-child { flex: none; }
-@media (min-width: 901px) { .cta-card--lesson .cta-card-label { padding-right: 36px; } } /* the course card overlaps this card's right edge */
 
 @media (max-width: 620px) {
   /* Phone: controls in the new blocks are 44 px high, text in their fields is 16 px */
