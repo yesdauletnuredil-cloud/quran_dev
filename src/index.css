@@ -1101,6 +1101,7 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
   .lesson-extra, .promo-code .button, .tier-tabs button, .support-card .filter-row button, .disclosure-button { min-height: 44px; }
   .support-card .filter-row button { min-width: 44px; } /* the "1" chip of the student count was 41 px wide */
   .confirm-modal .modal-close, .story-modal .modal-close { width: 44px; height: 44px; }
+  .app:has(.confirm-modal) .toast { display: none; } /* a toast from the previous action does not stay under an open dialog */
   .tier-row-link { padding: 12px 0; margin: -12px 0; }
   .destinations--4 .destination-cta { padding: 12px 0; margin: -12px 0; }
   .video-controls { padding: 6px 4px; }
