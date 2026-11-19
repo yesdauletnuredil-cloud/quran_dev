@@ -697,7 +697,7 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 .promo-form label { font-size: 14px; font-weight: 500; }
 .promo-row { display: flex; gap: 10px; }
 .promo-row .input { flex: 1; min-width: 0; letter-spacing: .06em; text-transform: uppercase; }
-.promo-row .input::placeholder { letter-spacing: .06em; }
+.promo-row .input::placeholder { color: var(--muted); letter-spacing: .06em; opacity: 1; }
 .promo-success { margin: 4px 0 0 !important; padding: 12px 14px; border-radius: var(--radius-sm); display: flex; gap: 10px; align-items: center; color: var(--primary) !important; background: var(--surface-soft); font-size: 14px !important; }
 .detail-main > .panel + .panel { margin-top: 16px; }
 /* Profile: progress first, tier as one line, ustaz block in the main column */
@@ -948,7 +948,7 @@ button.price-card { width: 100%; text-align: left; font: inherit; color: inherit
 }
 .field-hint { color: var(--muted); font-size: 13px; line-height: 1.5; }
 .promo-input { letter-spacing: .06em; text-transform: uppercase; }
-.promo-input::placeholder { letter-spacing: .06em; }
+.promo-input::placeholder { color: var(--muted); letter-spacing: .06em; opacity: 1; } /* browser default grey was 3.2:1 on white */
 
 /* Final CTA: two columns, preview cards on the right */
 .final-cta::before { left: 74%; }
