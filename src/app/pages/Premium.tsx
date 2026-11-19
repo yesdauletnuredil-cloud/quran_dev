@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { ConfirmDialog } from "../confirm";
 import { useApp } from "../context";
@@ -9,7 +9,10 @@ export default function Premium() {
   const { t, lang, authed, subscription, tier, subscribe, requireAuth, notify, formatDate } = useApp();
   const navigate = useNavigate();
   // ?tier=plus preselects a tier (links from the home tier preview); unknown values are ignored.
-  const linked = useSearchParams()[0].get("tier");
+  // ?review=1 is added only on the way back from registration: it opens the "check" dialog for that tier.
+  const [params, setParams] = useSearchParams();
+  const linked = params.get("tier");
+  const fromRegistration = params.get("review") === "1";
   const initial = tiers.find((x) => x.id === linked)?.id ?? subscription?.tier ?? "plus";
   const [selected, setSelected] = useState<Tier>(initial);
   // Mobile comparison tab opens on the selected tier and follows the selection; it can still be switched by hand.
@@ -22,6 +25,15 @@ export default function Premium() {
   const [review, setReview] = useState<Tier | null>(null);
   const closeReview = useCallback(() => setReview(null), []);
   const current = tier;
+  // After registration the person has already chosen: open the check dialog for that tier (nothing is bought until
+  // they press the confirm button). The marker is dropped from the address so closing the dialog or going back does not reopen it.
+  useEffect(() => {
+    if (!fromRegistration || !authed) return;
+    const ids = tiers.map((x) => x.id);
+    const id = tiers.find((x) => x.id === linked)?.id;
+    if (id && id !== "basic" && ids.indexOf(id) > ids.indexOf(tier ?? "basic")) setReview(id);
+    setParams(id ? { tier: id } : {}, { replace: true });
+  }, [authed]); // eslint-disable-line react-hooks/exhaustive-deps
   // "Recommended" is a suggestion for people without a paid tier; a subscriber already chose.
   const recommended = (id: Tier) => !subscription && id === "plus";
   const choose = (id: Tier) => { setSelected(id); setMobileTier(id); };
@@ -88,7 +100,7 @@ export default function Premium() {
     // Guests go to registration and come back to this page with the same tier selected
     // (the login page already follows ?next=; the original sign-in dialog stays as it is).
     if (!authed) {
-      return <Button full icon="arrow" to={`/login?mode=register&next=${encodeURIComponent(`/premium?tier=${id}`)}`} variant={variant}>{t(`${name} рәсімдеу`, `Оформить ${name}`)}</Button>;
+      return <Button full icon="arrow" to={`/login?mode=register&next=${encodeURIComponent(`/premium?tier=${id}&review=1`)}`} variant={variant}>{t(`${name} рәсімдеу`, `Оформить ${name}`)}</Button>;
     }
     // Opens the check dialog on this page, not another page: no arrow.
     return (
