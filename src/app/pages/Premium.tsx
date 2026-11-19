@@ -101,7 +101,7 @@ export default function Premium() {
       <PageHero
         crumbs={[{ label: t("Басты бет", "Главная"), to: "/" }, { label: t("Тарифтер", "Тарифы") }]}
         eyebrow="BASIC · PLUS · PREMIUM"
-        lead={t("Алдымен тегін материалдармен танысыңыз. Дайын болғанда өзіңізге лайық тарифті таңдаңыз.", "Сначала познакомьтесь с бесплатными материалами. Когда будете готовы — выберите подходящий тариф.")}
+        lead={t("Алдымен тегін материалдармен танысыңыз. Содан кейін тарифті таңдаңыз: төменде Basic, Plus және Premium-ға не кіретіні көрсетілген.", "Сначала познакомьтесь с бесплатными материалами. Затем выберите тариф: ниже — что входит в Basic, Plus и Premium.")}
         title={t("Біліміңізді жалғастырыңыз", "Продолжайте своё обучение")}
       />
       {lowerTo && subscription && current && (() => {
@@ -137,7 +137,7 @@ export default function Premium() {
             className="review-dialog"
             closeLabel={t("Жабу", "Закрыть")}
             confirmLabel={takeLabel(p.name)}
-            keepLabel={t("Артқа", "Назад")}
+            keepLabel={t("Өзгерту", "Изменить")}
             onClose={closeReview}
             onConfirm={() => { setReview(null); subscribeNow(review); }}
             primary="confirm"
@@ -201,7 +201,7 @@ export default function Premium() {
       </section>
       <section className="page-section section-tint">
         <div className="container">
-          <div className="section-title"><p className="eyebrow">{t("САЛЫСТЫРУ", "СРАВНЕНИЕ")}</p><h2>{t("Әр тарифте не бар", "Что входит в каждый тариф")}</h2><p className="section-intro">{t("Әр келесі тариф алдыңғысын толық қамтиды. Premium — Plus мүмкіндіктері және Ұстазбен жеке консультация.", "Каждый следующий тариф включает предыдущий. Premium — всё из Plus и личная консультация с Ұстазом.")}</p></div>
+          <div className="section-title"><p className="eyebrow">{t("ҮШ ТАРИФ", "ТРИ ТАРИФА")}</p><h2>{t("Әр тарифте не бар", "Что входит в каждый тариф")}</h2><p className="section-intro">{t("Әр келесі тариф алдыңғысын толық қамтиды. Premium — Plus мүмкіндіктері және Ұстазбен жеке консультация.", "Каждый следующий тариф включает предыдущий. Premium — всё из Plus и личная консультация с Ұстазом.")}</p></div>
           <div aria-label={t("Тарифті көрсету", "Показать тариф")} className="compare-tabs tier-tabs filter-row" role="group">
             {tiers.map((p) => <button aria-pressed={mobileTier === p.id} className={mobileTier === p.id ? "active" : ""} key={p.id} onClick={() => setMobileTier(p.id)} type="button">{p.name}</button>)}
           </div>
@@ -233,7 +233,7 @@ export default function Premium() {
               <h3>{t("Ұстазбен жеке байланыс", "Личная связь с Ұстазом")}</h3>
               <p>{t("Plus — Ұстазға жазбаша сұрақ. Premium — қосымша қоңырау не бейне консультация.", "Plus — письменные вопросы Ұстазу. Premium — дополнительно звонок или видеоконсультация.")}</p>
             </div>
-            <Button icon="arrow" to="/ustaz" variant="secondary">{current === "plus" || current === "premium" ? t("Ұстазға жазу", "Написать Ұстазу") : t("Қалай жұмыс істейді", "Как это работает")}</Button>
+            <Button icon="arrow" to="/ustaz" variant="secondary">{current === "plus" || current === "premium" ? t("Ұстазға жазу", "Написать Ұстазу") : t("Ұстазбен байланыс", "Связь с Ұстазом")}</Button>
           </div>
         </div>
       </section>
@@ -241,12 +241,12 @@ export default function Premium() {
         <h2 className="sr-only">{t("Промокод және демеушілік", "Промокод и спонсорство")}</h2>
         <div className="container promo-layout">
           <div className="panel">
-            <h3>{t("Промокодыңыз бар ма?", "Есть промокод?")}</h3>
+            <h3>{t("Промокодты енгізу", "Ввести промокод")}</h3>
             <p>{t("Демеуші немесе грант бағдарламасы берген кодты енгізіңіз — тариф бірден ашылады.", "Введите код от спонсора или грантовой программы — тариф откроется сразу.")}</p>
             <PromoField id="promo-premium" />
           </div>
           <div className="panel panel--green">
-            <h3>{t("Басқа біреудің оқуына көмектескіңіз келе ме?", "Хотите оплатить обучение другому?")}</h3>
+            <h3>{t("Басқа адамның оқу ақысын төлеу", "Оплатить обучение другому")}</h3>
             <p>{t("Оқушыға демеуші болыңыз: біз промокод жасаймыз, ол оны осы бетте қолданады.", "Станьте спонсором ученика: мы создадим промокод, который он активирует на этой странице.")}</p>
             <Button icon="arrow" to="/support" variant="light">{t("Жобаны қолдау", "Поддержать проект")}</Button>
           </div>

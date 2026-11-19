@@ -79,7 +79,7 @@ function SponsorCard() {
           className="review-dialog"
           closeLabel={t("Жабу", "Закрыть")}
           confirmLabel={t("Демеуші болу", "Стать спонсором")}
-          keepLabel={t("Артқа", "Назад")}
+          keepLabel={t("Өзгерту", "Изменить")}
           onClose={closeReview}
           onConfirm={() => { setReview(false); generate(); }}
           primary="confirm"
@@ -109,14 +109,14 @@ function DevelopmentCard() {
 
   const donate = () => {
     setLoading(true);
-    window.setTimeout(() => { setLoading(false); notify(t("Рақмет! Бұл демо — төлем алынбады.", "Спасибо! Это демо — оплата не списана.")); }, 900);
+    window.setTimeout(() => { setLoading(false); notify(t("Рақмет. Бұл демо: төлем алынбады.", "Спасибо. Это демо: оплата не списана.")); }, 900);
   };
 
   return (
     <article className="panel support-card">
       <span className="support-num">02</span>
       <h3>{t("Жобаны дамытуға", "Поддержка разработки")}</h3>
-      <p>{t("Жаңа сабақтар, аудио жазбалар, қосымша мен сервер шығындары. Әр үлес платформаны тегін бөлімдерімен бірге дамытуға көмектеседі.", "Новые уроки, аудиозаписи, приложение и серверы. Каждый вклад помогает развивать платформу и её бесплатные разделы.")}</p>
+      <p>{t("Жаңа сабақтар, аудио жазбалар, қосымша мен сервер шығындары.", "Новые уроки, аудиозаписи, приложение и серверы.")}</p>
       <p className="support-label" id="donate-amount-label">{t("Сома", "Сумма")}</p>
       <Chips items={amounts.map(formatPrice)} labelledBy="donate-amount-label" onChange={setAmount} value={amount} />
       <p className="support-label" id="donate-period-label">{t("Мерзімділік", "Периодичность")}</p>
@@ -161,8 +161,8 @@ export default function Support() {
     <>
       <PageHero
         crumbs={[{ label: t("Басты бет", "Главная"), to: "/" }, { label: t("Жобаны қолдау", "Поддержать проект") }]}
-        eyebrow={t("ҚОЛДАУ", "ПОДДЕРЖКА")}
-        lead={t("Quran Academy KZ білімді қолжетімді етуге тырысады. Өзіңізге ыңғайлы көмек жолын таңдаңыз.", "Quran Academy KZ стремится сделать знания доступными. Выберите удобный для вас способ помочь.")}
+        eyebrow={t("КӨМЕКТЕСУДІҢ ҮШ ЖОЛЫ", "ТРИ СПОСОБА")}
+        lead={t("Көмектесудің үш жолы бар: оқушыға демеушілік, платформаны дамытуға үлес немесе зекет.", "Помочь можно тремя способами: спонсорством ученика, вкладом в развитие платформы или закятом.")}
         title={t("Жобаны қолдау", "Поддержать проект")}
       />
       <section className="page-section">
@@ -174,7 +174,7 @@ export default function Support() {
             <ZakatCard />
           </div>
           <div className="inline-cta">
-            <p>{t("Есептілік: түскен қаражат пен оның жұмсалуы туралы есеп [кезеңділік] сайын жарияланады.", "Прозрачность: отчёт о поступлениях и расходах публикуется [периодичность].")}</p>
+            <p>{t("Түскен қаражат пен оның жұмсалуы туралы есеп [кезеңділік] сайын жарияланады.", "Отчёт о поступлениях и расходах публикуется [периодичность].")}</p>
             <Button icon="arrow" to="/contact" variant="secondary">{t("Бізбен байланысу", "Связаться с нами")}</Button>
           </div>
         </div>

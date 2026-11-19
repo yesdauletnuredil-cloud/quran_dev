@@ -149,14 +149,14 @@ export default function Ustaz() {
     <>
       <PageHero
         crumbs={[{ label: t("Басты бет", "Главная"), to: "/" }, { label: t("Ұстазбен байланыс", "Связь с Ұстазом") }]}
-        eyebrow={t("ЖЕКЕ БАЙЛАНЫС", "ЛИЧНАЯ СВЯЗЬ")}
+        eyebrow={t("PLUS ПЕН PREMIUM", "PLUS И PREMIUM")}
         lead={t("Оқу барысындағы сұрақтарыңызды өзіңізге бекітілген Ұстазбен жеке талқылаңыз.", "Обсуждайте вопросы по обучению лично с закреплённым за вами Ұстазом.")}
         title={t("Ұстазбен жеке байланыс", "Личная связь с Ұстазом")}
       />
       <section className="page-section">
         <div className="container detail-layout">
           <div className="detail-main">
-            <h2 className="list-heading">{t("Қалай жұмыс істейді", "Как это работает")}</h2>
+            <h2 className="list-heading">{t("Ұстазға сұраныс қалай жіберіледі", "Как отправить запрос Ұстазу")}</h2>
             <ol className="ustaz-steps">{steps.map((s, i) => <li key={s}><span>0{i + 1}</span>{s}</li>)}</ol>
             {tier === "plus" || tier === "premium" ? (
               <>

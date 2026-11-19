@@ -201,7 +201,7 @@ export function PromoField({ id = "promo" }: { id?: string }) {
       <label htmlFor={id}>{t("Промокод", "Промокод")}</label>
       <div className="promo-row">
         <input aria-describedby={`${id}-status`} aria-invalid={!!error} autoCapitalize="characters" className="input" id={id} onChange={(e) => { setCode(e.target.value); setResult(null); }} placeholder="GRANT-XXXX" value={code} />
-        <Button loading={loading} type="submit" variant="secondary">{t("Қолдану", "Применить")}</Button>
+        <Button loading={loading} type="submit" variant="secondary">{t("Промокодты қолдану", "Применить промокод")}</Button>
       </div>
       <div aria-live="polite" id={`${id}-status`}>
         {error && <span className="field-error">{error}</span>}

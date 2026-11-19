@@ -24,7 +24,7 @@ function Achievements() {
             <h3>{a.title[lang]}</h3>
             <p>{a.desc[lang]}</p>
             {a.earned
-              ? <Button icon="image" onClick={() => setStory(a)} size="sm" variant="secondary">Stories</Button>
+              ? <Button icon="image" onClick={() => setStory(a)} size="sm" variant="secondary">{t("Stories карточкасы", "Карточка для Stories")}</Button>
               : <>
                   <div aria-hidden="true" className="progress"><i style={{ width: `${(a.progress[0] / (a.progress[1] || 1)) * 100}%` }} /></div>
                   <small>{a.progress[0]} / {a.progress[1]} {t("сабақ", ruOf(a.progress[1], ["урока", "уроков"]))}</small>
@@ -67,7 +67,7 @@ function OpenedPanel({ tier, from, onClose }: { tier: Tier; from: Tier; onClose:
       )}
       <div className="opened-actions">
         <Button icon="arrow" size="sm" to="/ustaz" variant="secondary">{t("Ұстазбен байланыс", "Связь с Ұстазом")}</Button>
-        <Button onClick={onClose} size="sm" variant="secondary">{t("Түсінікті", "Понятно")}</Button>
+        <Button onClick={onClose} size="sm" variant="secondary">{t("Жабу", "Закрыть")}</Button>
       </div>
     </section>
   );
@@ -91,7 +91,7 @@ function ProgressPanel() {
               <b>{next.title}</b>
               <small>{next.topic.title} · {t("Сабақ", "Урок")} {next.index + 1}</small>
             </p>
-            <Button icon="arrow" to={next.url}>{started ? t("Жалғастыру", "Продолжить") : t("Бастау", "Начать")}</Button>
+            <Button icon="arrow" to={next.url}>{started ? t("Келесі сабаққа өту", "Перейти к следующему уроку") : t("Бірінші сабақты бастау", "Начать первый урок")}</Button>
           </>
         ) : premium ? (
           <>
@@ -119,7 +119,7 @@ function PromoDisclosure() {
   return (
     <div className="panel promo-disclosure">
       <button aria-controls="promo-more" aria-expanded={open} className="disclosure-button" onClick={() => setOpen(!open)} type="button">
-        {t("Промокодыңыз бар ма?", "Есть промокод?")}<Icon name="chevron" size={16} />
+        {t("Промокодты енгізу", "Ввести промокод")}<Icon name="chevron" size={16} />
       </button>
       {/* Always in the page (hidden while folded) so aria-controls always points at an element. */}
       <div className="promo-more" hidden={!open} id="promo-more">
@@ -134,7 +134,7 @@ export default function Profile() {
   const { t, authed, subscription, tier: tierId, formatDate, logout } = useApp();
   const location = useLocation();
   const navigate = useNavigate();
-  // Set by /premium after a purchase or upgrade; cleared on "Понятно" so Back or a revisit doesn't repeat it.
+  // Set by /premium after a purchase or upgrade; cleared on "Закрыть" so Back or a revisit doesn't repeat it.
   const opened = (location.state as { opened?: { tier: Tier; from: Tier } } | null)?.opened;
   const closeOpened = () => {
     navigate(location.pathname, { replace: true, state: null });
@@ -210,7 +210,7 @@ export default function Profile() {
                   <h3>{t("Ұстаз", "Ұстаз")}</h3>
                   <p>{t("Ұстазға жеке сұрақтар және кезекші Ұстазбен жедел байланыс — Plus және Premium тарифтерінде.", "Личные вопросы Ұстазу и срочная связь с дежурным — на тарифах Plus и Premium.")}</p>
                 </div>
-                <Button icon="arrow" size="sm" to="/ustaz" variant="secondary">{t("Қалай жұмыс істейді", "Как это работает")}</Button>
+                <Button icon="arrow" size="sm" to="/ustaz" variant="secondary">{t("Ұстазбен байланыс", "Связь с Ұстазом")}</Button>
               </div>
             )}
             <Achievements />

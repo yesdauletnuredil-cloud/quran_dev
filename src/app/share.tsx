@@ -247,7 +247,7 @@ export function SharePanel({ title, path, story }: { title: string; path: string
       <h3>{t("Бөлісу", "Поделиться")}</h3>
       <div className="share-actions">
         <Button icon="share" onClick={share} size="sm" variant="secondary">{t("Бөлісу", "Поделиться")}</Button>
-        <Button icon="copy" onClick={copy} size="sm" variant="secondary">{t("Сілтеме", "Ссылка")}</Button>
+        <Button icon="copy" onClick={copy} size="sm" variant="secondary">{t("Сілтемені көшіру", "Копировать ссылку")}</Button>
       </div>
       <button className="story-trigger" onClick={() => setOpen(true)} type="button">
         <span className="story-trigger-thumb" style={{ backgroundImage: `url("${visualUrl(story.visual, 90, 160)}")` }} />
