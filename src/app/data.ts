@@ -124,7 +124,8 @@ export const products: Product[] = [
   { id: "memorization-cards", title: "Жаттау карточкалары", category: "Оқу құралдары", price: 2900, tone: "sage", glyph: "حِفْظ", desc: "Қысқа сүрелерді жүйелі қайталауға арналған карточкалар жинағы.", details: ["50 карточка", "Қысқа сүрелер", "Қайталау кестесі"] },
 ];
 export const getProduct = (id?: string) => products.find((p) => p.id === id);
-export const formatPrice = (n: number) => `${n.toLocaleString("ru-RU")} ₸`;
+// Non-breaking spaces between thousands and before the tenge sign: a price never splits across lines.
+export const formatPrice = (n: number) => `${n.toLocaleString("ru-RU")} ₸`.replace(/\s/g, "\u00a0");
 /** Tier price label: Basic is free. */
 export const tierPrice = (price: number, t: (kz: string, ru: string) => string) => (price === 0 ? t("Тегін", "Бесплатно") : formatPrice(price));
 
