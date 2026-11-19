@@ -172,7 +172,7 @@ export function LessonView({ topic, index, base, heading, parent }: { topic: Top
           <aside className="detail-aside">
             <div className="panel">
               <h3>{t("Сабақ күйі", "Статус урока")}</h3>
-              <p>{isDone ? t("Аяқталған. Прогресс сақталды.", "Завершён. Прогресс сохранён.") : t("Сабақты аяқтаған соң белгілеңіз. Прогресс аккаунтта сақталады.", "Отметьте урок после завершения. Прогресс сохранится в аккаунте.")}</p>
+              <p>{isDone ? t("Аяқталған.", "Завершён.") : t("Сабақты аяқтаған соң белгілеңіз.", "Отметьте урок после завершения.")}</p>
               <Button disabled={locked} full icon={isDone ? "check" : undefined} onClick={() => requireAuth(() => { toggleDone(key); notify(isDone ? t("Белгі алынды", "Отметка снята") : t("Сабақ аяқталды", "Урок завершён")); })} variant={isDone ? "secondary" : "primary"}>
                 {isDone ? t("Аяқталды", "Завершён") : t("Аяқталды деп белгілеу", "Отметить завершённым")}
               </Button>
